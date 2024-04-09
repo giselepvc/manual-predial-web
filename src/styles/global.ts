@@ -28,8 +28,8 @@ export const GlobalStyle = createGlobalStyle`
   }
   body {
     text-rendering: optimizeLegibility;
-    background: ${({ theme }) => theme.colors.white};
-    color: ${({ theme }) => theme.colors.grayd2};
+    background: ${({ theme }) => theme.colors.gray41};
+    color: ${({ theme }) => theme.colors.white};
   }
   button {
     cursor: pointer;

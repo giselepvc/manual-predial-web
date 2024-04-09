@@ -5,11 +5,8 @@ import { VscEye, VscEyeClosed } from 'react-icons/vsc';
 import { useRouter } from 'next/navigation';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { SubmitHandler, useForm } from 'react-hook-form';
-
 import Button from '@/components/Button/Button';
-
 import { ILoginForm, LoginSchema } from '@/validations/LoginSchema';
-
 import {
   ErrorMessage,
   FormContainer,
@@ -36,8 +33,6 @@ const Login = () => {
   });
 
   const onSubmit: SubmitHandler<ILoginForm> = form => {
-    console.log(form);
-
     router.push('/users');
   };
 

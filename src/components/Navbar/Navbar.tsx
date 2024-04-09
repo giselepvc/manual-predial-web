@@ -1,0 +1,77 @@
+'use client';
+
+import { useState } from 'react';
+import { usePathname } from 'next/navigation';
+import UserIcon from '../../../public/icons/user.svg';
+import TractorIcon from '../../../public/icons/tractor.svg';
+import EnterpriseIcon from '../../../public/icons/enterprise.svg';
+import BookIcon from '../../../public/icons/book.svg';
+import SettingsIcon from '../../../public/icons/settings.svg';
+import ExitIcon from '../../../public/icons/exit.svg';
+import {
+  LogoButton,
+  LogoImg,
+  LogoTextImg,
+  LogoutButton,
+  Nav,
+  NavLink,
+  NavLinkText,
+  NavbarContainer,
+} from './styles';
+
+const Navbar = () => {
+  const [expanded, setExpanded] = useState(true);
+  const pathname = usePathname();
+
+  return (
+    <NavbarContainer>
+      <LogoButton type="button" onClick={() => setExpanded(prev => !prev)}>
+        <LogoImg src="/img/logo_icon.svg" alt="logo" />
+        <LogoTextImg src="/img/logo_text.svg" alt="predial" open={expanded} />
+      </LogoButton>
+
+      <Nav open={expanded}>
+        <NavLink href="/users" selected={pathname.startsWith('/users')}>
+          <UserIcon />
+          <NavLinkText selected={pathname.startsWith('/users')}>
+            Listagem de usuário
+          </NavLinkText>
+        </NavLink>
+        <NavLink href="/company" selected={pathname.startsWith('/company')}>
+          <TractorIcon />
+          <NavLinkText selected={pathname.startsWith('/company')}>
+            Listagem de construtora
+          </NavLinkText>
+        </NavLink>
+        <NavLink
+          href="/enterprise"
+          selected={pathname.startsWith('/enterprise')}
+        >
+          <EnterpriseIcon />
+          <NavLinkText selected={pathname.startsWith('/enterprise')}>
+            Listagem de emprendimento
+          </NavLinkText>
+        </NavLink>
+        <NavLink href="/manual" selected={pathname.startsWith('/manual')}>
+          <BookIcon />
+          <NavLinkText selected={pathname.startsWith('/manual')}>
+            Listagem de manual
+          </NavLinkText>
+        </NavLink>
+        <NavLink href="/config" selected={pathname.startsWith('/config')}>
+          <SettingsIcon />
+          <NavLinkText selected={pathname.startsWith('/config')}>
+            Configurações
+          </NavLinkText>
+        </NavLink>
+      </Nav>
+
+      <LogoutButton type="button">
+        <ExitIcon />
+        {expanded && 'Sair'}
+      </LogoutButton>
+    </NavbarContainer>
+  );
+};
+
+export default Navbar;
