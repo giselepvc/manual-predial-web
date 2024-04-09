@@ -6,9 +6,15 @@ interface PageProps {
   title: string;
   backButton?: boolean;
   backFunction?: () => void;
+  children: React.ReactNode;
 }
 
-const PageLayout = ({ title, backButton, backFunction }: PageProps) => {
+const PageLayout = ({
+  title,
+  backButton,
+  backFunction,
+  children,
+}: PageProps) => {
   return (
     <PageComponent>
       <PageTitle>{title}</PageTitle>
@@ -19,6 +25,8 @@ const PageLayout = ({ title, backButton, backFunction }: PageProps) => {
           Retornar para listagem
         </BackButton>
       )}
+
+      {children}
     </PageComponent>
   );
 };

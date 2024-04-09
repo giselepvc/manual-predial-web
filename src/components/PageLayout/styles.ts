@@ -12,14 +12,13 @@ export const PageTitle = styled.h1`
   font-size: 1.625rem;
   color: ${({ theme }) => theme.colors.white};
   font-weight: 700;
+  margin-bottom: 2rem;
 `;
 
 export const BackButton = styled.div`
   display: flex;
   align-items: center;
   gap: 0.8rem;
-
-  margin-top: 2rem;
 
   color: ${({ theme }) => theme.colors.grayaa};
   font-weight: 600;
