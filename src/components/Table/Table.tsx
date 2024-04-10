@@ -2,103 +2,103 @@
 import { Table, TableSection } from './styles';
 
 export interface MockOrder {
-  company_logo: string;
   id: string;
   customer: string;
   equipment_count: number;
-  technician: string;
+  cpf: string;
+  cnpj: string;
   status: string;
   type: string;
 }
 
 export const mockOrders: MockOrder[] = [
   {
-    company_logo: '/cargill.png',
     id: '1001',
     customer: 'Felipe Augusto',
     equipment_count: 14,
-    technician: '-',
+    cpf: '475.213.908-17',
+    cnpj: '47.078.568/0001-99',
     status: 'Não atribuído',
     type: 'Extintor',
   },
   {
-    company_logo: '/petrobras.png',
     id: '1002',
     customer: 'Jhon Jhones',
     equipment_count: 12,
-    technician: 'João Silva',
+    cpf: '475.213.908-17',
+    cnpj: '47.078.568/0001-99',
     status: 'Iniciada',
     type: 'Extintor/ Hidrante',
   },
   {
-    company_logo: '/braskem.png',
     id: '1003',
     customer: 'Eduardo Lima',
     equipment_count: 10,
-    technician: 'Gilberto Nobrega',
+    cpf: '475.213.908-17',
+    cnpj: '47.078.568/0001-99',
     status: 'Finalizada',
     type: 'Extintor',
   },
   {
-    company_logo: '/cargill.png',
     id: '1004',
     customer: 'Fernando Reis',
     equipment_count: 9,
-    technician: 'Manuel Gomes',
+    cpf: '475.213.908-17',
+    cnpj: '47.078.568/0001-99',
     status: 'Aprovada',
     type: 'Extintor/ Hidrante',
   },
   {
-    company_logo: '/petrobras.png',
     id: '1005',
     customer: 'Julio Prestes',
     equipment_count: 8,
-    technician: 'Gilberto Nobrega',
+    cpf: '475.213.908-17',
+    cnpj: '47.078.568/0001-99',
     status: 'Programada',
     type: 'Extintor',
   },
   {
-    company_logo: '/braskem.png',
     id: '1006',
     customer: 'Trevor Philips',
     equipment_count: 12,
-    technician: 'João Silva',
+    cpf: '475.213.908-17',
+    cnpj: '47.078.568/0001-99',
     status: 'Rascunho',
     type: 'Extintor/ Hidrante',
   },
   {
-    company_logo: '/cargill.png',
     id: '1007',
     customer: 'Michael de Santa',
     equipment_count: 12,
-    technician: 'Gilberto Nobrega',
+    cpf: '475.213.908-17',
+    cnpj: '47.078.568/0001-99',
     status: 'Programada',
     type: 'Extintor',
   },
   {
-    company_logo: '/petrobras.png',
     id: '1008',
     customer: 'Leonardo Fernandez',
     equipment_count: 18,
-    technician: 'James Vicendo',
+    cpf: '475.213.908-17',
+    cnpj: '47.078.568/0001-99',
     status: 'Iniciada',
     type: 'Extintor/ Hidrante',
   },
   {
-    company_logo: '/braskem.png',
     id: '1009',
     customer: 'Franklin Clinton',
     equipment_count: 14,
-    technician: 'Gilberto Nobrega',
+    cpf: '475.213.908-17',
+    cnpj: '47.078.568/0001-99',
     status: 'Programada',
     type: 'Extintor',
   },
   {
-    company_logo: '/cargill.png',
     id: '1010',
     customer: 'Lamar Davis',
     equipment_count: 16,
-    technician: 'Niko Belic',
+    cpf: '475.213.908-17',
+    cnpj: '47.078.568/0001-99',
     status: 'Programada',
     type: 'Extintor/ Hidrante',
   },

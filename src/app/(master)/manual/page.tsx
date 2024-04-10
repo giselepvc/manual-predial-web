@@ -5,6 +5,7 @@ import PageLayout from '@/components/PageLayout/PageLayout';
 import Pagination from '@/components/Pagination/Pagination';
 import TableComponent, { mockOrders } from '@/components/Table/Table';
 import EditIcon from '../../../../public/icons/edit.svg';
+import { ActionButton } from './styles';
 
 const ManualPage = () => {
   return (
@@ -25,20 +26,14 @@ const ManualPage = () => {
           <tr key={order.id}>
             <td>{order.id}</td>
             <td>{order.customer}</td>
-            <td>{order.customer}</td>
+            <td>{order.cnpj}</td>
             <td>{order.customer}</td>
             <td>{order.equipment_count}</td>
-            <td
-              style={{
-                display: 'flex',
-                gap: '0.3rem',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-              }}
-            >
-              <EditIcon />
-              Editar
+            <td>
+              <ActionButton>
+                <EditIcon />
+                Editar
+              </ActionButton>
             </td>
           </tr>
         ))}

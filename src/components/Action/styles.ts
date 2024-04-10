@@ -29,6 +29,10 @@ export const FilterInput = styled.input`
   &::placeholder {
     color: ${({ theme }) => theme.colors.gray9a};
   }
+
+  &:focus-visible {
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.35);
+  }
 `;
 
 export const FilterButton = styled.button`
@@ -70,5 +74,18 @@ export const FilterRegister = styled.button`
   svg {
     width: 1rem;
     color: ${({ theme }) => theme.colors.gray9a};
+  }
+
+  animation-timing-function: ease-out;
+  animation-duration: 100ms;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.white};
+    opacity: 0.8;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.4);
+
+    svg {
+      color: ${({ theme }) => theme.colors.white};
+    }
   }
 `;

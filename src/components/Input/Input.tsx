@@ -2,7 +2,7 @@ import { forwardRef, InputHTMLAttributes } from 'react';
 import { Input } from './styles';
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
-  maskFunction: (value: string) => string;
+  maskFunction?: (value: string) => string;
   placeholder?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }

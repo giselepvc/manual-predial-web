@@ -18,7 +18,7 @@ const CompanyPage = () => {
             <td>{order.id}</td>
             <td>{order.customer}</td>
             <td>{order.customer}</td>
-            <td>{order.customer}</td>
+            <td>{order.cnpj}</td>
             <td>{order.status}</td>
             <td>{order.type}</td>
             <td>{order.status}</td>

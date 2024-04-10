@@ -64,10 +64,9 @@
     "no-nested-ternary": "off",
     "no-useless-constructor": "off",
     "function-paren-newline": "off",
+    "eslint-plugin-vue/no-console": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
-    "@typescript-eslint/no-shadow": [
-      "error"
-    ],
+    "@typescript-eslint/no-shadow": "off",
     "react/jsx-filename-extension": [
       1,
       {

@@ -8,7 +8,7 @@ import TableComponent, { mockOrders } from '@/components/Table/Table';
 const UsersPage = () => {
   return (
     <PageLayout title="Listagem de usuários">
-      <Action title="Cadastrar novo usuário" />
+      <Action title="Cadastrar novo usuário" href="/users/create" />
 
       <TableComponent
         fields={['ID', 'Nome', 'E-mail', 'CPF', 'CNPJ', 'Celular', 'CEP']}
@@ -18,8 +18,8 @@ const UsersPage = () => {
             <td>{order.id}</td>
             <td>{order.customer}</td>
             <td>{order.customer}</td>
-            <td>{order.customer}</td>
-            <td>{order.status}</td>
+            <td>{order.cpf}</td>
+            <td>{order.cnpj}</td>
             <td>{order.type}</td>
             <td>{order.status}</td>
           </tr>
