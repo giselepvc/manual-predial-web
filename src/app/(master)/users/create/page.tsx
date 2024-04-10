@@ -5,6 +5,7 @@ import PageLayout from '@/components/PageLayout/PageLayout';
 import { useRouter } from 'next/navigation';
 import Input from '@/components/Input/Input';
 import { useForm } from 'react-hook-form';
+import Select from '@/components/Select/Select';
 import UserIcon from '../../../../../public/icons/peaple.svg';
 import HpuseIcon from '../../../../../public/icons/house.svg';
 import {
@@ -68,7 +69,7 @@ const UserRegisterPage = () => {
 
           <Field>
             <Label>Empreendimento</Label>
-            <Input placeholder="Selecione empreendimento" />
+            <Select placeholder="Selecione empreendimento" options={[]} />
           </Field>
         </FormSection>
 

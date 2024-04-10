@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
+    "@iconify/react": "^4.1.1",
     "@svgr/webpack": "^8.1.0",
     "axios": "^1.6.5",
     "date-fns": "^3.3.1",
