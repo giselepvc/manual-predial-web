@@ -1,6 +1,9 @@
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { ChapterSchema, IChapterForm } from '@/validations/ChapterSchema';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { ChapterSchema, IChapterForm } from '@/validations/ChapterSchema';
+import Select from '@/components/Select/Select';
+import Input from '@/components/Input/Input';
+import Button from '@/components/Button/Button';
 import { handleSuccess } from '@/utils/handleToast';
 import {
   ButtonSection,
@@ -11,15 +14,12 @@ import {
   RegisterForm,
   RegisterTitle,
 } from './styles';
-import Select from '../Select/Select';
-import Input from '../Input/Input';
-import Button from '../Button/Button';
 
 interface ChapterPageProps {
   onClose: () => void;
 }
 
-const ChapterForm = ({ onClose }: ChapterPageProps) => {
+const AbasForm = ({ onClose }: ChapterPageProps) => {
   const {
     control,
     register,
@@ -27,18 +27,12 @@ const ChapterForm = ({ onClose }: ChapterPageProps) => {
     formState: { errors },
   } = useForm<IChapterForm>({
     resolver: yupResolver(ChapterSchema),
-    defaultValues: {
-      type: {
-        label: 'Capítulo',
-        value: 'capitulo',
-      },
-    },
   });
 
   const onSubmit: SubmitHandler<IChapterForm> = form => {
     console.log(form);
 
-    handleSuccess('Capítulo cadastrado com sucesso.');
+    handleSuccess('Aba cadastrada com sucesso.');
 
     onClose();
   };
@@ -48,31 +42,6 @@ const ChapterForm = ({ onClose }: ChapterPageProps) => {
       <RegisterTitle>Cadastro de capítulo</RegisterTitle>
 
       <FormSection>
-        <Field>
-          <Label>Tipo de cadastro</Label>
-          <Controller
-            control={control}
-            name="type"
-            render={({ field: { onChange, value } }) => (
-              <Select
-                placeholder="Capítulo"
-                onChange={onChange}
-                value={value}
-                options={[
-                  {
-                    label: 'Capítulo',
-                    value: 'capitulo',
-                  },
-                ]}
-                isDisabled
-              />
-            )}
-          />
-          {errors?.type?.value?.message && (
-            <ErrorMessage>{errors.type.value.message}</ErrorMessage>
-          )}
-        </Field>
-
         <Field>
           <Label>Ordem</Label>
           <Input
@@ -109,20 +78,25 @@ const ChapterForm = ({ onClose }: ChapterPageProps) => {
             <ErrorMessage>{errors.visible.value.message}</ErrorMessage>
           )}
         </Field>
+
+        <Field>
+          <Label>Título</Label>
+          <Input placeholder="Insira um título" />
+        </Field>
       </FormSection>
 
       <FormSection>
         <Field>
-          <Label>Nome do capítulo</Label>
-          <Input placeholder="Insira um nome" style={{ minWidth: '850px' }} />
+          <Label>Legenda</Label>
+          <Input placeholder="Insira um título" style={{ minWidth: '850px' }} />
         </Field>
       </FormSection>
 
-      {/* <FormSection>
+      <FormSection>
         <Field>
           <Label>Selecione um ícone</Label>
         </Field>
-      </FormSection> */}
+      </FormSection>
 
       <ButtonSection>
         <Button outlined text="Voltar" type="button" onClick={onClose} />
@@ -136,4 +110,4 @@ const ChapterForm = ({ onClose }: ChapterPageProps) => {
   );
 };
 
-export default ChapterForm;
+export default AbasForm;

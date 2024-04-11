@@ -1,7 +1,12 @@
+'use client';
+
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { handleSuccess } from '@/utils/handleToast';
 import { ContainerSchema, IContainerForm } from '@/validations/ContainerSchema';
+import Select from '@/components/Select/Select';
+import Input from '@/components/Input/Input';
+import Button from '@/components/Button/Button';
 import {
   ButtonSection,
   ErrorMessage,
@@ -11,9 +16,6 @@ import {
   RegisterForm,
   RegisterTitle,
 } from './styles';
-import Select from '../Select/Select';
-import Input from '../Input/Input';
-import Button from '../Button/Button';
 
 interface ChapterPageProps {
   onClose: () => void;

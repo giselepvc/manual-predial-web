@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
 import UserIcon from '../../../public/icons/user.svg';
 import TractorIcon from '../../../public/icons/tractor.svg';
 import EnterpriseIcon from '../../../public/icons/enterprise.svg';
@@ -20,6 +21,7 @@ import {
 } from './styles';
 
 const Navbar = () => {
+  const { logout } = useAuth();
   const [expanded, setExpanded] = useState(true);
   const pathname = usePathname();
 
@@ -66,7 +68,12 @@ const Navbar = () => {
         </NavLink>
       </Nav>
 
-      <LogoutButton type="button">
+      <LogoutButton
+        type="button"
+        onClick={() => {
+          logout();
+        }}
+      >
         <ExitIcon />
         {expanded && 'Sair'}
       </LogoutButton>

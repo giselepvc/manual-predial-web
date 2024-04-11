@@ -2,6 +2,8 @@
 
 'use client';
 
+import { localStorageKeys } from '@/utils/localStorageKeys';
+import { redirect, usePathname } from 'next/navigation';
 import {
   createContext,
   ReactNode,
@@ -12,7 +14,15 @@ import {
 } from 'react';
 
 export interface User {
-  id: string;
+  id: number;
+  email: string;
+  username: string;
+}
+
+export interface ILoginResponse {
+  jwt: string;
+  refreshToken: string;
+  user: User;
 }
 
 interface IUserProvider {
@@ -31,9 +41,10 @@ const AuthContext = createContext({} as IUserProvider);
 const AuthProvider = ({ children }: ChildrenProps) => {
   const [user, setUser] = useState<User>({} as User);
   const [loading, setLoading] = useState(true);
+  const pathname = usePathname();
 
   useEffect(() => {
-    const dataUser = localStorage.getItem('@manualPredial: user');
+    const dataUser = localStorage.getItem(localStorageKeys.user);
 
     if (dataUser) {
       setUser(JSON.parse(dataUser));
@@ -42,18 +53,24 @@ const AuthProvider = ({ children }: ChildrenProps) => {
     setLoading(false);
   }, []);
 
-  const isAuthenticated = user.id !== undefined;
+  const isAuthenticated = !!user.id;
 
   const logout = () => {
-    localStorage.removeItem('@manualPredial: user');
-    localStorage.removeItem('@manualPredial: accessToken');
-    localStorage.removeItem('@manualPredial: refreshToken');
+    localStorage.removeItem(localStorageKeys.user);
+    localStorage.removeItem(localStorageKeys.accessToken);
+    localStorage.removeItem(localStorageKeys.refreshToken);
 
     setUser({} as User);
   };
 
+  const publicRoutes = ['/'];
+
   if (loading) {
     return null;
+  }
+
+  if (!isAuthenticated && !publicRoutes.includes(pathname)) {
+    redirect('/');
   }
 
   return (

@@ -7,6 +7,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import Button from '@/components/Button/Button';
 import { ILoginForm, LoginSchema } from '@/validations/LoginSchema';
+import { ILoginResponse, useAuth } from '@/hooks/useAuth';
+import api from '@/services/api';
+import handleError from '@/utils/handleToast';
+import { localStorageKeys } from '@/utils/localStorageKeys';
 import {
   ErrorMessage,
   FormContainer,
@@ -22,8 +26,11 @@ import {
 
 const Login = () => {
   const router = useRouter();
+  const { setUser } = useAuth();
 
   const [show, setShow] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -32,8 +39,34 @@ const Login = () => {
     resolver: yupResolver(LoginSchema),
   });
 
-  const onSubmit: SubmitHandler<ILoginForm> = form => {
-    router.push('/users');
+  const onSubmit: SubmitHandler<ILoginForm> = async form => {
+    try {
+      setIsSubmitting(true);
+
+      const { data } = await api.post<ILoginResponse>('/auth/local', {
+        identifier: form.email.trim(),
+        password: form.password.trim(),
+        rememberMe: true,
+      });
+
+      // const allowedRoleIds = [3, 4];
+      // if (!allowedRoleIds.includes(data.role)) {
+      //   handleError('Usuário não pode acessar a plataforma');
+      //   return;
+      // }
+
+      setUser(data.user);
+
+      localStorage.setItem(localStorageKeys.accessToken, data.jwt);
+      localStorage.setItem(localStorageKeys.user, JSON.stringify(data.user));
+      localStorage.setItem(localStorageKeys.refreshToken, data.refreshToken);
+
+      router.push('/users');
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -81,6 +114,7 @@ const Login = () => {
         <Button
           type="submit"
           text="Fazer Login"
+          disabled={isSubmitting}
           style={{ width: '170px', marginBottom: '2rem' }}
         />
 

@@ -9,13 +9,19 @@ import StyledComponentsRegistry from '@/lib/registry';
 import { GlobalStyle } from '@/styles/global';
 import { theme } from '@/styles/theme';
 import AuthProvider from '@/hooks/useAuth';
+import { ProgressLoading } from '@/components/ProgressBar/ProgressBar';
 
 const Providers = ({ children }: PropsWithChildren) => {
   return (
     <StyledComponentsRegistry>
       <ThemeProvider theme={theme}>
         <GlobalStyle />
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <main>
+            <ProgressLoading />
+            {children}
+          </main>
+        </AuthProvider>
         <ToastContainer
           style={{
             zIndex: 999999,

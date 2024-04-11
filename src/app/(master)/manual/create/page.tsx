@@ -1,8 +1,8 @@
 'use client';
 
 import PageLayout from '@/components/PageLayout/PageLayout';
+import ManualForm from '@/components/forms/ManualForm/ManualForm';
 import { useRouter } from 'next/navigation';
-import ManualForm from '@/components/ManualForm/ManualForm';
 
 const ManualRegisterPage = () => {
   const { back } = useRouter();
