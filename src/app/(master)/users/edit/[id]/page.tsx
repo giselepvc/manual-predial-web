@@ -3,12 +3,12 @@
 import PageLayout from '@/components/PageLayout/PageLayout';
 import CustomerForm from '@/components/forms/CustomerForm/CustomerForm';
 
-const UserRegisterPage = () => {
+const CustomerEditPage = () => {
   return (
-    <PageLayout title="Cadastro de usuário">
+    <PageLayout title="Editar usuário">
       <CustomerForm />
     </PageLayout>
   );
 };
 
-export default UserRegisterPage;
+export default CustomerEditPage;

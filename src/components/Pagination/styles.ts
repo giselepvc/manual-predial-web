@@ -13,21 +13,20 @@ export const PaginationContainer = styled.div`
 
     border: 1px solid ${({ theme }) => theme.colors.gray41};
     border-radius: 0.625rem;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   }
 
   li a {
-    height: 2.625rem;
-    min-height: 2.625rem;
-    width: 2.625rem;
-    min-width: 2.625rem;
+    height: 2rem;
+    min-height: 2rem;
+    width: 2rem;
+    min-width: 2rem;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
     color: ${({ theme }) => theme.colors.white};
-    font-size: 1rem;
+    font-size: 0.85rem;
 
     cursor: pointer;
 
@@ -44,7 +43,7 @@ export const PaginationContainer = styled.div`
   .selected {
     a {
       color: ${({ theme }) => theme.colors.white};
-      background: ${({ theme }) => theme.colors.primary};
+      background: ${({ theme }) => theme.colors.gray2b};
     }
   }
 
@@ -77,7 +76,7 @@ export const PaginationContainer = styled.div`
 `;
 
 export const PaginationSection = styled.section`
-  padding: 2rem 0 2.625rem 0;
+  padding: 1.5rem 0 0 0;
 
   width: 100%;
 

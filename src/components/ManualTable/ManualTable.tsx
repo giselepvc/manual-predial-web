@@ -133,7 +133,7 @@ const listMocked: IManualList[] = [
   },
 ];
 
-const typeList = [
+export const typeList = [
   {
     label: 'Capítulo',
     value: 'capitulo',
@@ -165,8 +165,6 @@ const ManualTable = ({
   setTitle,
   title,
 }: ManualTableProps) => {
-  const options = {};
-
   return (
     <StepsPage>
       <Header>

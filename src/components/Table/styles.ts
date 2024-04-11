@@ -4,7 +4,8 @@ export const TableSection = styled.section`
   margin-top: 1.5rem;
 
   width: 100%;
-  padding: 1.875rem 1.75rem;
+  min-height: calc(100vh - 18rem);
+  padding: 1rem 1.75rem 0.5rem 1.75rem;
 
   border-radius: 0.625rem;
   background: ${({ theme }) => theme.colors.gray3d};

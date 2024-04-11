@@ -75,33 +75,6 @@ export const mockOrders: MockOrder[] = [
     status: 'Programada',
     type: 'Extintor',
   },
-  {
-    id: '1008',
-    customer: 'Leonardo Fernandez',
-    equipment_count: 18,
-    cpf: '475.213.908-17',
-    cnpj: '47.078.568/0001-99',
-    status: 'Iniciada',
-    type: 'Extintor/ Hidrante',
-  },
-  {
-    id: '1009',
-    customer: 'Franklin Clinton',
-    equipment_count: 14,
-    cpf: '475.213.908-17',
-    cnpj: '47.078.568/0001-99',
-    status: 'Programada',
-    type: 'Extintor',
-  },
-  {
-    id: '1010',
-    customer: 'Lamar Davis',
-    equipment_count: 16,
-    cpf: '475.213.908-17',
-    cnpj: '47.078.568/0001-99',
-    status: 'Programada',
-    type: 'Extintor/ Hidrante',
-  },
 ];
 
 interface TableProps {
@@ -124,7 +97,7 @@ const TableComponent = ({ children, fields }: TableProps) => {
           <tr>
             <td
               colSpan={8}
-              style={{ height: '0.375rem', background: 'transparent' }}
+              style={{ height: '0.1rem', background: 'transparent' }}
             />
           </tr>
 

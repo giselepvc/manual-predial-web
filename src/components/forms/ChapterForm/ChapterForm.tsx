@@ -1,10 +1,12 @@
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { Control, Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ChapterSchema, IChapterForm } from '@/validations/ChapterSchema';
 import Select from '@/components/Select/Select';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
 import { handleSuccess } from '@/utils/handleToast';
+import { typeList } from '@/components/ManualTable/ManualTable';
+import { IManualForm } from '@/validations/ManualSchema';
 import {
   ButtonSection,
   ErrorMessage,
@@ -17,22 +19,17 @@ import {
 
 interface ChapterPageProps {
   onClose: () => void;
+  control: Control<IManualForm, any>;
 }
 
-const ChapterForm = ({ onClose }: ChapterPageProps) => {
+const ChapterForm = ({ onClose, control }: ChapterPageProps) => {
   const {
-    control,
+    control: controlManual,
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<IChapterForm>({
     resolver: yupResolver(ChapterSchema),
-    defaultValues: {
-      type: {
-        label: 'Capítulo',
-        value: 'capitulo',
-      },
-    },
   });
 
   const onSubmit: SubmitHandler<IChapterForm> = form => {
@@ -58,19 +55,11 @@ const ChapterForm = ({ onClose }: ChapterPageProps) => {
                 placeholder="Capítulo"
                 onChange={onChange}
                 value={value}
-                options={[
-                  {
-                    label: 'Capítulo',
-                    value: 'capitulo',
-                  },
-                ]}
+                options={typeList}
                 isDisabled
               />
             )}
           />
-          {errors?.type?.value?.message && (
-            <ErrorMessage>{errors.type.value.message}</ErrorMessage>
-          )}
         </Field>
 
         <Field>
@@ -85,7 +74,7 @@ const ChapterForm = ({ onClose }: ChapterPageProps) => {
         <Field>
           <Label>Visível?</Label>
           <Controller
-            control={control}
+            control={controlManual}
             name="visible"
             render={({ field: { onChange, value } }) => (
               <Select

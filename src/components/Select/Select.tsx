@@ -63,7 +63,7 @@ const Select = <OptionType, T extends boolean = false>({
             background: theme.colors.gray3d,
             boxShadow: 'none',
             height: '2.75rem',
-            width: width || '250px',
+            minWidth: width || '230px',
             borderRadius: '0.625rem',
             padding: '0 0.5rem 0 1.3rem',
             zIndex: 9999,

@@ -81,11 +81,11 @@ const ManualForm = () => {
         />
       )}
 
-      {steps === 2 && <ChapterForm onClose={onClose} />}
+      {steps === 2 && <ChapterForm control={control} onClose={onClose} />}
 
-      {steps === 3 && <TitleForm onClose={onClose} />}
+      {steps === 3 && <TitleForm control={control} onClose={onClose} />}
 
-      {steps === 4 && <ContainerForm onClose={onClose} />}
+      {steps === 4 && <ContainerForm control={control} onClose={onClose} />}
 
       {steps === 5 && <AbasForm onClose={onClose} />}
     </RegisterForm>
