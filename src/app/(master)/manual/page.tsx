@@ -10,7 +10,7 @@ import { ActionButton } from './styles';
 const ManualPage = () => {
   return (
     <PageLayout title="Listagem de manuais">
-      <Action title="Cadastrar novo manual" />
+      <Action title="Cadastrar novo manual" href="/manual/create" />
 
       <TableComponent
         fields={[

@@ -20,6 +20,8 @@ export const BackButton = styled.div`
   align-items: center;
   gap: 0.8rem;
 
+  margin-bottom: 2rem;
+
   color: ${({ theme }) => theme.colors.grayaa};
   font-weight: 600;
   cursor: pointer;

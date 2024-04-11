@@ -14,6 +14,7 @@ interface Props<OptionType, T extends boolean>
   extends ReactSelectProps<OptionType, T, { options: OptionType[] }> {
   label?: string;
   error?: string;
+  width?: string;
   containerStyle?: CSSProperties;
   options: OptionType[];
   containerClassName?: string;
@@ -38,6 +39,7 @@ const Select = <OptionType, T extends boolean = false>({
   placeholder,
   error,
   isMulti,
+  width,
   containerClassName,
   ...rest
 }: Props<OptionType, T>) => {
@@ -61,10 +63,10 @@ const Select = <OptionType, T extends boolean = false>({
             background: theme.colors.gray3d,
             boxShadow: 'none',
             height: '2.75rem',
-            width: '250px',
+            width: width || '250px',
             borderRadius: '0.625rem',
             padding: '0 0.5rem 0 1.3rem',
-            zIndex: 2,
+            zIndex: 9999,
             fontSize: '0.9rem',
             fontWeight: 400,
             color: theme.colors.white,
@@ -109,7 +111,7 @@ const Select = <OptionType, T extends boolean = false>({
             boxShadow: 'none',
             border: 'none',
             borderRadius: '0.625rem',
-            width: '250px',
+            width: width || '250px',
             background: theme.colors.gray41,
           }),
           menuList: prev => ({

@@ -8,6 +8,7 @@ export const Input = styled.input`
 
   padding: 0 1.3rem;
   width: 100%;
+  min-width: 250px;
   max-width: 250px;
   height: 2.75rem;
 
