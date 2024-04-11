@@ -1,4 +1,5 @@
 import { useRouter } from 'next/navigation';
+import { Dispatch, SetStateAction } from 'react';
 import SearchIcon from '../../../public/icons/search.svg';
 import PlusIcon from '../../../public/icons/plus.svg';
 import {
@@ -12,9 +13,10 @@ import {
 interface ActionProps {
   title?: string;
   href?: string;
+  setSearch?: Dispatch<SetStateAction<string>>;
 }
 
-const Action = ({ title, href }: ActionProps) => {
+const Action = ({ title, href, setSearch }: ActionProps) => {
   const { push } = useRouter();
 
   const handleNavigation = () => {
@@ -29,7 +31,10 @@ const Action = ({ title, href }: ActionProps) => {
         <FilterButton>
           <SearchIcon />
         </FilterButton>
-        <FilterInput placeholder="Insira uma informação" />
+        <FilterInput
+          placeholder="Insira uma informação"
+          onBlur={e => setSearch && setSearch(e.target.value)}
+        />
       </FilterSection>
 
       <FilterRegister onClick={handleNavigation}>

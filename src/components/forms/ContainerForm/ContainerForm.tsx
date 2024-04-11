@@ -1,12 +1,14 @@
 'use client';
 
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { Control, Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { handleSuccess } from '@/utils/handleToast';
 import { ContainerSchema, IContainerForm } from '@/validations/ContainerSchema';
 import Select from '@/components/Select/Select';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
+import { IManualForm } from '@/validations/ManualSchema';
+import { typeList } from '@/components/ManualTable/ManualTable';
 import {
   ButtonSection,
   ErrorMessage,
@@ -19,11 +21,12 @@ import {
 
 interface ChapterPageProps {
   onClose: () => void;
+  control: Control<IManualForm, any>;
 }
 
-const ContainerForm = ({ onClose }: ChapterPageProps) => {
+const ContainerForm = ({ onClose, control }: ChapterPageProps) => {
   const {
-    control,
+    control: controlContainer,
     register,
     handleSubmit,
     formState: { errors },
@@ -61,12 +64,7 @@ const ContainerForm = ({ onClose }: ChapterPageProps) => {
                 onChange={onChange}
                 value={value}
                 width="210px"
-                options={[
-                  {
-                    label: 'Capítulo',
-                    value: 'capitulo',
-                  },
-                ]}
+                options={typeList}
                 isDisabled
               />
             )}
@@ -79,7 +77,7 @@ const ContainerForm = ({ onClose }: ChapterPageProps) => {
         <Field>
           <Label>Capítulo</Label>
           <Controller
-            control={control}
+            control={controlContainer}
             name="chapter"
             render={({ field: { onChange, value } }) => (
               <Select
@@ -108,7 +106,7 @@ const ContainerForm = ({ onClose }: ChapterPageProps) => {
         <Field>
           <Label>Título</Label>
           <Controller
-            control={control}
+            control={controlContainer}
             name="title"
             render={({ field: { onChange, value } }) => (
               <Select
@@ -149,7 +147,7 @@ const ContainerForm = ({ onClose }: ChapterPageProps) => {
         <Field>
           <Label>Visível?</Label>
           <Controller
-            control={control}
+            control={controlContainer}
             name="visible"
             render={({ field: { onChange, value } }) => (
               <Select
@@ -178,7 +176,7 @@ const ContainerForm = ({ onClose }: ChapterPageProps) => {
         <Field>
           <Label>Tipo do container</Label>
           <Controller
-            control={control}
+            control={controlContainer}
             name="visible"
             render={({ field: { onChange, value } }) => (
               <Select

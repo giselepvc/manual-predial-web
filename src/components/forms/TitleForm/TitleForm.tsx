@@ -1,10 +1,12 @@
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { Control, Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { handleSuccess } from '@/utils/handleToast';
 import { ITitleForm, TitleSchema } from '@/validations/TitleSchema';
 import Select from '@/components/Select/Select';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
+import { IManualForm } from '@/validations/ManualSchema';
+import { typeList } from '@/components/ManualTable/ManualTable';
 import {
   ButtonSection,
   ErrorMessage,
@@ -17,29 +19,22 @@ import {
 
 interface ChapterPageProps {
   onClose: () => void;
+  control: Control<IManualForm, any>;
 }
 
-const TitleForm = ({ onClose }: ChapterPageProps) => {
+const TitleForm = ({ onClose, control }: ChapterPageProps) => {
   const {
-    control,
+    control: controlTitle,
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<ITitleForm>({
     resolver: yupResolver(TitleSchema),
-    defaultValues: {
-      type: {
-        label: 'Capítulo',
-        value: 'capitulo',
-      },
-    },
   });
 
   const onSubmit: SubmitHandler<ITitleForm> = form => {
     console.log(form);
-
     handleSuccess('Título cadastrado com sucesso.');
-
     onClose();
   };
 
@@ -59,12 +54,7 @@ const TitleForm = ({ onClose }: ChapterPageProps) => {
                 onChange={onChange}
                 value={value}
                 width="210px"
-                options={[
-                  {
-                    label: 'Capítulo',
-                    value: 'capitulo',
-                  },
-                ]}
+                options={typeList}
                 isDisabled
               />
             )}
@@ -77,7 +67,7 @@ const TitleForm = ({ onClose }: ChapterPageProps) => {
         <Field>
           <Label>Capítulo</Label>
           <Controller
-            control={control}
+            control={controlTitle}
             name="chapter"
             render={({ field: { onChange, value } }) => (
               <Select
@@ -116,7 +106,7 @@ const TitleForm = ({ onClose }: ChapterPageProps) => {
         <Field>
           <Label>Visível?</Label>
           <Controller
-            control={control}
+            control={controlTitle}
             name="visible"
             render={({ field: { onChange, value } }) => (
               <Select

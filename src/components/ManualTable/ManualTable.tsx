@@ -1,8 +1,11 @@
 import { Control, Controller, UseFormWatch } from 'react-hook-form';
 import Image from 'next/image';
-import { IManualList, ITitleList } from '@/interfaces/manual';
+import { CaptersDatum, IManualList, TitlesDatum } from '@/interfaces/manual';
 import { Dispatch, SetStateAction } from 'react';
 import { IManualForm } from '@/validations/ManualSchema';
+import { RecursiveNormalize } from '@/utils/normalizeStrapi';
+import Select from '../Select/Select';
+import Button from '../Button/Button';
 import {
   Field,
   FormSection,
@@ -16,122 +19,6 @@ import {
   TableRow,
   TableSection,
 } from './styles';
-import Select from '../Select/Select';
-import Button from '../Button/Button';
-
-enum ITypes {
-  CAPITULO = 'Capítulo',
-  TITULO = 'Título',
-  CONTAINER = 'Container',
-}
-
-const listMocked: IManualList[] = [
-  {
-    id: 1,
-    type: ITypes.CAPITULO,
-    order: 1,
-    visible: true,
-    name: 'Novo manual',
-    icon: '/icons/diamond.svg',
-    titles: [
-      {
-        id: 1,
-        name: 'Título 1',
-        order: 1,
-        visible: true,
-        content: [
-          {
-            order: 1,
-            type: 'Abas',
-            visible: true,
-          },
-          {
-            order: 2,
-            type: 'Arquivo PDF',
-            visible: true,
-          },
-          {
-            order: 3,
-            type: 'Imagem unica com legenda abaixo paragrafo multiplo',
-            visible: true,
-          },
-          {
-            order: 4,
-            type: 'Paragrafo - par de chaves',
-            visible: true,
-          },
-          {
-            order: 5,
-            type: 'Paragrafo multiplo',
-            visible: true,
-          },
-          {
-            order: 6,
-            type: 'Paragrafo multiplo itens não numerados',
-            visible: true,
-          },
-          {
-            order: 7,
-            type: 'Paragrafo unico',
-            visible: true,
-          },
-        ],
-      },
-      {
-        id: 2,
-        name: 'Título 2',
-        order: 2,
-        visible: true,
-        content: [
-          {
-            order: 1,
-            type: 'Abas',
-            visible: true,
-          },
-        ],
-      },
-      {
-        id: 3,
-        name: 'Título 3',
-        order: 3,
-        visible: true,
-        content: [
-          {
-            order: 1,
-            type: 'Abas',
-            visible: true,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 2,
-    type: ITypes.CAPITULO,
-    order: 2,
-    visible: true,
-    name: 'Manual antigo',
-    icon: '/icons/diamond.svg',
-    titles: [],
-  },
-  {
-    id: 3,
-    type: ITypes.CAPITULO,
-    order: 3,
-    visible: false,
-    name: 'Capítulo 1',
-    icon: '/icons/diamond.svg',
-    titles: [
-      {
-        id: 1,
-        name: 'Título 1',
-        order: 1,
-        visible: true,
-        content: [],
-      },
-    ],
-  },
-];
 
 export const typeList = [
   {
@@ -151,10 +38,15 @@ export const typeList = [
 interface ManualTableProps {
   control: Control<IManualForm, any>;
   watch: UseFormWatch<IManualForm>;
-  cap: IManualList | undefined;
-  title: ITitleList | undefined;
-  setCap: Dispatch<SetStateAction<IManualList | undefined>>;
-  setTitle: Dispatch<SetStateAction<ITitleList | undefined>>;
+  cap: RecursiveNormalize<CaptersDatum> | undefined;
+  title: RecursiveNormalize<TitlesDatum> | undefined;
+  setCap: Dispatch<
+    SetStateAction<RecursiveNormalize<CaptersDatum> | undefined>
+  >;
+  setTitle: Dispatch<
+    SetStateAction<RecursiveNormalize<TitlesDatum> | undefined>
+  >;
+  manual: RecursiveNormalize<IManualList> | undefined;
 }
 
 const ManualTable = ({
@@ -164,6 +56,7 @@ const ManualTable = ({
   setCap,
   setTitle,
   title,
+  manual,
 }: ManualTableProps) => {
   return (
     <StepsPage>
@@ -195,7 +88,7 @@ const ManualTable = ({
       </FormSection>
 
       <TableSection>
-        {listMocked.map(item => (
+        {manual?.capters.map(item => (
           <>
             <TableRow
               key={item.id}
@@ -212,7 +105,7 @@ const ManualTable = ({
                   width={20}
                   height={20}
                 />
-                <div>{item.name}</div>
+                <div>{item.title}</div>
               </InfoSection>
 
               <Image
@@ -227,7 +120,7 @@ const ManualTable = ({
               />
             </TableRow>
             {cap?.id === item.id &&
-              item.titles.map(itemTitle => (
+              item.titles.map((itemTitle, index) => (
                 <>
                   <TableMore
                     key={itemTitle.id}
@@ -238,8 +131,8 @@ const ManualTable = ({
                     }
                   >
                     <InfoSection>
-                      <span>{itemTitle.order}</span>
-                      <div>{itemTitle.name}</div>
+                      <span>{index + 1}</span>
+                      <div>{itemTitle.title}</div>
                     </InfoSection>
 
                     <Image
@@ -254,11 +147,11 @@ const ManualTable = ({
                     />
                   </TableMore>
                   {title?.id === itemTitle.id &&
-                    itemTitle.content.map(cont => (
+                    itemTitle.contents.map((cont, contIdx) => (
                       <TableDetails>
                         <InfoSection>
-                          <span>{cont.order}</span>
-                          <div>{cont.type}</div>
+                          <span>{contIdx + 1}</span>
+                          <div>{cont.key}</div>
                         </InfoSection>
 
                         <Button
