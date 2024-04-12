@@ -12,13 +12,20 @@ import cnpjMask from '@/utils/masks/cnpjMask';
 import telephoneMask from '@/utils/masks/phone';
 import zipcodeMask from '@/utils/masks/cep';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import EditIcon from '../../../../public/icons/edit.svg';
 import { ActionButton } from './styles';
 
 const UsersPage = () => {
   const { push } = useRouter();
 
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+
   const clientsParams = {
+    'pagination[page]': page,
+    'pagination[pageSize]': 7,
+    'filters[name][$containsi]': search || undefined,
     populate: 'users',
   };
 
@@ -29,11 +36,13 @@ const UsersPage = () => {
 
   const clients = normalizeStrapi(clientsData || []);
 
-  console.log(clients);
-
   return (
     <PageLayout title="Listagem de usuários">
-      <Action title="Cadastrar novo usuário" href="/users/create" />
+      <Action
+        title="Cadastrar novo usuário"
+        href="/users/create"
+        setSearch={setSearch}
+      />
 
       <TableComponent
         fields={['Nome', 'E-mail', 'CPF', 'CNPJ', 'Celular', 'CEP', 'Ações']}
@@ -56,7 +65,11 @@ const UsersPage = () => {
         ))}
       </TableComponent>
 
-      <Pagination pageCount={clientsData?.meta?.pagination?.pageCount || 0} />
+      <Pagination
+        pageCount={clientsData?.meta?.pagination?.pageCount || 0}
+        forcePage={page - 1}
+        onPageChange={p => setPage(p.selected + 1)}
+      />
     </PageLayout>
   );
 };

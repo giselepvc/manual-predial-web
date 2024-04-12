@@ -55,3 +55,13 @@ export const Label = styled.label`
   font-weight: 600;
   color: ${({ theme }) => theme.colors.grayd9};
 `;
+
+export const ErrorMessage = styled.h3`
+  position: absolute;
+  bottom: -1.25rem;
+  left: 0.25rem;
+
+  font-size: 8pt;
+  font-weight: 400;
+  color: ${({ theme }) => theme.colors.error};
+`;

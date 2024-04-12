@@ -6,7 +6,7 @@ import CustomerForm from '@/components/forms/CustomerForm/CustomerForm';
 const CustomerEditPage = () => {
   return (
     <PageLayout title="Editar usuário">
-      <CustomerForm />
+      <CustomerForm isEditing />
     </PageLayout>
   );
 };
