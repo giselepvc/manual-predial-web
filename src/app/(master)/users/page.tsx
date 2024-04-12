@@ -23,7 +23,7 @@ const UsersPage = () => {
   };
 
   const { data: clientsData } = useQuery({
-    queryKey: ['myItems', clientsParams],
+    queryKey: ['usersData', clientsParams],
     queryFn: async () => getClients(clientsParams),
   });
 

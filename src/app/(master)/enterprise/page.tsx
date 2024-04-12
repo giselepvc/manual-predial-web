@@ -21,7 +21,7 @@ const EnterprisePage = () => {
   };
 
   const { data: enterpriseData } = useQuery({
-    queryKey: ['myItems', enterpriseParams],
+    queryKey: ['enterpriseData', enterpriseParams],
     queryFn: async () => getEnterprise(enterpriseParams),
   });
 
