@@ -29,7 +29,11 @@ const CompanyPage = () => {
 
   return (
     <PageLayout title="Listagem de construtora">
-      <Action title="Cadastrar nova construtora" setSearch={setSearch} />
+      <Action
+        title="Cadastrar nova construtora"
+        setSearch={setSearch}
+        href="/company/create"
+      />
 
       <TableComponent
         fields={['ID', 'Nome', 'E-mail', 'CNPJ', 'Celular', 'CEP', 'Status']}
