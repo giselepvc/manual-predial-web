@@ -57,24 +57,26 @@ const ManualForm = ({ editing }: ManualFormProps) => {
   const manualsParams = {
     'populate[0]': 'capters.titles.contents',
     'populate[1]': 'enterprise',
-    'filters[id]': param?.id,
+    'filters[id]': param?.id || manual?.id,
   };
 
   useQuery({
-    queryKey: ['myItems', manualsParams],
+    queryKey: ['manualForm', manualsParams],
     queryFn: async () => {
-      const { data } = await getManuals(manualsParams);
+      const data = await getManuals(manualsParams);
       const results = normalizeStrapi(data || []);
+      const result = results?.[0];
 
       setValue('enterprise', {
-        value: results?.[0]?.enterprise?.title || '',
-        label: results?.[0]?.enterprise?.title || '',
+        value: result?.enterprise?.id?.toString() || '',
+        label: result?.enterprise?.title || '',
       });
-      setValue('name', results?.[0]?.title || '');
-      setManual(results?.[0]);
+      setValue('name', result?.title || '');
+      setManual(result);
       setSteps(1);
+      return results;
     },
-    enabled: !!param?.id && !!editing,
+    enabled: (!!param?.id && editing) || !!manual?.id,
   });
 
   const onSubmit: SubmitHandler<IManualForm> = async form => {
@@ -110,15 +112,10 @@ const ManualForm = ({ editing }: ManualFormProps) => {
   };
 
   useEffect(() => {
-    if (watch('type.value')) {
-      const stepTypes = {
-        capitulo: setSteps(2),
-        titulo: setSteps(3),
-        container: setSteps(4),
-      } as any;
-
-      return stepTypes[watch('type.value') || ''];
-    }
+    if (watch('type.value') === undefined) return;
+    if (watch('type.value') === 'capitulo') setSteps(2);
+    if (watch('type.value') === 'titulo') setSteps(3);
+    if (watch('type.value') === 'container') setSteps(4);
   }, [watch('type')]);
 
   const onClose = () => {
@@ -149,7 +146,9 @@ const ManualForm = ({ editing }: ManualFormProps) => {
           manual={manual}
         />
       )}
-      {steps === 2 && <ChapterForm control={control} onClose={onClose} />}
+      {steps === 2 && (
+        <ChapterForm control={control} onClose={onClose} manual={manual} />
+      )}
       {steps === 3 && <TitleForm control={control} onClose={onClose} />}
       {steps === 4 && <ContainerForm control={control} onClose={onClose} />}
       {steps === 5 && <AbasForm onClose={onClose} />}

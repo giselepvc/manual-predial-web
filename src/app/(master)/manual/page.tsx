@@ -124,7 +124,7 @@ const ManualPage = () => {
           isLoading={isUpdating}
         >
           <ConfirmModal.Message>
-            Tem certeza que deseja <strong>excluir</strong> manual?
+            Tem certeza que deseja <strong>excluir</strong> esse manual?
           </ConfirmModal.Message>
         </ConfirmModal>
       )}

@@ -19,10 +19,18 @@ export const Table = styled.table`
 
   color: ${({ theme }) => theme.colors.grayd9};
 
+  th {
+    padding: 0 1rem;
+  }
+
   thead tr th {
     font-size: 1.15rem;
     font-weight: 600;
     color: ${({ theme }) => theme.colors.white};
+  }
+
+  td {
+    padding: 0 1rem;
   }
 
   tbody tr td {

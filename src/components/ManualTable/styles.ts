@@ -81,6 +81,10 @@ export const TableRow = styled.div<TableProps>`
   div {
     color: ${({ theme }) => theme.colors.grayaa};
     font-weight: 600;
+
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
 `;
 
@@ -166,4 +170,17 @@ export const FormSection = styled.section`
   grid-column-gap: 2rem;
   grid-row-gap: 1.5rem;
   justify-content: space-between;
+`;
+
+export const NotListText = styled.div`
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: ${({ theme }) => theme.colors.grayaa};
+  font-size: 20px;
+  font-weight: 700;
 `;

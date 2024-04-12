@@ -111,7 +111,7 @@ const Select = <OptionType, T extends boolean = false>({
             boxShadow: 'none',
             border: 'none',
             borderRadius: '0.625rem',
-            width: width || '250px',
+            minWidth: width || '230px',
             background: theme.colors.gray41,
           }),
           menuList: prev => ({

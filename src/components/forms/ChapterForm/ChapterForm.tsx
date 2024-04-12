@@ -4,9 +4,14 @@ import { ChapterSchema, IChapterForm } from '@/validations/ChapterSchema';
 import Select from '@/components/Select/Select';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
-import { handleSuccess } from '@/utils/handleToast';
+import handleError, { handleSuccess } from '@/utils/handleToast';
 import { typeList } from '@/components/ManualTable/ManualTable';
 import { IManualForm } from '@/validations/ManualSchema';
+import api from '@/services/api';
+import { useState } from 'react';
+import { RecursiveNormalize } from '@/utils/normalizeStrapi';
+import { IManualList } from '@/interfaces/manual';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   ButtonSection,
   ErrorMessage,
@@ -20,9 +25,15 @@ import {
 interface ChapterPageProps {
   onClose: () => void;
   control: Control<IManualForm, any>;
+  manual: RecursiveNormalize<IManualList> | undefined;
 }
 
-const ChapterForm = ({ onClose, control }: ChapterPageProps) => {
+const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
+  const query = useQueryClient();
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const chaptesIds = manual?.capters?.map(capter => capter.id) || [];
+
   const {
     control: controlManual,
     register,
@@ -32,12 +43,33 @@ const ChapterForm = ({ onClose, control }: ChapterPageProps) => {
     resolver: yupResolver(ChapterSchema),
   });
 
-  const onSubmit: SubmitHandler<IChapterForm> = form => {
-    console.log(form);
+  const onSubmit: SubmitHandler<IChapterForm> = async form => {
+    setIsLoading(true);
 
-    handleSuccess('Capítulo cadastrado com sucesso.');
+    try {
+      const { data } = await api.post<{ data: { id: number } }>('/capters', {
+        data: {
+          ...form,
+          visible: form.visible?.value === 'sim',
+        },
+      });
 
-    onClose();
+      if (data.data?.id && manual?.id) {
+        await api.put(`/manuals/${manual.id}`, {
+          data: {
+            capters: [...chaptesIds, data.data.id],
+          },
+        });
+      }
+
+      handleSuccess('Capítulo cadastrado com sucesso.');
+      query.invalidateQueries({ queryKey: ['manualForm'] });
+      onClose();
+    } catch (err: any) {
+      handleError(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -67,8 +99,11 @@ const ChapterForm = ({ onClose, control }: ChapterPageProps) => {
           <Input
             placeholder="Insira uma ordem"
             type="number"
-            {...register('title')}
+            {...register('order')}
           />
+          {errors?.order?.message && (
+            <ErrorMessage>{errors.order.message}</ErrorMessage>
+          )}
         </Field>
 
         <Field>
@@ -103,15 +138,16 @@ const ChapterForm = ({ onClose, control }: ChapterPageProps) => {
       <FormSection>
         <Field>
           <Label>Nome do capítulo</Label>
-          <Input placeholder="Insira um nome" style={{ minWidth: '850px' }} />
+          <Input
+            placeholder="Insira um nome"
+            style={{ minWidth: '850px' }}
+            {...register('title')}
+          />
+          {errors?.title?.message && (
+            <ErrorMessage>{errors.title.message}</ErrorMessage>
+          )}
         </Field>
       </FormSection>
-
-      {/* <FormSection>
-        <Field>
-          <Label>Selecione um ícone</Label>
-        </Field>
-      </FormSection> */}
 
       <ButtonSection>
         <Button outlined text="Voltar" type="button" onClick={onClose} />
@@ -119,6 +155,7 @@ const ChapterForm = ({ onClose, control }: ChapterPageProps) => {
           text="Cadastrar"
           type="button"
           onClick={handleSubmit(onSubmit)}
+          disabled={isLoading}
         />
       </ButtonSection>
     </RegisterForm>
