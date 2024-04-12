@@ -29,7 +29,11 @@ const EnterprisePage = () => {
 
   return (
     <PageLayout title="Listagem de emprendimento">
-      <Action title="Cadastrar novo emprendimento" setSearch={setSearch} />
+      <Action
+        title="Cadastrar novo emprendimento"
+        setSearch={setSearch}
+        href="/enterprise/create"
+      />
 
       <TableComponent
         fields={['ID', 'Nome', 'E-mail', 'CNPJ', 'Celular', 'CEP', 'Status']}
