@@ -31,6 +31,7 @@ interface ManualFormProps {
 const ManualForm = ({ editing }: ManualFormProps) => {
   const param = useParams();
 
+  const [isLoading, setIsloading] = useState<boolean>(false);
   const [steps, setSteps] = useState<number>(editing ? 1 : 0);
   const [cap, setCap] = useState<
     RecursiveNormalize<CaptersDatum> | undefined
@@ -77,6 +78,8 @@ const ManualForm = ({ editing }: ManualFormProps) => {
   });
 
   const onSubmit: SubmitHandler<IManualForm> = async form => {
+    setIsloading(true);
+
     try {
       const { data } = await api.post<ResponseManual>('/manuals', {
         data: {
@@ -86,15 +89,23 @@ const ManualForm = ({ editing }: ManualFormProps) => {
         },
       });
 
+      await api.put(`/enterprises/${form.enterprise?.value}`, {
+        data: {
+          manuals: [data.data.id],
+        },
+      });
+
       setManual({
-        ...data.data?.attributes,
-        id: data.data?.id,
+        ...data.data.attributes,
+        id: data.data.id,
         enterprise: {} as any,
         capters: [],
       });
       setSteps(1);
     } catch (error: any) {
       handleError(error);
+    } finally {
+      setIsloading(false);
     }
   };
 
@@ -124,9 +135,9 @@ const ManualForm = ({ editing }: ManualFormProps) => {
           errors={errors}
           onSubmit={onSubmit}
           register={register}
+          isLoading={isLoading}
         />
       )}
-
       {steps === 1 && (
         <ManualTable
           control={control}
@@ -138,7 +149,6 @@ const ManualForm = ({ editing }: ManualFormProps) => {
           manual={manual}
         />
       )}
-
       {steps === 2 && <ChapterForm control={control} onClose={onClose} />}
       {steps === 3 && <TitleForm control={control} onClose={onClose} />}
       {steps === 4 && <ContainerForm control={control} onClose={onClose} />}

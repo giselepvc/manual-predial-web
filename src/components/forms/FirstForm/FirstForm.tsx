@@ -13,6 +13,9 @@ import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
 import { useRouter } from 'next/navigation';
 import { IManualForm } from '@/validations/ManualSchema';
+import { useQuery } from '@tanstack/react-query';
+import { getEnterprise } from '@/services/querys/enterprise';
+import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import {
   ButtonSection,
   ErrorMessage,
@@ -22,14 +25,8 @@ import {
   StepsPage,
 } from './styles';
 
-const optionsMocked = [
-  {
-    label: 'Mestres da web',
-    value: 'Mestres da web',
-  },
-];
-
 interface FirstProps {
+  isLoading: boolean;
   control: Control<IManualForm, any>;
   errors: FieldErrors<IManualForm>;
   register: UseFormRegister<IManualForm>;
@@ -43,8 +40,26 @@ const FirstForm = ({
   onSubmit,
   register,
   handleSubmit,
+  isLoading,
 }: FirstProps) => {
   const { back } = useRouter();
+
+  const enterpriseParams = {
+    populate: '*',
+  };
+
+  const { data: enterprises } = useQuery({
+    queryKey: ['myItems', enterpriseParams],
+    queryFn: async () => {
+      const data = await getEnterprise(enterpriseParams);
+      const enterpriseList = normalizeStrapi(data || []);
+      const resultEnterprise = enterpriseList?.map(enter => ({
+        label: enter.title || '',
+        value: enter.id ? `${enter.id}` : '',
+      }));
+      return resultEnterprise;
+    },
+  });
 
   return (
     <StepsPage>
@@ -60,7 +75,7 @@ const FirstForm = ({
                 width="700px"
                 onChange={onChange}
                 value={value}
-                options={optionsMocked}
+                options={enterprises || []}
               />
             )}
           />
@@ -86,7 +101,12 @@ const FirstForm = ({
 
       <ButtonSection>
         <Button outlined text="Voltar" type="button" onClick={back} />
-        <Button text="Próximo" type="button" onClick={handleSubmit(onSubmit)} />
+        <Button
+          text="Próximo"
+          type="button"
+          onClick={handleSubmit(onSubmit)}
+          disabled={isLoading}
+        />
       </ButtonSection>
     </StepsPage>
   );
