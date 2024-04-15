@@ -64,6 +64,7 @@ const ManualTable = ({
 
   const [listOtions, setListOptions] = useState(typeList);
   const [deletingId, setDeletingId] = useState<number>();
+  const [deletingTitleId, setDeletingTitleId] = useState<number>();
   const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
@@ -97,6 +98,25 @@ const ManualTable = ({
       setDeletingId(undefined);
       query.invalidateQueries({ queryKey: ['manualForm'] });
       query.invalidateQueries({ queryKey: ['manualList'] });
+    } catch (err: any) {
+      handleError(err);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const onDeleteTitle = async () => {
+    if (!deletingTitleId) {
+      return;
+    }
+
+    try {
+      setIsUpdating(true);
+      await api.delete(`/titles/${deletingTitleId}`);
+
+      handleSuccess('Título deletado com sucesso.');
+      setDeletingTitleId(undefined);
+      query.invalidateQueries({ queryKey: ['manualForm'] });
     } catch (err: any) {
       handleError(err);
     } finally {
@@ -175,55 +195,79 @@ const ManualTable = ({
 
                 {cap?.id === capter.id &&
                   capter.titles.map((titles, index) => (
-                    <Thread>
-                      <ThreadSection>
-                        <ThreadLine />
-                      </ThreadSection>
+                    <>
+                      <Thread>
+                        <ThreadSection>
+                          <ThreadLine />
+                        </ThreadSection>
 
-                      <TableMore
-                        key={titles.id}
-                        onClick={() =>
-                          setTitle(props =>
-                            props === titles ? undefined : titles,
-                          )
-                        }
-                      >
-                        <InfoSection>
-                          <span>{index + 1}</span>
-                          <div>{titles.title}</div>
-                        </InfoSection>
-
-                        <Image
-                          src={
-                            title?.id === titles.id
-                              ? '/icons/up-arrow.svg'
-                              : '/icons/down-arrow.svg'
+                        <TableMore
+                          key={titles.id}
+                          onClick={() =>
+                            setTitle(props =>
+                              props === titles ? undefined : titles,
+                            )
                           }
-                          alt="icon"
-                          width={20}
-                          height={20}
-                        />
-                      </TableMore>
+                        >
+                          <InfoSection>
+                            <span>{index + 1}</span>
+                            <div>{titles.title}</div>
+                          </InfoSection>
+
+                          <div>
+                            <FaTrash
+                              onClick={() =>
+                                !isUpdating && setDeletingTitleId(titles.id)
+                              }
+                            />
+                            <Image
+                              src={
+                                title?.id === titles.id
+                                  ? '/icons/up-arrow.svg'
+                                  : '/icons/down-arrow.svg'
+                              }
+                              alt="icon"
+                              width={20}
+                              height={20}
+                            />
+                          </div>
+                        </TableMore>
+                      </Thread>
 
                       {title?.id === titles.id &&
                         titles.contents.map((container, contIdx) => (
-                          <TableDetails>
-                            <InfoSection>
-                              <span>{contIdx + 1}</span>
-                              <div>{container.key}</div>
-                            </InfoSection>
+                          <Thread style={{ paddingLeft: '3rem' }}>
+                            <ThreadSection>
+                              <ThreadLine />
+                            </ThreadSection>
 
-                            <Button
-                              type="button"
-                              text="Editar o conteúdo"
-                              style={{ minHeight: '25px' }}
-                              onClick={() => null}
-                            />
-                          </TableDetails>
+                            <TableDetails>
+                              <InfoSection>
+                                <span>{contIdx + 1}</span>
+                                <div>{container.key}</div>
+                              </InfoSection>
+
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  gap: '1rem',
+                                  alignItems: 'center',
+                                }}
+                              >
+                                <Button
+                                  type="button"
+                                  text="Editar o conteúdo"
+                                  style={{ minHeight: '25px' }}
+                                  onClick={() => null}
+                                />
+                                <FaTrash />
+                              </div>
+                            </TableDetails>
+                          </Thread>
                         ))}
 
                       <div style={{ marginBottom: '1rem' }} />
-                    </Thread>
+                    </>
                   ))}
               </>
             ))
@@ -245,6 +289,22 @@ const ManualTable = ({
         >
           <ConfirmModal.Message>
             Tem certeza que deseja <strong>excluir</strong> esse capítulo?
+          </ConfirmModal.Message>
+        </ConfirmModal>
+      )}
+
+      {deletingTitleId && (
+        <ConfirmModal
+          title="Atenção"
+          onClose={() => setDeletingTitleId(undefined)}
+          onConfirm={onDeleteTitle}
+          onCancel={() => setDeletingTitleId(undefined)}
+          cancelText="Cancelar"
+          confirmText="Sim, excluir"
+          isLoading={isUpdating}
+        >
+          <ConfirmModal.Message>
+            Tem certeza que deseja <strong>excluir</strong> esse título?
           </ConfirmModal.Message>
         </ConfirmModal>
       )}

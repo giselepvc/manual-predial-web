@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 export const StepsPage = styled.form`
   display: flex;
@@ -99,13 +99,24 @@ export const TableRow = styled.div<TableProps>`
   }
 `;
 
+const fadeIn = keyframes`
+  from {
+    height: 0px;
+  }
+  to {
+    height: 50px;
+  }
+`;
+
 export const TableMore = styled.div<TableProps>`
+  overflow: hidden;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
 
   width: 100%;
-  min-height: 50px;
+  height: 50px;
   padding: 0 2.5rem;
   margin-top: -1rem;
   margin-bottom: 1rem;
@@ -113,16 +124,29 @@ export const TableMore = styled.div<TableProps>`
   background: ${({ theme }) => theme.colors.gray41};
 
   cursor: pointer;
+  animation: ${fadeIn} 0.2s ease-in-out;
 
   span {
     font-size: 0.9rem;
     color: ${({ theme }) => theme.colors.grayd9};
-    margin-right: 3.4rem;
+    margin-right: 0.35rem;
   }
 
   div {
     color: ${({ theme }) => theme.colors.grayaa};
     font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+`;
+
+const detailsFadeIn = keyframes`
+  from {
+    min-height: 0px;
+  }
+  to {
+    min-height: 100px;;
   }
 `;
 
@@ -131,7 +155,7 @@ export const TableDetails = styled.div<TableProps>`
   align-items: center;
   justify-content: space-between;
 
-  width: 96%;
+  width: 100%;
   min-height: 100px;
   padding: 0 2.5rem;
   margin-top: -1rem;
@@ -140,6 +164,7 @@ export const TableDetails = styled.div<TableProps>`
   background: ${({ theme }) => theme.colors.gray41};
 
   cursor: pointer;
+  animation: ${detailsFadeIn} 0.2s ease-in-out;
 
   span {
     font-size: 0.9rem;
@@ -203,8 +228,10 @@ export const ThreadSection = styled.div`
   justify-content: flex-start;
 
   min-width: 48px;
-  min-height: 50px;
+  height: 50px;
   margin-top: -1rem;
+
+  animation: ${fadeIn} 0.2s ease-in-out;
 `;
 
 export const ThreadLine = styled.div`

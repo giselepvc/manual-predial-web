@@ -1,6 +1,6 @@
 import { Control, Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { handleSuccess } from '@/utils/handleToast';
+import handleError, { handleSuccess } from '@/utils/handleToast';
 import { ITitleForm, TitleSchema } from '@/validations/TitleSchema';
 import Select from '@/components/Select/Select';
 import Input from '@/components/Input/Input';
@@ -9,6 +9,9 @@ import { IManualForm } from '@/validations/ManualSchema';
 import { typeList } from '@/components/ManualTable/ManualTable';
 import { RecursiveNormalize } from '@/utils/normalizeStrapi';
 import { IManualList } from '@/interfaces/manual';
+import { useState } from 'react';
+import api from '@/services/api';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   ButtonSection,
   ErrorMessage,
@@ -26,6 +29,10 @@ interface ChapterPageProps {
 }
 
 const TitleForm = ({ onClose, control, manual }: ChapterPageProps) => {
+  const query = useQueryClient();
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const {
     control: controlTitle,
     register,
@@ -35,10 +42,42 @@ const TitleForm = ({ onClose, control, manual }: ChapterPageProps) => {
     resolver: yupResolver(TitleSchema),
   });
 
-  const onSubmit: SubmitHandler<ITitleForm> = form => {
-    console.log(form);
-    handleSuccess('Título cadastrado com sucesso.');
-    onClose();
+  const onSubmit: SubmitHandler<ITitleForm> = async form => {
+    setIsLoading(true);
+
+    try {
+      const { data } = await api.post<{ data: { id: number } }>('/titles', {
+        data: {
+          ...form,
+          description: '',
+          chapter: undefined,
+          visible: form.visible?.value === 'sim',
+        },
+      });
+
+      if (data.data?.id && form?.chapter?.value) {
+        const chapter = manual?.capters?.find(
+          capter => capter?.id === Number(form.chapter.value),
+        );
+        const chapterTitlesIds = chapter?.titles?.map(ttls => ttls?.id) || [];
+
+        await api.put(`/capters/${form?.chapter?.value}`, {
+          data: {
+            titles: [...chapterTitlesIds, data.data.id],
+          },
+        });
+      }
+
+      handleSuccess('Título cadastrado com sucesso.');
+
+      query.invalidateQueries({ queryKey: ['manualForm'] });
+
+      onClose();
+    } catch (err: any) {
+      handleError(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -56,15 +95,12 @@ const TitleForm = ({ onClose, control, manual }: ChapterPageProps) => {
                 placeholder="Capítulo"
                 onChange={onChange}
                 value={value}
-                width="210px"
+                width="230px"
                 options={typeList}
                 isDisabled
               />
             )}
           />
-          {errors?.type?.value?.message && (
-            <ErrorMessage>{errors.type.value.message}</ErrorMessage>
-          )}
         </Field>
 
         <Field>
@@ -77,7 +113,7 @@ const TitleForm = ({ onClose, control, manual }: ChapterPageProps) => {
                 placeholder="Selecione um capítulo"
                 onChange={onChange}
                 value={value}
-                width="210px"
+                width="230px"
                 options={
                   manual?.capters?.map(chapter => ({
                     label: chapter?.title || '',
@@ -87,8 +123,8 @@ const TitleForm = ({ onClose, control, manual }: ChapterPageProps) => {
               />
             )}
           />
-          {errors?.type?.value?.message && (
-            <ErrorMessage>{errors.type.value.message}</ErrorMessage>
+          {errors?.chapter?.value?.message && (
+            <ErrorMessage>{errors.chapter.value.message}</ErrorMessage>
           )}
         </Field>
 
@@ -97,8 +133,8 @@ const TitleForm = ({ onClose, control, manual }: ChapterPageProps) => {
           <Input
             placeholder="Insira uma ordem"
             type="number"
-            style={{ maxWidth: '210px', minWidth: '210px' }}
-            {...register('title')}
+            style={{ width: '230px' }}
+            {...register('order')}
           />
         </Field>
 
@@ -112,7 +148,7 @@ const TitleForm = ({ onClose, control, manual }: ChapterPageProps) => {
                 placeholder="Selecione uma opção"
                 onChange={onChange}
                 value={value}
-                width="210px"
+                width="230px"
                 options={[
                   {
                     label: 'Sim',
@@ -132,10 +168,18 @@ const TitleForm = ({ onClose, control, manual }: ChapterPageProps) => {
         </Field>
       </FormSection>
 
-      <FormSection>
-        <Field>
-          <Label>Nome do capítulo</Label>
-          <Input placeholder="Insira um nome" style={{ minWidth: '880px' }} />
+      <FormSection
+        style={{
+          gridTemplateColumns: '1fr',
+        }}
+      >
+        <Field style={{ maxWidth: '100%' }}>
+          <Label>Nome do título</Label>
+          <Input
+            placeholder="Insira um nome"
+            style={{ width: '965px' }}
+            {...register('title')}
+          />
         </Field>
       </FormSection>
 
@@ -145,6 +189,7 @@ const TitleForm = ({ onClose, control, manual }: ChapterPageProps) => {
           text="Cadastrar"
           type="button"
           onClick={handleSubmit(onSubmit)}
+          disabled={isLoading}
         />
       </ButtonSection>
     </RegisterForm>

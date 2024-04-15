@@ -2,13 +2,18 @@
 
 import { Control, Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { handleSuccess } from '@/utils/handleToast';
+import handleError, { handleSuccess } from '@/utils/handleToast';
 import { ContainerSchema, IContainerForm } from '@/validations/ContainerSchema';
 import Select from '@/components/Select/Select';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
 import { IManualForm } from '@/validations/ManualSchema';
 import { typeList } from '@/components/ManualTable/ManualTable';
+import { RecursiveNormalize } from '@/utils/normalizeStrapi';
+import { IManualList, Titles } from '@/interfaces/manual';
+import { useEffect, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import api from '@/services/api';
 import {
   ButtonSection,
   ErrorMessage,
@@ -22,30 +27,72 @@ import {
 interface ChapterPageProps {
   onClose: () => void;
   control: Control<IManualForm, any>;
+  manual: RecursiveNormalize<IManualList> | undefined;
 }
 
-const ContainerForm = ({ onClose, control }: ChapterPageProps) => {
+const ContainerForm = ({ onClose, control, manual }: ChapterPageProps) => {
+  const query = useQueryClient();
+
+  const [titlesList, setTitles] = useState<RecursiveNormalize<Titles>>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const {
     control: controlContainer,
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<IContainerForm>({
     resolver: yupResolver(ContainerSchema),
-    defaultValues: {
-      type: {
-        label: 'Capítulo',
-        value: 'capitulo',
-      },
-    },
   });
 
-  const onSubmit: SubmitHandler<IContainerForm> = form => {
-    console.log(form);
+  useEffect(() => {
+    if (watch('chapter.value')) {
+      const chapter = manual?.capters?.find(
+        chapter => chapter?.id === Number(watch('chapter.value')),
+      );
+      setTitles(chapter?.titles || []);
+    }
+  }, [watch('chapter')]);
 
-    handleSuccess('Container cadastrado com sucesso.');
+  const onSubmit: SubmitHandler<IContainerForm> = async form => {
+    setIsLoading(true);
 
-    onClose();
+    try {
+      const { data } = await api.post<{ data: { id: number } }>('/containers', {
+        data: {
+          title: form.container?.label,
+          description: form.container?.value,
+          order: form.order,
+          visible: form.visible?.value === 'sim',
+        },
+      });
+
+      if (data.data?.id && form?.title?.value && form?.chapter?.value) {
+        const chapter = manual?.capters?.find(
+          capter => capter?.id === Number(form.chapter.value),
+        );
+        const title = chapter?.titles?.find(
+          title => title?.id === Number(form.title.value),
+        );
+        const titlesContentsIds =
+          title?.contents?.map(content => content?.id) || [];
+
+        await api.put(`/titles/${form?.title?.value}`, {
+          data: {
+            contents: [...titlesContentsIds, data.data.id],
+          },
+        });
+      }
+
+      handleSuccess('Container cadastrado com sucesso.');
+      query.invalidateQueries({ queryKey: ['manualForm'] });
+      onClose();
+    } catch (err: any) {
+      handleError(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -60,17 +107,27 @@ const ContainerForm = ({ onClose, control }: ChapterPageProps) => {
             name="type"
             render={({ field: { onChange, value } }) => (
               <Select
-                placeholder="Capítulo"
+                placeholder="Tipo de cadastro"
                 onChange={onChange}
                 value={value}
-                width="210px"
+                width="230px"
                 options={typeList}
                 isDisabled
               />
             )}
           />
-          {errors?.type?.value?.message && (
-            <ErrorMessage>{errors.type.value.message}</ErrorMessage>
+        </Field>
+
+        <Field>
+          <Label>Ordem</Label>
+          <Input
+            placeholder="Insira uma ordem"
+            type="number"
+            style={{ width: '230px' }}
+            {...register('order')}
+          />
+          {errors?.order?.message && (
+            <ErrorMessage>{errors.order.message}</ErrorMessage>
           )}
         </Field>
 
@@ -84,17 +141,14 @@ const ContainerForm = ({ onClose, control }: ChapterPageProps) => {
                 placeholder="Selecione um capítulo"
                 onChange={onChange}
                 value={value}
-                width="210px"
-                options={[
-                  {
-                    label: 'Capítulo 1',
-                    value: 'capitulo 1',
-                  },
-                  {
-                    label: 'Capítulo 2',
-                    value: 'capitulo 2',
-                  },
-                ]}
+                width="230px"
+                zIndex={9999}
+                options={
+                  manual?.capters?.map(chapter => ({
+                    label: chapter?.title || '',
+                    value: `${chapter?.id || ''}`,
+                  })) || []
+                }
               />
             )}
           />
@@ -113,33 +167,19 @@ const ContainerForm = ({ onClose, control }: ChapterPageProps) => {
                 placeholder="Selecione um título"
                 onChange={onChange}
                 value={value}
-                width="210px"
-                options={[
-                  {
-                    label: 'Título 1',
-                    value: 'Título 1',
-                  },
-                  {
-                    label: 'Título 2',
-                    value: 'Título 2',
-                  },
-                ]}
+                width="230px"
+                options={
+                  titlesList?.map(title => ({
+                    label: title?.title || '',
+                    value: `${title?.id || ''}`,
+                  })) || []
+                }
               />
             )}
           />
           {errors?.title?.value?.message && (
             <ErrorMessage>{errors.title.value.message}</ErrorMessage>
           )}
-        </Field>
-
-        <Field>
-          <Label>Ordem</Label>
-          <Input
-            placeholder="Insira uma ordem"
-            type="number"
-            style={{ maxWidth: '210px', minWidth: '210px' }}
-            {...register('title')}
-          />
         </Field>
       </FormSection>
 
@@ -154,7 +194,7 @@ const ContainerForm = ({ onClose, control }: ChapterPageProps) => {
                 placeholder="Selecione uma opção"
                 onChange={onChange}
                 value={value}
-                width="210px"
+                width="230px"
                 options={[
                   {
                     label: 'Sim',
@@ -177,13 +217,13 @@ const ContainerForm = ({ onClose, control }: ChapterPageProps) => {
           <Label>Tipo do container</Label>
           <Controller
             control={controlContainer}
-            name="visible"
+            name="container"
             render={({ field: { onChange, value } }) => (
               <Select
                 placeholder="Selecione uma opção"
                 onChange={onChange}
                 value={value}
-                width="210px"
+                width="230px"
                 options={[
                   {
                     label: 'Abas',
@@ -199,26 +239,26 @@ const ContainerForm = ({ onClose, control }: ChapterPageProps) => {
                   },
                   {
                     label: 'Paragrafo - par de chaves',
-                    value: 'pdf',
+                    value: 'keys',
                   },
                   {
                     label: 'Paragrafo multiplo',
-                    value: 'pdf',
+                    value: 'multi',
                   },
                   {
                     label: 'Paragrafo multiplo itens não numerados',
-                    value: 'pdf',
+                    value: 'multi not number',
                   },
                   {
                     label: 'Paragrafo unico',
-                    value: 'pdf',
+                    value: 'unique',
                   },
                 ]}
               />
             )}
           />
-          {errors?.visible?.value?.message && (
-            <ErrorMessage>{errors.visible.value.message}</ErrorMessage>
+          {errors?.container?.value?.message && (
+            <ErrorMessage>{errors.container.value.message}</ErrorMessage>
           )}
         </Field>
       </FormSection>
@@ -229,6 +269,7 @@ const ContainerForm = ({ onClose, control }: ChapterPageProps) => {
           text="Cadastrar"
           type="button"
           onClick={handleSubmit(onSubmit)}
+          disabled={isLoading}
         />
       </ButtonSection>
     </RegisterForm>

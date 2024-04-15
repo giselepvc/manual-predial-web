@@ -62,7 +62,7 @@ const GroupPage = () => {
     <PageLayout title="Listagem de grupos">
       <Action
         title="Cadastrar novo grupo"
-        href="/manual/create"
+        href="/group/create"
         setSearch={setSearch}
       />
 
@@ -83,7 +83,7 @@ const GroupPage = () => {
                   gap: '1.5rem',
                 }}
               >
-                <ActionButton onClick={() => push(`/manual/edit/${manual.id}`)}>
+                <ActionButton onClick={() => push(`/group/edit/${manual.id}`)}>
                   <EditIcon />
                   Editar
                 </ActionButton>

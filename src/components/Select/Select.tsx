@@ -15,6 +15,7 @@ interface Props<OptionType, T extends boolean>
   label?: string;
   error?: string;
   width?: string;
+  zIndex?: number;
   containerStyle?: CSSProperties;
   options: OptionType[];
   containerClassName?: string;
@@ -40,6 +41,7 @@ const Select = <OptionType, T extends boolean = false>({
   error,
   isMulti,
   width,
+  zIndex,
   containerClassName,
   ...rest
 }: Props<OptionType, T>) => {
@@ -66,7 +68,7 @@ const Select = <OptionType, T extends boolean = false>({
             width: width || '230px',
             borderRadius: '0.625rem',
             padding: '0 0.5rem 0 1.3rem',
-            zIndex: 9999,
+            zIndex: zIndex || 999,
             fontSize: '0.9rem',
             marginTop: '8px',
             fontWeight: 400,

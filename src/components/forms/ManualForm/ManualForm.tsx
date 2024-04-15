@@ -152,7 +152,9 @@ const ManualForm = ({ editing }: ManualFormProps) => {
       {steps === 3 && (
         <TitleForm control={control} onClose={onClose} manual={manual} />
       )}
-      {steps === 4 && <ContainerForm control={control} onClose={onClose} />}
+      {steps === 4 && (
+        <ContainerForm control={control} onClose={onClose} manual={manual} />
+      )}
       {steps === 5 && <AbasForm onClose={onClose} />}
     </RegisterForm>
   );

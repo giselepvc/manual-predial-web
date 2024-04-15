@@ -3,10 +3,6 @@ import * as yup from 'yup';
 export type IContainerForm = yup.InferType<typeof ContainerSchema>;
 
 export const ContainerSchema = yup.object({
-  type: yup.object({
-    value: yup.string(),
-    label: yup.string(),
-  }),
   chapter: yup.object({
     value: yup.string().required('Capítulo é obrigatório'),
     label: yup.string().required('Capítulo é obrigatório'),
