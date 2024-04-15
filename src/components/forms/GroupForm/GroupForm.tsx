@@ -120,6 +120,36 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
     }
   };
 
+  const onUpdate: SubmitHandler<IGroupForm> = async form => {
+    setIsLoading(true);
+
+    try {
+      const { data } = await api.put<{ data: { id: number } }>(
+        `/groups/${groupId}}`,
+        {
+          data: {
+            name: form.name,
+          },
+        },
+      );
+
+      if (data.data?.id && form?.enterprise?.value) {
+        await api.put(`/enterprises/${form?.enterprise?.value}`, {
+          data: {
+            groups: [data.data.id],
+          },
+        });
+      }
+
+      handleSuccess('Edição realizada com sucesso.');
+      back();
+    } catch (err: any) {
+      handleError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const onRemoveChapters = async () => {
     if (!deletingId) {
       return;
@@ -145,7 +175,7 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
   };
 
   return (
-    <RegisterForm onSubmit={handleSubmit(onSubmit)}>
+    <RegisterForm onSubmit={handleSubmit(!isEditing ? onSubmit : onUpdate)}>
       <FormSection>
         <Field>
           <Label>Nome do grupo</Label>

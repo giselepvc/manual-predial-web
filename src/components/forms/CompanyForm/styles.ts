@@ -34,7 +34,7 @@ export const FormSection = styled.section`
 
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-column-gap: 2rem;
+  grid-column-gap: 0.8rem;
   grid-row-gap: 1.5rem;
 `;
 
@@ -54,4 +54,14 @@ export const Label = styled.label`
   font-size: 0.95rem;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.grayd9};
+`;
+
+export const ErrorMessage = styled.h3`
+  position: absolute;
+  bottom: -1.25rem;
+  left: 0.25rem;
+
+  font-size: 8pt;
+  font-weight: 400;
+  color: ${({ theme }) => theme.colors.error};
 `;

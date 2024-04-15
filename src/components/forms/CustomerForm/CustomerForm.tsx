@@ -1,6 +1,6 @@
 import Select from '@/components/Select/Select';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
 import { CustomerSchema, ICustomerForm } from '@/validations/CustomerSchema';
@@ -31,18 +31,18 @@ import {
 
 interface CustomerProps {
   isEditing?: boolean;
+  customerId?: string;
 }
 
-const CustomerForm = ({ isEditing }: CustomerProps) => {
+const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
   const { back } = useRouter();
-  const param = useParams();
 
   const [isLoading, setIsLoading] = useState(false);
 
   const clientsParams = {
     'pagination[page]': 1,
     'pagination[pageSize]': 1,
-    'filters[id]': param?.id || undefined,
+    'filters[id]': customerId,
     populate: 'users',
   };
 
@@ -53,7 +53,7 @@ const CustomerForm = ({ isEditing }: CustomerProps) => {
       const clients = normalizeStrapi(clientsData || []);
       return clients?.[0];
     },
-    enabled: !!param?.id,
+    enabled: !!customerId,
   });
 
   const enterpriseParams = {
@@ -85,8 +85,12 @@ const CustomerForm = ({ isEditing }: CustomerProps) => {
   } = useForm<ICustomerForm>({
     resolver: yupResolver(CustomerSchema),
     defaultValues: {
-      ...client,
-      email: client?.users?.email || undefined,
+      ...(isEditing && {
+        ...client,
+        email: client?.users?.email || undefined,
+        password: '12345678',
+        confirmPassword: '12345678',
+      }),
     },
   });
 
@@ -101,6 +105,28 @@ const CustomerForm = ({ isEditing }: CustomerProps) => {
       });
 
       handleSuccess('Cadastro realizado com sucesso.');
+      back();
+    } catch (err: any) {
+      handleError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onUpdate: SubmitHandler<ICustomerForm> = async form => {
+    setIsLoading(true);
+
+    try {
+      await api.put(`/clients/${customerId}`, {
+        data: {
+          ...form,
+          password: undefined,
+          confirmPassword: undefined,
+          title: '',
+        },
+      });
+
+      handleSuccess('Cliente editado com sucesso.');
       back();
     } catch (err: any) {
       handleError(err);
@@ -148,7 +174,7 @@ const CustomerForm = ({ isEditing }: CustomerProps) => {
   };
 
   return (
-    <RegisterForm onSubmit={handleSubmit(onSubmit)}>
+    <RegisterForm onSubmit={handleSubmit(isEditing ? onUpdate : onSubmit)}>
       <RegisterTitle>
         <UserIcon />
         Dados pessoais
@@ -350,7 +376,11 @@ const CustomerForm = ({ isEditing }: CustomerProps) => {
 
       <ButtonSection>
         <Button outlined text="Cancelar" type="button" onClick={back} />
-        <Button text="Cadastrar" type="submit" disabled={isLoading} />
+        <Button
+          text={isEditing ? 'Editar' : 'Cadastrar'}
+          type="submit"
+          disabled={isLoading}
+        />
       </ButtonSection>
     </RegisterForm>
   );
