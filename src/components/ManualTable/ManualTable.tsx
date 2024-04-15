@@ -10,6 +10,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import api from '@/services/api';
 import Select from '../Select/Select';
 import Button from '../Button/Button';
+import ConfirmModal from '../ConfirmeModal/ConfirmeModal';
 import {
   Field,
   FormSection,
@@ -23,8 +24,11 @@ import {
   TableMore,
   TableRow,
   TableSection,
+  ThreadSection,
+  Thread,
+  ThreadLine,
+  Content,
 } from './styles';
-import ConfirmModal from '../ConfirmeModal/ConfirmeModal';
 
 export const typeList = [
   {
@@ -129,96 +133,105 @@ const ManualTable = ({
         </Field>
       </FormSection>
 
-      <TableSection>
-        {manual?.capters && manual.capters.length > 0 ? (
-          manual.capters.map(item => (
-            <>
-              <TableRow
-                key={item.id}
-                selected={cap?.id === item.id}
-                onClick={() =>
-                  setCap(props => (props === item ? undefined : item))
-                }
-              >
-                <InfoSection>
-                  <span>{item.order}</span>
-                  <Image
-                    src="/icons/image.svg"
-                    alt="icon"
-                    width={20}
-                    height={20}
-                  />
-                  <div>{item.title}</div>
-                </InfoSection>
+      <Content>
+        <TableSection>
+          {manual?.capters && manual.capters.length > 0 ? (
+            manual.capters.map(capter => (
+              <>
+                <TableRow
+                  key={capter.id}
+                  selected={cap?.id === capter.id}
+                  onClick={() => {
+                    setCap(props => (props === capter ? undefined : capter));
+                  }}
+                >
+                  <InfoSection>
+                    <span>{capter.order}</span>
+                    <Image
+                      src="/icons/image.svg"
+                      alt="icon"
+                      width={20}
+                      height={20}
+                    />
+                    <div>{capter.title}</div>
+                  </InfoSection>
 
-                <div>
-                  <FaTrash
-                    onClick={() => (isUpdating ? null : setDeletingId(item.id))}
-                  />
-                  <Image
-                    src={
-                      cap?.id === item.id
-                        ? '/icons/up-arrow.svg'
-                        : '/icons/down-arrow.svg'
-                    }
-                    alt="icon"
-                    width={20}
-                    height={20}
-                  />
-                </div>
-              </TableRow>
-              {cap?.id === item.id &&
-                item.titles.map((itemTitle, index) => (
-                  <>
-                    <TableMore
-                      key={itemTitle.id}
-                      onClick={() =>
-                        setTitle(props =>
-                          props === itemTitle ? undefined : itemTitle,
-                        )
+                  <div>
+                    <FaTrash
+                      onClick={() => !isUpdating && setDeletingId(capter.id)}
+                    />
+                    <Image
+                      src={
+                        cap?.id === capter.id
+                          ? '/icons/up-arrow.svg'
+                          : '/icons/down-arrow.svg'
                       }
-                    >
-                      <InfoSection>
-                        <span>{index + 1}</span>
-                        <div>{itemTitle.title}</div>
-                      </InfoSection>
+                      alt="icon"
+                      width={20}
+                      height={20}
+                    />
+                  </div>
+                </TableRow>
 
-                      <Image
-                        src={
-                          title?.id === itemTitle.id
-                            ? '/icons/up-arrow.svg'
-                            : '/icons/down-arrow.svg'
+                {cap?.id === capter.id &&
+                  capter.titles.map((titles, index) => (
+                    <Thread>
+                      <ThreadSection>
+                        <ThreadLine />
+                      </ThreadSection>
+
+                      <TableMore
+                        key={titles.id}
+                        onClick={() =>
+                          setTitle(props =>
+                            props === titles ? undefined : titles,
+                          )
                         }
-                        alt="icon"
-                        width={20}
-                        height={20}
-                      />
-                    </TableMore>
-                    {title?.id === itemTitle.id &&
-                      itemTitle.contents.map((cont, contIdx) => (
-                        <TableDetails>
-                          <InfoSection>
-                            <span>{contIdx + 1}</span>
-                            <div>{cont.key}</div>
-                          </InfoSection>
+                      >
+                        <InfoSection>
+                          <span>{index + 1}</span>
+                          <div>{titles.title}</div>
+                        </InfoSection>
 
-                          <Button
-                            type="button"
-                            text="Editar o conteúdo"
-                            style={{ minHeight: '25px' }}
-                            onClick={() => null}
-                          />
-                        </TableDetails>
-                      ))}
-                    <div style={{ marginBottom: '1rem' }} />
-                  </>
-                ))}
-            </>
-          ))
-        ) : (
-          <NotListText>Não há capitulos cadastrados!</NotListText>
-        )}
-      </TableSection>
+                        <Image
+                          src={
+                            title?.id === titles.id
+                              ? '/icons/up-arrow.svg'
+                              : '/icons/down-arrow.svg'
+                          }
+                          alt="icon"
+                          width={20}
+                          height={20}
+                        />
+                      </TableMore>
+
+                      {title?.id === titles.id &&
+                        titles.contents.map((container, contIdx) => (
+                          <TableDetails>
+                            <InfoSection>
+                              <span>{contIdx + 1}</span>
+                              <div>{container.key}</div>
+                            </InfoSection>
+
+                            <Button
+                              type="button"
+                              text="Editar o conteúdo"
+                              style={{ minHeight: '25px' }}
+                              onClick={() => null}
+                            />
+                          </TableDetails>
+                        ))}
+
+                      <div style={{ marginBottom: '1rem' }} />
+                    </Thread>
+                  ))}
+              </>
+            ))
+          ) : (
+            <NotListText>Não há capitulos cadastrados!</NotListText>
+          )}
+        </TableSection>
+      </Content>
 
       {deletingId && (
         <ConfirmModal

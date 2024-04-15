@@ -13,4 +13,8 @@ export const ChapterSchema = yup.object({
     value: yup.string().required('Status é obrigatório'),
     label: yup.string().required('Status é obrigatório'),
   }),
+  group: yup.object({
+    value: yup.string(),
+    label: yup.string(),
+  }),
 });

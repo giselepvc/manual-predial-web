@@ -32,7 +32,7 @@ export const Label = styled.label`
   color: ${({ theme }) => theme.colors.grayd9};
 `;
 
-export const TableSection = styled.section`
+export const Content = styled.section`
   width: 100%;
   height: calc(100vh - 24rem);
   max-height: calc(100vh - 24rem);
@@ -41,6 +41,17 @@ export const TableSection = styled.section`
   border-radius: 0.625rem;
   background: ${({ theme }) => theme.colors.gray3d};
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+  display: flex;
+  flex-direction: center;
+  align-items: center;
+`;
+
+export const TableSection = styled.section`
+  width: 100%;
+  height: 100%;
+
+  background: transparent;
   overflow-y: auto;
 
   display: flex;
@@ -93,7 +104,7 @@ export const TableMore = styled.div<TableProps>`
   align-items: center;
   justify-content: space-between;
 
-  width: 98%;
+  width: 100%;
   min-height: 50px;
   padding: 0 2.5rem;
   margin-top: -1rem;
@@ -183,4 +194,27 @@ export const NotListText = styled.div`
   color: ${({ theme }) => theme.colors.grayaa};
   font-size: 20px;
   font-weight: 700;
+`;
+
+export const ThreadSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+
+  min-width: 48px;
+  min-height: 50px;
+  margin-top: -1rem;
+`;
+
+export const ThreadLine = styled.div`
+  height: 25px;
+  width: 24px;
+  border-left: ${({ theme }) => `2px solid ${theme.colors.grayaa}`};
+  border-bottom: ${({ theme }) => `2px solid ${theme.colors.grayaa}`};
+`;
+
+export const Thread = styled.div`
+  display: flex;
+  width: 100%;
 `;

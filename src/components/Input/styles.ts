@@ -7,9 +7,9 @@ export const Input = styled.input`
   border-radius: 0.625rem;
 
   padding: 0 1.3rem;
-  width: 100%;
-  max-width: 250px;
+  width: 230px;
   height: 2.75rem;
+  margin-top: 8px;
 
   font-size: 0.9rem;
   font-weight: 400;

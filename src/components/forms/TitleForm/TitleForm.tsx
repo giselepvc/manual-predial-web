@@ -7,6 +7,8 @@ import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
 import { IManualForm } from '@/validations/ManualSchema';
 import { typeList } from '@/components/ManualTable/ManualTable';
+import { RecursiveNormalize } from '@/utils/normalizeStrapi';
+import { IManualList } from '@/interfaces/manual';
 import {
   ButtonSection,
   ErrorMessage,
@@ -20,9 +22,10 @@ import {
 interface ChapterPageProps {
   onClose: () => void;
   control: Control<IManualForm, any>;
+  manual: RecursiveNormalize<IManualList> | undefined;
 }
 
-const TitleForm = ({ onClose, control }: ChapterPageProps) => {
+const TitleForm = ({ onClose, control, manual }: ChapterPageProps) => {
   const {
     control: controlTitle,
     register,
@@ -75,16 +78,12 @@ const TitleForm = ({ onClose, control }: ChapterPageProps) => {
                 onChange={onChange}
                 value={value}
                 width="210px"
-                options={[
-                  {
-                    label: 'Capítulo 1',
-                    value: 'capitulo 1',
-                  },
-                  {
-                    label: 'Capítulo 2',
-                    value: 'capitulo 2',
-                  },
-                ]}
+                options={
+                  manual?.capters?.map(chapter => ({
+                    label: chapter?.title || '',
+                    value: `${chapter?.id || ''}`,
+                  })) || []
+                }
               />
             )}
           />

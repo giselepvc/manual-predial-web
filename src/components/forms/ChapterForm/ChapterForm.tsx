@@ -9,9 +9,10 @@ import { typeList } from '@/components/ManualTable/ManualTable';
 import { IManualForm } from '@/validations/ManualSchema';
 import api from '@/services/api';
 import { useState } from 'react';
-import { RecursiveNormalize } from '@/utils/normalizeStrapi';
+import { RecursiveNormalize, normalizeStrapi } from '@/utils/normalizeStrapi';
 import { IManualList } from '@/interfaces/manual';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { getGroups } from '@/services/querys/groups';
 import {
   ButtonSection,
   ErrorMessage,
@@ -33,6 +34,17 @@ const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const chaptesIds = manual?.capters?.map(capter => capter.id) || [];
+
+  const groupsParams = {
+    populate: '*',
+  };
+
+  const { data: groupsData } = useQuery({
+    queryKey: ['groupList', groupsParams],
+    queryFn: async () => getGroups(groupsParams),
+  });
+
+  const groups = normalizeStrapi(groupsData || []);
 
   const {
     control: controlManual,
@@ -62,8 +74,25 @@ const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
         });
       }
 
+      if (data.data?.id && form?.group?.value) {
+        const group = groups?.find(
+          group => group?.id === Number(form?.group?.value),
+        );
+        const groupChapterIds = group?.capters?.map(capter => capter?.id) || [];
+
+        await api.put(`/groups/${form.group.value}`, {
+          data: {
+            capters: [...groupChapterIds, data.data.id],
+          },
+        });
+      }
+
       handleSuccess('Capítulo cadastrado com sucesso.');
+
       query.invalidateQueries({ queryKey: ['manualForm'] });
+      query.invalidateQueries({ queryKey: ['manualList'] });
+      query.invalidateQueries({ queryKey: ['groupList'] });
+
       onClose();
     } catch (err: any) {
       handleError(err);
@@ -84,6 +113,7 @@ const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
             name="type"
             render={({ field: { onChange, value } }) => (
               <Select
+                width="250px"
                 placeholder="Capítulo"
                 onChange={onChange}
                 value={value}
@@ -99,6 +129,7 @@ const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
           <Input
             placeholder="Insira uma ordem"
             type="number"
+            style={{ width: '250px' }}
             {...register('order')}
           />
           {errors?.order?.message && (
@@ -113,6 +144,7 @@ const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
             name="visible"
             render={({ field: { onChange, value } }) => (
               <Select
+                width="250px"
                 placeholder="Selecione uma opção"
                 onChange={onChange}
                 value={value}
@@ -137,10 +169,35 @@ const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
 
       <FormSection>
         <Field>
+          <Label>Grupo</Label>
+          <Controller
+            control={controlManual}
+            name="group"
+            render={({ field: { onChange, value } }) => (
+              <Select
+                width="250px"
+                placeholder="Selecione um grupo"
+                onChange={onChange}
+                value={value}
+                options={
+                  groups?.map(group => ({
+                    label: group?.name || '',
+                    value: `${group?.id || ''}`,
+                  })) || []
+                }
+              />
+            )}
+          />
+          {errors?.group?.value?.message && (
+            <ErrorMessage>{errors.group?.value?.message}</ErrorMessage>
+          )}
+        </Field>
+
+        <Field>
           <Label>Nome do capítulo</Label>
           <Input
             placeholder="Insira um nome"
-            style={{ minWidth: '850px' }}
+            style={{ width: '250px' }}
             {...register('title')}
           />
           {errors?.title?.message && (
