@@ -8,6 +8,7 @@ import { FaTrash } from 'react-icons/fa6';
 import handleError, { handleSuccess } from '@/utils/handleToast';
 import { useQueryClient } from '@tanstack/react-query';
 import api from '@/services/api';
+import { urlBuild } from '@/utils/urlBuild';
 import Select from '../Select/Select';
 import Button from '../Button/Button';
 import ConfirmModal from '../ConfirmeModal/ConfirmeModal';
@@ -156,121 +157,127 @@ const ManualTable = ({
       <Content>
         <TableSection>
           {manual?.capters && manual.capters.length > 0 ? (
-            manual.capters.map(capter => (
-              <>
-                <TableRow
-                  key={capter.id}
-                  selected={cap?.id === capter.id}
-                  onClick={() => {
-                    setCap(props => (props === capter ? undefined : capter));
-                  }}
-                >
-                  <InfoSection>
-                    <span>{capter.order}</span>
-                    <Image
-                      src="/icons/image.svg"
-                      alt="icon"
-                      width={20}
-                      height={20}
-                    />
-                    <div>{capter.title}</div>
-                  </InfoSection>
+            manual.capters
+              .sort((a, b) => a.order - b.order)
+              .map(capter => (
+                <>
+                  <TableRow
+                    key={capter.id}
+                    selected={cap?.id === capter.id}
+                    onClick={() => {
+                      setCap(props => (props === capter ? undefined : capter));
+                    }}
+                  >
+                    <InfoSection>
+                      <span>{capter.order}</span>
+                      <Image
+                        src={
+                          capter.icon?.image?.url
+                            ? urlBuild(capter.icon?.image?.url)
+                            : '/icons/image.svg'
+                        }
+                        alt="icon"
+                        width={20}
+                        height={20}
+                      />
+                      <div>{capter.title}</div>
+                    </InfoSection>
 
-                  <div>
-                    <FaTrash
-                      onClick={() => !isUpdating && setDeletingId(capter.id)}
-                    />
-                    <Image
-                      src={
-                        cap?.id === capter.id
-                          ? '/icons/up-arrow.svg'
-                          : '/icons/down-arrow.svg'
-                      }
-                      alt="icon"
-                      width={20}
-                      height={20}
-                    />
-                  </div>
-                </TableRow>
+                    <div>
+                      <FaTrash
+                        onClick={() => !isUpdating && setDeletingId(capter.id)}
+                      />
+                      <Image
+                        src={
+                          cap?.id === capter.id
+                            ? '/icons/up-arrow.svg'
+                            : '/icons/down-arrow.svg'
+                        }
+                        alt="icon"
+                        width={20}
+                        height={20}
+                      />
+                    </div>
+                  </TableRow>
 
-                {cap?.id === capter.id &&
-                  capter.titles.map((titles, index) => (
-                    <>
-                      <Thread>
-                        <ThreadSection>
-                          <ThreadLine />
-                        </ThreadSection>
+                  {cap?.id === capter.id &&
+                    capter.titles.map((titles, index) => (
+                      <>
+                        <Thread>
+                          <ThreadSection>
+                            <ThreadLine />
+                          </ThreadSection>
 
-                        <TableMore
-                          key={titles.id}
-                          onClick={() =>
-                            setTitle(props =>
-                              props === titles ? undefined : titles,
-                            )
-                          }
-                        >
-                          <InfoSection>
-                            <span>{index + 1}</span>
-                            <div>{titles.title}</div>
-                          </InfoSection>
+                          <TableMore
+                            key={titles.id}
+                            onClick={() =>
+                              setTitle(props =>
+                                props === titles ? undefined : titles,
+                              )
+                            }
+                          >
+                            <InfoSection>
+                              <span>{index + 1}</span>
+                              <div>{titles.title}</div>
+                            </InfoSection>
 
-                          <div>
-                            <FaTrash
-                              onClick={() =>
-                                !isUpdating && setDeletingTitleId(titles.id)
-                              }
-                            />
-                            <Image
-                              src={
-                                title?.id === titles.id
-                                  ? '/icons/up-arrow.svg'
-                                  : '/icons/down-arrow.svg'
-                              }
-                              alt="icon"
-                              width={20}
-                              height={20}
-                            />
-                          </div>
-                        </TableMore>
-                      </Thread>
+                            <div>
+                              <FaTrash
+                                onClick={() =>
+                                  !isUpdating && setDeletingTitleId(titles.id)
+                                }
+                              />
+                              <Image
+                                src={
+                                  title?.id === titles.id
+                                    ? '/icons/up-arrow.svg'
+                                    : '/icons/down-arrow.svg'
+                                }
+                                alt="icon"
+                                width={20}
+                                height={20}
+                              />
+                            </div>
+                          </TableMore>
+                        </Thread>
 
-                      {title?.id === titles.id &&
-                        titles.contents.map((container, contIdx) => (
-                          <Thread style={{ paddingLeft: '3rem' }}>
-                            <ThreadSection>
-                              <ThreadLine />
-                            </ThreadSection>
+                        {title?.id === titles.id &&
+                          titles.contents.map((container, contIdx) => (
+                            <Thread style={{ paddingLeft: '3rem' }}>
+                              <ThreadSection>
+                                <ThreadLine />
+                              </ThreadSection>
 
-                            <TableDetails>
-                              <InfoSection>
-                                <span>{contIdx + 1}</span>
-                                <div>{container.key}</div>
-                              </InfoSection>
+                              <TableDetails>
+                                <InfoSection>
+                                  <span>{contIdx + 1}</span>
+                                  <div>{container.key}</div>
+                                </InfoSection>
 
-                              <div
-                                style={{
-                                  display: 'flex',
-                                  gap: '1rem',
-                                  alignItems: 'center',
-                                }}
-                              >
-                                <Button
-                                  type="button"
-                                  text="Editar o conteúdo"
-                                  style={{ minHeight: '25px' }}
-                                  onClick={() => null}
-                                />
-                                <FaTrash />
-                              </div>
-                            </TableDetails>
-                          </Thread>
-                        ))}
+                                <div
+                                  style={{
+                                    display: 'flex',
+                                    gap: '1rem',
+                                    alignItems: 'center',
+                                  }}
+                                >
+                                  <Button
+                                    type="button"
+                                    text="Editar o conteúdo"
+                                    style={{ minHeight: '25px' }}
+                                    onClick={() => null}
+                                  />
+                                  <FaTrash />
+                                </div>
+                              </TableDetails>
+                            </Thread>
+                          ))}
 
-                      <div style={{ marginBottom: '1rem' }} />
-                    </>
-                  ))}
-              </>
-            ))
+                        <div style={{ marginBottom: '1rem' }} />
+                      </>
+                    ))}
+                </>
+              ))
           ) : (
             <NotListText>Não há capitulos cadastrados!</NotListText>
           )}

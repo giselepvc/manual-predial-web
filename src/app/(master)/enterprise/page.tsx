@@ -60,9 +60,9 @@ const EnterprisePage = () => {
   };
 
   return (
-    <PageLayout title="Listagem de emprendimento">
+    <PageLayout title="Listagem de empreendimento">
       <Action
-        title="Cadastrar novo emprendimento"
+        title="Cadastrar novo empreendimento"
         setSearch={setSearch}
         href="/enterprise/create"
       />

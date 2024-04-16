@@ -66,3 +66,49 @@ export const ButtonSection = styled.div`
   width: 100%;
   margin: 3rem 0 2rem 0;
 `;
+
+export const RadioContainer = styled.div`
+  width: fit-content;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.625rem;
+`;
+
+export const RadiosRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 10px;
+  padding-left: 0.85rem;
+`;
+
+export const CheckboxLabel = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.grayd9};
+`;
+
+export const Checkbox = styled.input`
+  appearance: none;
+  -moz-appearance: none;
+
+  height: 15px;
+  width: 15px;
+  min-width: 15px;
+  min-height: 15px;
+  border-radius: 50%;
+  border: 1px solid ${({ theme }) => theme.colors.grayd9};
+  background: transparent;
+
+  cursor: pointer;
+
+  &:checked {
+    background: ${({ theme }) => theme.colors.primary};
+  }
+`;

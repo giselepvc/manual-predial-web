@@ -14,7 +14,18 @@ export interface IconsAttributes {
 }
 
 export interface Capters {
-  data: any[];
+  data: CaptersDatum[];
+}
+
+export interface CaptersDatum {
+  id: number;
+  attributes: CaptersAttributes;
+}
+
+export interface CaptersAttributes {
+  title: string;
+  order: number;
+  visible: boolean;
 }
 
 export interface Image {

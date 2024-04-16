@@ -9,6 +9,8 @@ export const MainComponent = styled.div`
 export const IconsList = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, 50px);
+  grid-row-gap: 0.8rem;
+  gap: 0.4rem;
 `;
 
 interface ImageProps {

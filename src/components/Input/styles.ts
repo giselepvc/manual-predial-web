@@ -16,6 +16,10 @@ export const Input = styled.input`
   color: ${({ theme }) => theme.colors.white};
   outline: none;
 
+  &:disabled {
+    color: ${({ theme }) => theme.colors.gray9a};
+  }
+
   &::placeholder {
     color: ${({ theme }) => theme.colors.gray9a};
   }

@@ -17,4 +17,5 @@ export const ChapterSchema = yup.object({
     value: yup.string(),
     label: yup.string(),
   }),
+  icon: yup.number(),
 });

@@ -158,10 +158,14 @@ export const LogoutButton = styled.button`
   color: ${({ theme }) => theme.colors.gray8f};
 
   svg {
-    font-size: 1.25rem;
+    font-size: 1.4rem;
     color: ${({ theme }) => theme.colors.gray8f};
   }
 `;
+
+interface BottomProps {
+  expanded?: boolean;
+}
 
 export const BottomSection = styled.div`
   margin-top: auto;
@@ -171,7 +175,7 @@ export const BottomSection = styled.div`
   padding-right: 1.875rem;
 `;
 
-export const LogoutSection = styled.div`
+export const LogoutSection = styled.div<BottomProps>`
   padding: 0 1rem;
 
   display: flex;
@@ -181,17 +185,26 @@ export const LogoutSection = styled.div`
   height: 75px;
   width: 100%;
 
-  border: ${({ theme }) => `2px solid ${theme.colors.gray8f}`};
   border-radius: 8px;
+  background: ${({ theme }) => theme.colors.gray41};
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 
   font-size: 1rem;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.gray8f};
 
-  div {
+  div > span {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 150px;
+    max-width: 130px;
   }
+`;
+
+export const ProfileImg = styled.img`
+  height: 30px;
+  width: 30px;
+
+  border-radius: 50px;
+  border: ${({ theme }) => `1px solid ${theme.colors.gray8f}`};
 `;

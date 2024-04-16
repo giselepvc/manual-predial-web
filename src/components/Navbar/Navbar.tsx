@@ -20,6 +20,7 @@ import {
   NavLink,
   NavLinkText,
   NavbarContainer,
+  ProfileImg,
 } from './styles';
 
 const Navbar = () => {
@@ -53,7 +54,7 @@ const Navbar = () => {
         >
           <EnterpriseIcon />
           <NavLinkText selected={pathname.startsWith('/enterprise')}>
-            Listagem de emprendimento
+            Listagem de empreendimento
           </NavLinkText>
         </NavLink>
         <NavLink href="/group" selected={pathname.startsWith('/group')}>
@@ -87,8 +88,15 @@ const Navbar = () => {
       </Nav>
 
       <BottomSection>
-        <LogoutSection>
-          <div>Olá, {user.username}</div>
+        <LogoutSection expanded={expanded}>
+          {expanded && (
+            <div
+              style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}
+            >
+              <ProfileImg src="/icons/image.svg" />
+              <span>{user.username}</span>
+            </div>
+          )}
 
           <LogoutButton
             type="button"
@@ -97,7 +105,6 @@ const Navbar = () => {
             }}
           >
             <ExitIcon />
-            {expanded && 'Sair'}
           </LogoutButton>
         </LogoutSection>
       </BottomSection>

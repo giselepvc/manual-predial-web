@@ -37,6 +37,7 @@ export interface CaptersAttributes {
   publishedAt: string;
   visible: boolean;
   titles: Titles;
+  icon: IIcon;
 }
 
 export interface Titles {
@@ -110,3 +111,49 @@ export interface Attributes {
 }
 
 export interface Meta {}
+
+export interface IIcon {
+  data: IIconData;
+}
+
+export interface IIconData {
+  id: number;
+  attributes: PurpleAttributes;
+}
+
+export interface PurpleAttributes {
+  title: string;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date;
+  active: boolean;
+  image: Image;
+}
+
+export interface Image {
+  data: ImageData;
+}
+
+export interface ImageData {
+  id: number;
+  attributes: FluffyAttributes;
+}
+
+export interface FluffyAttributes {
+  name: string;
+  alternativeText: null;
+  caption: null;
+  width: number;
+  height: number;
+  formats: null;
+  hash: string;
+  ext: string;
+  mime: string;
+  size: number;
+  url: string;
+  previewUrl: null;
+  provider: string;
+  provider_metadata: null;
+  createdAt: Date;
+  updatedAt: Date;
+}

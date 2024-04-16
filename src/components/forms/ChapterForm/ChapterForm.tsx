@@ -13,12 +13,18 @@ import { RecursiveNormalize, normalizeStrapi } from '@/utils/normalizeStrapi';
 import { IManualList } from '@/interfaces/manual';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getGroups } from '@/services/querys/groups';
+import { getIcons } from '@/services/querys/icons';
+import Image from 'next/image';
+import { urlBuild } from '@/utils/urlBuild';
 import {
   ButtonSection,
+  Checkbox,
+  CheckboxLabel,
   ErrorMessage,
   Field,
   FormSection,
   Label,
+  RadiosRow,
   RegisterForm,
   RegisterTitle,
 } from './styles';
@@ -46,6 +52,23 @@ const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
 
   const groups = normalizeStrapi(groupsData || []);
 
+  const iconsParams = {
+    populate: '*',
+    'filters[active]': true,
+  };
+
+  const { data: icons } = useQuery({
+    queryKey: ['iconsData', iconsParams],
+    queryFn: async () => {
+      const result = await getIcons(iconsParams);
+      const iconsResult = normalizeStrapi(result || []);
+
+      iconsResult.sort((a, b) => a.id - b.id);
+
+      return iconsResult;
+    },
+  });
+
   const {
     control: controlManual,
     register,
@@ -70,6 +93,17 @@ const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
         await api.put(`/manuals/${manual.id}`, {
           data: {
             capters: [...chaptesIds, data.data.id],
+          },
+        });
+      }
+
+      if (form?.icon && form?.icon !== 0 && data.data.id) {
+        const iconSelected = icons?.find(item => item.id === form.icon);
+        const captersList = iconSelected?.capters?.map(item => item.id) || [];
+
+        await api.put(`/icons/${form?.icon}`, {
+          data: {
+            capters: [...captersList, data.data.id],
           },
         });
       }
@@ -203,6 +237,29 @@ const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
           {errors?.title?.message && (
             <ErrorMessage>{errors.title.message}</ErrorMessage>
           )}
+        </Field>
+      </FormSection>
+
+      <FormSection>
+        <Field>
+          <Label>Selecione um ícone</Label>
+          <RadiosRow>
+            <CheckboxLabel>
+              <Checkbox type="radio" {...register('icon')} value={0} />
+              Nenhum
+            </CheckboxLabel>
+            {icons?.map(item => (
+              <CheckboxLabel>
+                <Checkbox type="radio" {...register('icon')} value={item.id} />
+                <Image
+                  src={urlBuild(item.image?.url)}
+                  alt="icons"
+                  width={14}
+                  height={14}
+                />
+              </CheckboxLabel>
+            ))}
+          </RadiosRow>
         </Field>
       </FormSection>
 
