@@ -14,9 +14,10 @@ interface ActionProps {
   title?: string;
   href?: string;
   setSearch?: Dispatch<SetStateAction<string>>;
+  notFilter?: boolean;
 }
 
-const Action = ({ title, href, setSearch }: ActionProps) => {
+const Action = ({ title, href, setSearch, notFilter }: ActionProps) => {
   const { push } = useRouter();
 
   const handleNavigation = () => {
@@ -27,15 +28,17 @@ const Action = ({ title, href, setSearch }: ActionProps) => {
 
   return (
     <FilterRow>
-      <FilterSection>
-        <FilterButton>
-          <SearchIcon />
-        </FilterButton>
-        <FilterInput
-          placeholder="Insira uma informação"
-          onBlur={e => setSearch && setSearch(e.target.value)}
-        />
-      </FilterSection>
+      {!notFilter && (
+        <FilterSection>
+          <FilterButton>
+            <SearchIcon />
+          </FilterButton>
+          <FilterInput
+            placeholder="Insira uma informação"
+            onBlur={e => setSearch && setSearch(e.target.value)}
+          />
+        </FilterSection>
+      )}
 
       <FilterRegister onClick={handleNavigation}>
         <PlusIcon />

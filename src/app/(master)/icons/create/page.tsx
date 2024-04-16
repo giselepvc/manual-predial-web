@@ -1,13 +1,14 @@
 'use client';
 
 import PageLayout from '@/components/PageLayout/PageLayout';
+import IconsForm from '@/components/forms/IconsForm/IconsForm';
 
-const CreateiconsPage = () => {
+const IconsPage = () => {
   return (
     <PageLayout title="Cadastro de ícones">
-      <div />
+      <IconsForm />
     </PageLayout>
   );
 };
 
-export default CreateiconsPage;
+export default IconsPage;

@@ -74,6 +74,7 @@ export const FilterRegister = styled.button`
   svg {
     width: 1rem;
     color: ${({ theme }) => theme.colors.gray9a};
+    margin-right: 0.5rem;
   }
 
   animation-timing-function: ease-out;

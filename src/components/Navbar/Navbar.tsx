@@ -68,12 +68,9 @@ const Navbar = () => {
             Listagem de manual
           </NavLinkText>
         </NavLink>
-        <NavLink
-          href="/icons/list"
-          selected={pathname.startsWith('/icons/list')}
-        >
+        <NavLink href="/icons" selected={pathname.startsWith('/icons')}>
           <BookIcon />
-          <NavLinkText selected={pathname.startsWith('/icons/list')}>
+          <NavLinkText selected={pathname.startsWith('/icons')}>
             Listagem de ícones
           </NavLinkText>
         </NavLink>
