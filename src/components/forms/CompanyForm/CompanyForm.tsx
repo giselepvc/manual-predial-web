@@ -11,7 +11,7 @@ import { useState } from 'react';
 import api from '@/services/api';
 import cnpjMask from '@/utils/masks/cnpjMask';
 import telephoneMask from '@/utils/masks/phone';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getCompanies } from '@/services/querys/company';
 import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import UserIcon from '../../../../public/icons/peaple.svg';
@@ -33,6 +33,7 @@ interface CompanProps {
 
 const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
   const { back } = useRouter();
+  const query = useQueryClient();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -48,6 +49,21 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
     queryFn: async () => {
       const companysData = await getCompanies(companiesParams);
       const companys = normalizeStrapi(companysData || []);
+
+      reset({
+        address: companys?.[0]?.address,
+        complement: companys?.[0]?.complement || undefined,
+        number: companys?.[0]?.number,
+        city: companys?.[0]?.city,
+        cnpj: companys?.[0]?.cnpj,
+        neighborhood: companys?.[0]?.neighborhood,
+        phone: companys?.[0]?.phone,
+        state: companys?.[0]?.state,
+        zipCode: companys?.[0]?.zipCode,
+        name: companys?.[0]?.name,
+        email: companys?.[0]?.email,
+      });
+
       return companys?.[0];
     },
     enabled: !!companyId,
@@ -60,6 +76,7 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
     setValue,
     setError,
     getValues,
+    reset,
     formState: { errors },
   } = useForm<ICompanyForm>({
     resolver: yupResolver(CompanySchema),
@@ -90,6 +107,7 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
         },
       });
 
+      query.invalidateQueries({ queryKey: ['CompaniesData'] });
       handleSuccess('Cadastro realizado com sucesso.');
       back();
     } catch (error) {
@@ -109,6 +127,7 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
         },
       });
 
+      query.invalidateQueries({ queryKey: ['CompaniesData'] });
       handleSuccess('Alteração realizada com sucesso.');
       back();
     } catch (error) {
