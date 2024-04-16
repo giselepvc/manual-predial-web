@@ -67,7 +67,7 @@ const Select = <OptionType, T extends boolean = false>({
             height: '2.75rem',
             width: width || '230px',
             borderRadius: '0.625rem',
-            padding: '0 0.5rem 0 1.3rem',
+            padding: '0 0.2rem 0 1rem',
             zIndex: zIndex || 999,
             fontSize: '0.9rem',
             marginTop: '8px',

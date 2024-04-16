@@ -21,10 +21,15 @@ export interface IClientsAttributes {
   referencePoint: null;
   complement: string;
   users: IUsers;
+  enterprise: IEnterprise;
 }
 
 export interface IUsers {
   data: IUserClient;
+}
+
+export interface IEnterprise {
+  data: IEnterpriseDatum;
 }
 
 export interface IUserClient {
@@ -32,7 +37,15 @@ export interface IUserClient {
   attributes: IUserClientAttributes;
 }
 
+export interface IEnterpriseDatum {
+  id: number;
+  attributes: IEnterpriseAttributes;
+}
+
 export interface IUserClientAttributes {
   username: string;
   email: string;
+}
+export interface IEnterpriseAttributes {
+  title: string;
 }

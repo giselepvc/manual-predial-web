@@ -2,14 +2,15 @@
 
 import PageLayout from '@/components/PageLayout/PageLayout';
 import CompanyForm from '@/components/forms/CompanyForm/CompanyForm';
-import { useParams } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 const CreateCompanyPage = () => {
-  const param = useParams();
+  const router = useRouter();
+  const param = router.query;
 
   return (
     <PageLayout title="Editar construtora">
-      <CompanyForm isEditing companyId={param?.id as string} />
+      <CompanyForm isEditing companyId={(param?.id as string) || ''} />
     </PageLayout>
   );
 };

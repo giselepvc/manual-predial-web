@@ -41,10 +41,20 @@ const CompanyPage = () => {
       />
 
       <TableComponent
-        fields={['Nome', 'E-mail', 'CNPJ', 'Celular', 'CEP', 'Status', 'Ações']}
+        fields={[
+          'ID',
+          'Nome',
+          'E-mail',
+          'CNPJ',
+          'Celular',
+          'CEP',
+          'Status',
+          'Ações',
+        ]}
       >
         {companies.map(order => (
           <tr key={order.id}>
+            <td>{order.id}</td>
             <td>{order.name}</td>
             <td>{order.email}</td>
             <td>{order.cnpj}</td>

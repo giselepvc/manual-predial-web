@@ -9,7 +9,7 @@ const CustomerEditPage = () => {
 
   return (
     <PageLayout title="Editar usuário">
-      <CustomerForm isEditing customerId={param?.id as string} />
+      <CustomerForm isEditing customerId={Number(param?.id as string)} />
     </PageLayout>
   );
 };

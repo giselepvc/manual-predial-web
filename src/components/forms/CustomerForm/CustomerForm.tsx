@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import Select from '@/components/Select/Select';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
@@ -13,7 +14,7 @@ import handleError, { handleSuccess } from '@/utils/handleToast';
 import { getAddressFromCep } from '@/services/addressApi';
 import api from '@/services/api';
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getEnterprise } from '@/services/querys/enterprise';
 import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import { getClients } from '@/services/querys/clients';
@@ -31,46 +32,60 @@ import {
 
 interface CustomerProps {
   isEditing?: boolean;
-  customerId?: string;
+  customerId?: number;
 }
 
 const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
   const { back } = useRouter();
+  const query = useQueryClient();
 
   const [isLoading, setIsLoading] = useState(false);
-
-  const clientsParams = {
-    'pagination[page]': 1,
-    'pagination[pageSize]': 1,
-    'filters[id]': customerId,
-    populate: 'users',
-  };
-
-  const { data: client } = useQuery({
-    queryKey: ['usersData', clientsParams],
-    queryFn: async () => {
-      const clientsData = await getClients(clientsParams);
-      const clients = normalizeStrapi(clientsData || []);
-      return clients?.[0];
-    },
-    enabled: !!customerId,
-  });
 
   const enterpriseParams = {
     populate: '*',
   };
 
   const { data: enterprises } = useQuery({
-    queryKey: ['myItems', enterpriseParams],
+    queryKey: ['enterprisesData', enterpriseParams],
     queryFn: async () => {
       const data = await getEnterprise(enterpriseParams);
       const enterpriseList = normalizeStrapi(data || []);
-      const resultEnterprise = enterpriseList?.map(enter => ({
+      return enterpriseList?.map(enter => ({
         label: enter.title || '',
         value: enter.id ? `${enter.id}` : '',
       }));
-      return resultEnterprise;
     },
+  });
+
+  const clientsParams = {
+    'pagination[page]': 1,
+    'pagination[pageSize]': 1,
+    'filters[id]': customerId,
+    populate: '*',
+  };
+
+  const { data: client } = useQuery({
+    queryKey: ['clientInfoData', clientsParams],
+    queryFn: async () => {
+      const clientsData = await getClients(clientsParams);
+      const clients = normalizeStrapi(clientsData || []);
+
+      reset({
+        ...clients?.[0],
+        email: clients?.[0]?.users?.email || undefined,
+        ...(clients?.[0]?.enterprise?.id ? {
+          enterprise: {
+            label: clients?.[0]?.enterprise?.title || '',
+            value: clients?.[0]?.enterprise?.id?.toString() || '',
+          },
+        } : { enterprise: undefined }),
+        password: '12345678',
+        confirmPassword: '12345678',
+      });
+
+      return clients?.[0];
+    },
+    enabled: !!customerId,
   });
 
   const {
@@ -80,6 +95,7 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
     setValue,
     setError,
     getValues,
+    reset,
     control,
     formState: { errors },
   } = useForm<ICustomerForm>({
@@ -87,6 +103,13 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
     defaultValues: {
       ...(isEditing && {
         ...client,
+        ...(client?.enterprise?.id
+          ? {
+            enterprise: {
+              label: client?.enterprise?.title || '',
+              value: client?.enterprise?.id?.toString() || '',
+            },
+          } : { enterprise: undefined }),
         email: client?.users?.email || undefined,
         password: '12345678',
         confirmPassword: '12345678',
@@ -98,12 +121,23 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
     setIsLoading(true);
 
     try {
-      await api.post('/registerUser', {
-        ...form,
-        confirmPassword: undefined,
-        title: '',
-      });
+      const { data } = await api.post<{ data: { id: number } }>(
+        '/registerUser',
+        {
+          ...form,
+          confirmPassword: undefined,
+        },
+      );
 
+      if (form?.enterprise?.value && data.data?.id) {
+        await api.put(`/enterprises/${form?.enterprise?.value}`, {
+          data: {
+            client: [data.data?.id],
+          },
+        });
+      }
+
+      query.invalidateQueries({ queryKey: ['usersData', 'enterpriseData'] });
       handleSuccess('Cadastro realizado com sucesso.');
       back();
     } catch (err: any) {
@@ -126,6 +160,15 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
         },
       });
 
+      if (form?.enterprise?.value && customerId) {
+        await api.put(`/enterprises/${form?.enterprise?.value}`, {
+          data: {
+            client: [customerId],
+          },
+        });
+      }
+
+      query.invalidateQueries({ queryKey: ['usersData', 'enterpriseData'] });
       handleSuccess('Cliente editado com sucesso.');
       back();
     } catch (err: any) {
@@ -251,24 +294,35 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
           )}
         </Field>
 
-        <Field>
-          <Label>Empreendimento</Label>
-          <Controller
-            control={control}
-            name="enterprise"
-            render={({ field: { onChange, value } }) => (
-              <Select
-                placeholder="Selecione empreendimento"
-                onChange={onChange}
-                value={value}
-                options={enterprises || []}
-              />
+        {isEditing ? (
+          <Field>
+            <Label>Empreendimento</Label>
+            <Controller
+              control={control}
+              name="enterprise"
+              render={({ field: { onChange, value } }) => (
+                <Select
+                  placeholder="Selecione empreendimento"
+                  onChange={onChange}
+                  value={value}
+                  options={enterprises || []}
+                />
+              )}
+            />
+          </Field>
+        ) : (
+          <Field>
+            <Label>Nome do empreendimento</Label>
+            <Input
+              placeholder="Insirir nome"
+              maskFunction={telephoneMask}
+              {...register('title')}
+            />
+            {errors?.title?.message && (
+              <ErrorMessage>{errors.title.message}</ErrorMessage>
             )}
-          />
-          {errors?.enterprise?.message && (
-            <ErrorMessage>{errors.enterprise.message}</ErrorMessage>
-          )}
-        </Field>
+          </Field>
+        )}
       </FormSection>
 
       {!isEditing && (

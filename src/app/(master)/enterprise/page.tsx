@@ -8,8 +8,13 @@ import { getEnterprise } from '@/services/querys/enterprise';
 import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import EditIcon from '../../../../public/icons/edit.svg';
+import { ActionButton } from './styles';
 
 const EnterprisePage = () => {
+  const { push } = useRouter();
+
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
 
@@ -17,6 +22,7 @@ const EnterprisePage = () => {
     'pagination[page]': page,
     'pagination[pageSize]': 7,
     'filters[title][$containsi]': search || undefined,
+    'sort[createdAt]': 'DESC',
     populate: 'client.users',
   };
 
@@ -36,7 +42,16 @@ const EnterprisePage = () => {
       />
 
       <TableComponent
-        fields={['ID', 'Nome', 'E-mail', 'CNPJ', 'Celular', 'CEP', 'Status']}
+        fields={[
+          'ID',
+          'Nome',
+          'E-mail',
+          'CNPJ',
+          'Celular',
+          'CEP',
+          'Status',
+          'Ações',
+        ]}
       >
         {enterprises?.map(order => (
           <tr key={order.id}>
@@ -47,6 +62,14 @@ const EnterprisePage = () => {
             <td>{order.client?.cellPhone || '--'}</td>
             <td>{order.client?.zipCode || '--'}</td>
             <td>{order.active ? 'Ativo' : 'Desativado'}</td>
+            <td>
+              <ActionButton
+                onClick={() => push(`/enterprise/edit/${order.id}`)}
+              >
+                <EditIcon />
+                Editar
+              </ActionButton>
+            </td>
           </tr>
         ))}
       </TableComponent>

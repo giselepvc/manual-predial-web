@@ -19,7 +19,7 @@ export const GlobalStyle = createGlobalStyle`
     appearance: textfield;
   }
   html {
-    @media (max-width: 1400px) {
+    @media (max-width: 1440px) {
       font-size: 93.75%;
     }
   }
