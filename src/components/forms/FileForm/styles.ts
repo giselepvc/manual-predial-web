@@ -48,16 +48,6 @@ export const Label = styled.label`
   color: ${({ theme }) => theme.colors.grayd9};
 `;
 
-export const ErrorMessage = styled.h3`
-  position: absolute;
-  bottom: -1.25rem;
-  left: 0.25rem;
-
-  font-size: 8pt;
-  font-weight: 400;
-  color: ${({ theme }) => theme.colors.error};
-`;
-
 export const ButtonSection = styled.div`
   display: flex;
   align-items: center;
@@ -68,69 +58,40 @@ export const ButtonSection = styled.div`
   margin: 3rem 0 2rem 0;
 `;
 
-export const TextArea = styled.textarea`
+export const InputSection = styled.label`
   border: none;
   background: ${({ theme }) => theme.colors.gray3d};
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 0.625rem;
 
-  padding: 1rem;
-  width: 230px;
-  height: 5.75rem;
+  padding: 0;
+  width: 500px;
+  height: 2.75rem;
   margin-top: 8px;
-  resize: none;
 
   font-size: 0.9rem;
   font-weight: 400;
-  color: ${({ theme }) => theme.colors.white};
-  outline: none;
+  color: ${({ theme }) => theme.colors.gray9a};
 
-  &:disabled {
-    color: ${({ theme }) => theme.colors.gray9a};
-  }
-
-  &::placeholder {
-    color: ${({ theme }) => theme.colors.gray9a};
-  }
-
-  &:focus-visible {
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.35);
-  }
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.5rem;
 `;
 
-export const RadiosRow = styled.div`
+export const FileButton = styled.div`
+  height: 2.75rem;
+  width: 150px;
+
+  background: ${({ theme }) => theme.colors.gray4a};
+  border-bottom-left-radius: 0.625rem;
+  border-top-left-radius: 0.625rem;
+
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: ${({ theme }) => theme.colors.gray9a};
+
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-top: 10px;
-  padding-left: 0.85rem;
-`;
-
-export const CheckboxLabel = styled.label`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.grayd9};
-`;
-
-export const Checkbox = styled.input`
-  appearance: none;
-  -moz-appearance: none;
-
-  height: 15px;
-  width: 15px;
-  min-width: 15px;
-  min-height: 15px;
-  border-radius: 50%;
-  border: 1px solid ${({ theme }) => theme.colors.grayd9};
-  background: transparent;
-
-  cursor: pointer;
-
-  &:checked {
-    background: ${({ theme }) => theme.colors.primary};
-  }
+  justify-content: center;
 `;

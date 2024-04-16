@@ -23,6 +23,8 @@ import ChapterForm from '../ChapterForm/ChapterForm';
 import FirstForm from '../FirstForm/FirstForm';
 import { RegisterForm } from './styles';
 import AbasForm from '../AbasForm/AbasForm';
+import ImageForm from '../ImageForm/ImageForm';
+import FileForm from '../FileForm/FileForm';
 
 interface ManualFormProps {
   editing?: boolean;
@@ -33,6 +35,7 @@ const ManualForm = ({ editing }: ManualFormProps) => {
 
   const [isLoading, setIsloading] = useState<boolean>(false);
   const [steps, setSteps] = useState<number>(editing ? 1 : 0);
+  const [buildType, setBuildType] = useState<string>('');
   const [cap, setCap] = useState<
     RecursiveNormalize<CaptersDatum> | undefined
   >();
@@ -124,6 +127,12 @@ const ManualForm = ({ editing }: ManualFormProps) => {
     setValue('type', undefined as any);
   };
 
+  const builder = {
+    abas: <AbasForm onClose={onClose} />,
+    pdf: <FileForm onClose={onClose} />,
+    image: <ImageForm onClose={onClose} />,
+  } as any;
+
   return (
     <RegisterForm>
       {steps === 0 && (
@@ -156,7 +165,7 @@ const ManualForm = ({ editing }: ManualFormProps) => {
       {steps === 4 && (
         <ContainerForm control={control} onClose={onClose} manual={manual} />
       )}
-      {steps === 5 && <AbasForm onClose={onClose} />}
+      {steps === 5 && builder[buildType]}
     </RegisterForm>
   );
 };

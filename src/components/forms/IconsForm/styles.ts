@@ -81,3 +81,41 @@ export const UploadLogoLabel = styled.label`
     filter: brightness(0.95);
   }
 `;
+
+export const InputSection = styled.label`
+  border: none;
+  background: ${({ theme }) => theme.colors.gray3d};
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 0.625rem;
+
+  padding: 0;
+  width: 500px;
+  height: 2.75rem;
+  margin-top: 8px;
+
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: ${({ theme }) => theme.colors.gray9a};
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.5rem;
+`;
+
+export const FileButton = styled.div`
+  height: 2.75rem;
+  width: 150px;
+
+  background: ${({ theme }) => theme.colors.gray4a};
+  border-bottom-left-radius: 0.625rem;
+  border-top-left-radius: 0.625rem;
+
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: ${({ theme }) => theme.colors.gray9a};
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;

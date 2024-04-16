@@ -110,7 +110,7 @@ const Select = <OptionType, T extends boolean = false>({
           menu: prev => ({
             ...prev,
             top: '1.25rem',
-            paddingTop: '1rem',
+            paddingTop: '1.5rem',
             boxShadow: 'none',
             border: 'none',
             borderRadius: '0.625rem',

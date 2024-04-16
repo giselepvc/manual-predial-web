@@ -1,18 +1,27 @@
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ChapterSchema, IChapterForm } from '@/validations/ChapterSchema';
 import Select from '@/components/Select/Select';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
-import { handleSuccess } from '@/utils/handleToast';
+import handleError, { handleSuccess } from '@/utils/handleToast';
+import Image from 'next/image';
+import { useQuery } from '@tanstack/react-query';
+import { getIcons } from '@/services/querys/icons';
+import { normalizeStrapi } from '@/utils/normalizeStrapi';
+import { urlBuild } from '@/utils/urlBuild';
+import { AbaSchema, IAbaForm } from '@/validations/AbaSchema';
 import {
   ButtonSection,
+  Checkbox,
+  CheckboxLabel,
   ErrorMessage,
   Field,
   FormSection,
   Label,
+  RadiosRow,
   RegisterForm,
   RegisterTitle,
+  TextArea,
 } from './styles';
 
 interface ChapterPageProps {
@@ -25,21 +34,38 @@ const AbasForm = ({ onClose }: ChapterPageProps) => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<IChapterForm>({
-    resolver: yupResolver(ChapterSchema),
+  } = useForm<IAbaForm>({
+    resolver: yupResolver(AbaSchema),
   });
 
-  const onSubmit: SubmitHandler<IChapterForm> = form => {
-    console.log(form);
+  const iconsParams = {
+    populate: '*',
+    'filters[active]': true,
+  };
 
-    handleSuccess('Aba cadastrada com sucesso.');
+  const { data: icons } = useQuery({
+    queryKey: ['iconsData', iconsParams],
+    queryFn: async () => {
+      const result = await getIcons(iconsParams);
+      const iconsResult = normalizeStrapi(result || []);
+      iconsResult.sort((a, b) => a.id - b.id);
+      return iconsResult;
+    },
+  });
 
-    onClose();
+  const onSubmit: SubmitHandler<IAbaForm> = async form => {
+    try {
+      console.log(form);
+      handleSuccess('Aba cadastrada com sucesso.');
+      onClose();
+    } catch (error) {
+      handleError(error);
+    }
   };
 
   return (
     <RegisterForm>
-      <RegisterTitle>Cadastro de capítulo</RegisterTitle>
+      <RegisterTitle>Cadastro de Aba</RegisterTitle>
 
       <FormSection>
         <Field>
@@ -47,7 +73,8 @@ const AbasForm = ({ onClose }: ChapterPageProps) => {
           <Input
             placeholder="Insira uma ordem"
             type="number"
-            {...register('title')}
+            style={{ width: '250px' }}
+            {...register('order')}
           />
         </Field>
 
@@ -61,6 +88,7 @@ const AbasForm = ({ onClose }: ChapterPageProps) => {
                 placeholder="Selecione uma opção"
                 onChange={onChange}
                 value={value}
+                width="250px"
                 options={[
                   {
                     label: 'Sim',
@@ -81,20 +109,44 @@ const AbasForm = ({ onClose }: ChapterPageProps) => {
 
         <Field>
           <Label>Título</Label>
-          <Input placeholder="Insira um título" />
+          <Input
+            placeholder="Insira um título da aba"
+            style={{ width: '250px' }}
+            {...register('title')}
+          />
         </Field>
       </FormSection>
 
       <FormSection>
         <Field>
           <Label>Legenda</Label>
-          <Input placeholder="Insira um título" style={{ minWidth: '850px' }} />
+          <TextArea
+            placeholder="Insira uma legenda"
+            style={{ width: '845px' }}
+          />
         </Field>
       </FormSection>
 
       <FormSection>
         <Field>
           <Label>Selecione um ícone</Label>
+          <RadiosRow>
+            <CheckboxLabel>
+              <Checkbox type="radio" {...register('icon')} value={0} />
+              Nenhum
+            </CheckboxLabel>
+            {icons?.map(item => (
+              <CheckboxLabel>
+                <Checkbox type="radio" {...register('icon')} value={item.id} />
+                <Image
+                  src={urlBuild(item.image?.url)}
+                  alt="icons"
+                  width={14}
+                  height={14}
+                />
+              </CheckboxLabel>
+            ))}
+          </RadiosRow>
         </Field>
       </FormSection>
 

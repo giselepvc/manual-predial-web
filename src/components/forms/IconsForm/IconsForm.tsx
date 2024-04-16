@@ -16,6 +16,8 @@ import {
   Label,
   ErrorMessage,
   UploadLogoLabel,
+  InputSection,
+  FileButton,
 } from './styles';
 
 type FormValues = {
@@ -91,7 +93,8 @@ const IconsForm = () => {
 
         <Field>
           <Label>Selecione um ícone</Label>
-          <UploadLogoLabel>
+          <InputSection>
+            <FileButton>Escolher arquivo</FileButton>
             {image ? image.name : 'Selecionar arquivo'}
             <input
               type="file"
@@ -104,7 +107,7 @@ const IconsForm = () => {
                 }
               }}
             />
-          </UploadLogoLabel>
+          </InputSection>
         </Field>
       </FormSection>
 
