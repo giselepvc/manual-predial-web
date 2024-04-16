@@ -115,7 +115,7 @@ interface NavProps {
 }
 
 export const Nav = styled.nav<NavProps>`
-  margin-top: min(8vh, 8.625rem);
+  margin-top: min(6vh, 6.625rem);
 
   width: fit-content;
 
@@ -149,18 +149,49 @@ export const LogoutButton = styled.button`
   border: none;
   background: transparent;
 
-  margin-top: auto;
-
   display: flex;
   align-items: center;
   gap: 0.5rem;
 
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.gray8f};
 
   svg {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     color: ${({ theme }) => theme.colors.gray8f};
+  }
+`;
+
+export const BottomSection = styled.div`
+  margin-top: auto;
+  width: 100%;
+
+  padding-left: 1.625rem;
+  padding-right: 1.875rem;
+`;
+
+export const LogoutSection = styled.div`
+  padding: 0 1rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  height: 75px;
+  width: 100%;
+
+  border: ${({ theme }) => `2px solid ${theme.colors.gray8f}`};
+  border-radius: 8px;
+
+  font-size: 1rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.gray8f};
+
+  div {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
   }
 `;

@@ -29,6 +29,7 @@ const GroupPage = () => {
     'pagination[page]': page,
     'pagination[pageSize]': 7,
     'filters[name][$containsi]': search || undefined,
+    'sort[createdAt]': 'DESC',
     populate: '*',
   };
 

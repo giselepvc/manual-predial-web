@@ -2,11 +2,10 @@
 
 import PageLayout from '@/components/PageLayout/PageLayout';
 import GroupForm from '@/components/forms/GroupForm/GroupForm';
-import { useRouter } from 'next/router';
+import { useParams } from 'next/navigation';
 
 const EditGroupPage = () => {
-  const router = useRouter();
-  const param = router.query;
+  const param = useParams();
 
   return (
     <PageLayout title="Editar grupo">

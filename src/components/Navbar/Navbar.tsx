@@ -10,10 +10,12 @@ import BookIcon from '../../../public/icons/book.svg';
 import SettingsIcon from '../../../public/icons/settings.svg';
 import ExitIcon from '../../../public/icons/exit.svg';
 import {
+  BottomSection,
   LogoButton,
   LogoImg,
   LogoTextImg,
   LogoutButton,
+  LogoutSection,
   Nav,
   NavLink,
   NavLinkText,
@@ -21,7 +23,7 @@ import {
 } from './styles';
 
 const Navbar = () => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const [expanded, setExpanded] = useState(true);
   const pathname = usePathname();
 
@@ -66,7 +68,20 @@ const Navbar = () => {
             Listagem de manual
           </NavLinkText>
         </NavLink>
-        <NavLink href="/config" selected={pathname.startsWith('/config')}>
+        <NavLink
+          href="/icons/list"
+          selected={pathname.startsWith('/icons/list')}
+        >
+          <BookIcon />
+          <NavLinkText selected={pathname.startsWith('/icons/list')}>
+            Listagem de ícones
+          </NavLinkText>
+        </NavLink>
+        <NavLink
+          href="/config"
+          selected={pathname.startsWith('/config')}
+          style={{ paddingLeft: '1.5rem' }}
+        >
           <SettingsIcon />
           <NavLinkText selected={pathname.startsWith('/config')}>
             Configurações
@@ -74,15 +89,21 @@ const Navbar = () => {
         </NavLink>
       </Nav>
 
-      <LogoutButton
-        type="button"
-        onClick={() => {
-          logout();
-        }}
-      >
-        <ExitIcon />
-        {expanded && 'Sair'}
-      </LogoutButton>
+      <BottomSection>
+        <LogoutSection>
+          <div>Olá, {user.username}</div>
+
+          <LogoutButton
+            type="button"
+            onClick={() => {
+              logout();
+            }}
+          >
+            <ExitIcon />
+            {expanded && 'Sair'}
+          </LogoutButton>
+        </LogoutSection>
+      </BottomSection>
     </NavbarContainer>
   );
 };

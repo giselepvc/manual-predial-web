@@ -53,6 +53,17 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
     queryFn: async () => {
       const groupsData = await getGroups(groupsParams);
       const groups = normalizeStrapi(groupsData || []);
+
+      reset({
+        name: groups?.[0]?.name || '',
+        enterprise: {
+          label: groups?.[0]?.enterprise?.title || undefined,
+          value: groups?.[0]?.enterprise?.id
+            ? `${groups?.[0].enterprise.id}`
+            : undefined,
+        },
+      });
+
       return groups?.[0];
     },
     enabled: !!groupId || !!groupsId,
@@ -78,6 +89,7 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
   const {
     handleSubmit,
     register,
+    reset,
     control,
     formState: { errors },
   } = useForm<IGroupForm>({
