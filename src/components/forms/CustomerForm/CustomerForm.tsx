@@ -130,7 +130,7 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
       );
 
       if (form?.enterprise?.value && data.data?.id) {
-        await api.put(`/enterprises/${form?.enterprise?.value}`, {
+        await api.put(`/enterprises/${form.enterprise.value}`, {
           data: {
             client: [data.data?.id],
           },
@@ -161,7 +161,7 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
       });
 
       if (form?.enterprise?.value && customerId) {
-        await api.put(`/enterprises/${form?.enterprise?.value}`, {
+        await api.put(`/enterprises/${form.enterprise.value}`, {
           data: {
             client: [customerId],
           },
@@ -249,6 +249,7 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
           <Input
             placeholder="Insirir cpf"
             maskFunction={cpfMask}
+            maxLength={14}
             {...register('cpf')}
           />
           {errors?.cpf?.message && (
@@ -261,6 +262,7 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
           <Input
             placeholder="Insirir cnpj"
             maskFunction={cnpjMask}
+            maxLength={18}
             {...register('cnpj')}
           />
           {errors?.cnpj?.message && (
@@ -275,7 +277,7 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
           <Input
             placeholder="Insirir telefone"
             maskFunction={telephoneMask}
-            {...register('cellPhone')}
+            {...register('phone')}
           />
           {errors?.cellPhone?.message && (
             <ErrorMessage>{errors.cellPhone.message}</ErrorMessage>
@@ -287,42 +289,29 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
           <Input
             placeholder="Insirir celular"
             maskFunction={telephoneMask}
-            {...register('phone')}
+            {...register('cellPhone')}
           />
           {errors?.phone?.message && (
             <ErrorMessage>{errors.phone.message}</ErrorMessage>
           )}
         </Field>
 
-        {isEditing ? (
-          <Field>
-            <Label>Empreendimento</Label>
-            <Controller
-              control={control}
-              name="enterprise"
-              render={({ field: { onChange, value } }) => (
-                <Select
-                  placeholder="Selecione empreendimento"
-                  onChange={onChange}
-                  value={value}
-                  options={enterprises || []}
-                />
-              )}
-            />
-          </Field>
-        ) : (
-          <Field>
-            <Label>Nome do empreendimento</Label>
-            <Input
-              placeholder="Insirir nome"
-              maskFunction={telephoneMask}
-              {...register('title')}
-            />
-            {errors?.title?.message && (
-              <ErrorMessage>{errors.title.message}</ErrorMessage>
+        <Field>
+          <Label>Empreendimento</Label>
+          <Controller
+            control={control}
+            name="enterprise"
+            render={({ field: { onChange, value } }) => (
+              <Select
+                placeholder="Selecione empreendimento"
+                onChange={onChange}
+                value={value}
+                options={enterprises || []}
+              />
             )}
-          </Field>
-        )}
+          />
+        </Field>
+
       </FormSection>
 
       {!isEditing && (

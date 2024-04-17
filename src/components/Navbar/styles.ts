@@ -207,4 +207,6 @@ export const ProfileImg = styled.img`
 
   border-radius: 50px;
   border: ${({ theme }) => `1px solid ${theme.colors.gray8f}`};
+
+  object-fit: cover;
 `;

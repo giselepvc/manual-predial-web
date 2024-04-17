@@ -73,10 +73,10 @@ const EnterprisePage = () => {
         {enterprises?.map(order => (
           <tr key={order.id}>
             <td>{order.title || '--'}</td>
-            <td>{order.client?.users?.email || '--'}</td>
-            <td>{order.client?.cnpj || '--'}</td>
-            <td>{order.client?.cellPhone || '--'}</td>
-            <td>{order.client?.zipCode || '--'}</td>
+            <td>{order.email || '--'}</td>
+            <td>{order.cnpj || '--'}</td>
+            <td>{order.phone || '--'}</td>
+            <td>{order.zipCode || '--'}</td>
             <td>{order.active ? 'Ativo' : 'Desativado'}</td>
             <td>
               <div

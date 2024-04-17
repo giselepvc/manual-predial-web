@@ -79,7 +79,7 @@ const UsersPage = () => {
             <td>{client.users?.email}</td>
             <td>{cpfMask(client.cpf)}</td>
             <td>{cnpjMask(client.cnpj)}</td>
-            <td>{telephoneMask(client.cellPhone)}</td>
+            <td>{telephoneMask(client.cellPhone || client.phone || '')}</td>
             <td>
               <div
                 style={{

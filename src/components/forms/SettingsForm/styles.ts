@@ -54,10 +54,7 @@ export const PhotoSection = styled.div`
   gap: 0.5rem;
   margin-top: 20px;
 `;
-export const PhotoWrapper = styled.div`
-  position: relative;
-  width: fit-content;
-`;
+
 export const Photo = styled(Image)`
   border-radius: 50%;
   object-fit: cover;
@@ -76,22 +73,13 @@ export const PhotoTitle = styled.h2`
 export const PhotoChangeButton = styled.label`
   background-color: transparent;
   border: none;
-  position: absolute;
-  right: 0;
-  bottom: 0;
 
-  display: flex;
+  position: relative;
   width: fit-content;
 
-  input {
-    display: none;
-  }
-  &::after {
-    content: '';
-    background-color: #fff;
-    position: absolute;
-    inset: 3px 3px 5px 3px;
-    z-index: 0;
-    border-radius: 6px;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
 `;

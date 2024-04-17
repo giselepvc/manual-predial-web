@@ -11,8 +11,8 @@ export const EnterpriseSchema = yup.object({
   phone: yup.string().required('Telefone é obrigatório'),
   state: yup.string().required('Estado é obrigatório'),
   zipCode: yup.string().required('CEP é obrigatório'),
-  name: yup.string().required('Nome é obrigatório'),
-  complement: yup.string(),
+  title: yup.string().required('Nome é obrigatório'),
+  complement: yup.string().nullable(),
   email: yup.string().email('Email inválido').required('Email é obrigatório'),
   company: yup.object({
     value: yup.string().required('Construtora é obrigatório'),

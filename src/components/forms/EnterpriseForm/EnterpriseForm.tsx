@@ -15,6 +15,10 @@ import { getAddressFromCep } from '@/services/addressApi';
 import handleError, { handleSuccess } from '@/utils/handleToast';
 import { useState } from 'react';
 import api from '@/services/api';
+import { useQuery } from '@tanstack/react-query';
+import { getCompanies } from '@/services/querys/company';
+import { normalizeStrapi } from '@/utils/normalizeStrapi';
+import { getEnterprise } from '@/services/querys/enterprise';
 import {
   ButtonSection,
   FormSection,
@@ -37,6 +41,43 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const companiesParams = {
+    populate: '*',
+  };
+
+  const { data: companiesData } = useQuery({
+    queryKey: ['CompaniesData', companiesParams],
+    queryFn: async () => {
+      const data = await getCompanies(companiesParams);
+      const result = normalizeStrapi(data || []);
+      return result;
+    },
+  });
+
+  const enterpriseParams = {
+    'pagination[page]': 1,
+    'pagination[pageSize]': 1,
+    'filters[id]': companyId,
+    populate: 'company',
+  };
+
+  const { data: company } = useQuery({
+    queryKey: ['enterpriseData', enterpriseParams],
+    queryFn: async () => {
+      const data = await getEnterprise(enterpriseParams);
+      const enterprises = normalizeStrapi(data || []);
+      reset({
+        ...enterprises?.[0],
+        company: {
+          label: enterprises?.[0]?.company?.name || '',
+          value: `${enterprises?.[0]?.company?.id || ''}`,
+        },
+      });
+
+      return enterprises?.[0];
+    },
+  });
+
   const {
     handleSubmit,
     register,
@@ -44,36 +85,58 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
     setValue,
     setError,
     getValues,
+    reset,
     control,
     formState: { errors },
   } = useForm<IEnterpriseForm>({
     resolver: yupResolver(EnterpriseSchema),
-    // defaultValues: {
-    //   ...(isEditing && {
-    //     address: company?.address,
-    //     complement: company?.complement || undefined,
-    //     number: company?.number,
-    //     city: company?.city,
-    //     cnpj: company?.cnpj,
-    //     neighborhood: company?.neighborhood,
-    //     phone: company?.phone,
-    //     state: company?.state,
-    //     zipCode: company?.zipCode,
-    //     name: company?.name,
-    //     email: company?.email,
-    //   }),
-    // },
+    defaultValues: {
+      complement: '',
+      ...(isEditing && {
+        company: {
+          label: company?.company?.name || '',
+          value: `${company?.company?.id || ''}`,
+        },
+        cnpj: company?.cnpj,
+        neighborhood: company?.neighborhood,
+        phone: company?.phone,
+        title: company?.title,
+        email: company?.email,
+        zipCode: company?.zipCode,
+        address: company?.address,
+        state: company?.state,
+        complement: company?.complement || '',
+        number: company?.number,
+        city: company?.city,
+      }),
+    },
   });
 
   const onSubmit: SubmitHandler<IEnterpriseForm> = async form => {
     setIsLoading(true);
 
     try {
-      await api.post('/enterprises', {
-        data: {
-          ...form,
+      const { data } = await api.post<{ data: { id: number } }>(
+        '/enterprises',
+        {
+          data: {
+            ...form,
+          },
         },
-      });
+      );
+
+      if (data.data?.id && form?.company?.value) {
+        const company = companiesData?.find(
+          item => item.id === Number(form?.company?.value),
+        );
+        const enterprisesIds = company?.enterprises?.map(item => item.id) || [];
+
+        await api.put(`/companies/${form.company.value}`, {
+          data: {
+            enterprises: [...enterprisesIds, data.data.id],
+          },
+        });
+      }
 
       handleSuccess('Cadastro realizado com sucesso.');
       back();
@@ -88,11 +151,29 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
     setIsLoading(true);
 
     try {
-      await api.put(`/enterprises/${companyId}`, {
+      api.put<{ data: { id: number } }>(`/enterprises/${companyId}`, {
         data: {
           ...form,
         },
       });
+
+      if (companyId && form?.company?.value) {
+        const company = companiesData?.find(
+          item => item.id === Number(form?.company?.value),
+        );
+        const enterprisesIds = company?.enterprises?.map(item => item.id) || [];
+        const isAdded = !!company?.enterprises?.find(
+          item => item.id === Number(companyId),
+        );
+
+        if (!isAdded) {
+          await api.put(`/companies/${form.company.value}`, {
+            data: {
+              enterprises: [...enterprisesIds, Number(companyId)],
+            },
+          });
+        }
+      }
 
       handleSuccess('Alteração realizado com sucesso.');
       back();
@@ -151,9 +232,9 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
       <FormSection>
         <Field>
           <Label>Nome</Label>
-          <Input placeholder="Insirir nome" {...register('name')} />
-          {errors?.name?.message && (
-            <ErrorMessage>{errors.name.message}</ErrorMessage>
+          <Input placeholder="Insirir nome" {...register('title')} />
+          {errors?.title?.message && (
+            <ErrorMessage>{errors.title.message}</ErrorMessage>
           )}
         </Field>
 
@@ -167,7 +248,12 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
                 placeholder="Selecione construtora"
                 onChange={onChange}
                 value={value}
-                options={[]}
+                options={
+                  companiesData?.map(companies => ({
+                    label: companies?.name || '',
+                    value: `${companies?.id || ''}`,
+                  })) || []
+                }
               />
             )}
           />

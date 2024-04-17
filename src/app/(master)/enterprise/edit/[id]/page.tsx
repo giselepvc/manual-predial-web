@@ -2,15 +2,14 @@
 
 import PageLayout from '@/components/PageLayout/PageLayout';
 import EnterpriseForm from '@/components/forms/EnterpriseForm/EnterpriseForm';
-import { useRouter } from 'next/router';
+import { useParams } from 'next/navigation';
 
 const EditEnterprisePage = () => {
-  const router = useRouter();
-  const param = router.query;
+  const param = useParams();
 
   return (
     <PageLayout title="Editar empreendimento">
-      <EnterpriseForm />
+      <EnterpriseForm companyId={(param?.id as string) || ''} isEditing />
     </PageLayout>
   );
 };
