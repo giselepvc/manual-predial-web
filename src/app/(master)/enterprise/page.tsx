@@ -30,7 +30,7 @@ const EnterprisePage = () => {
     'pagination[pageSize]': 7,
     'filters[title][$containsi]': search || undefined,
     'sort[createdAt]': 'DESC',
-    populate: 'client.users',
+    populate: ['client.users', 'company'],
   };
 
   const { data: enterpriseData } = useQuery({
@@ -68,15 +68,14 @@ const EnterprisePage = () => {
       />
 
       <TableComponent
-        fields={['Nome', 'E-mail', 'CNPJ', 'Celular', 'CEP', 'Status', 'Ações']}
+        fields={['Nome', 'Construtora', 'CNPJ', 'Celular', 'Status', 'Ações']}
       >
         {enterprises?.map(order => (
           <tr key={order.id}>
             <td>{order.title || '--'}</td>
-            <td>{order.email || '--'}</td>
+            <td>{order.company?.name || '--'}</td>
             <td>{order.cnpj || '--'}</td>
             <td>{order.phone || '--'}</td>
-            <td>{order.zipCode || '--'}</td>
             <td>{order.active ? 'Ativo' : 'Desativado'}</td>
             <td>
               <div

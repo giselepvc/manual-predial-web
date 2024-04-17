@@ -78,11 +78,7 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
     queryFn: async () => {
       const data = await getEnterprise(enterpriseParams);
       const enterprisesList = normalizeStrapi(data || []);
-      const resultEnterprise = enterprisesList?.map(enter => ({
-        label: enter.title || '',
-        value: enter.id ? `${enter.id}` : '',
-      }));
-      return resultEnterprise;
+      return enterprisesList;
     },
   });
 
@@ -116,11 +112,21 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
       });
 
       if (data.data?.id && form?.enterprise?.value) {
-        await api.put(`/enterprises/${form?.enterprise?.value}`, {
-          data: {
-            groups: [data.data.id],
-          },
-        });
+        const enterprise = enterprises?.find(
+          item => item.id === Number(form?.enterprise?.value),
+        );
+        const groupsIds = enterprise?.groups?.map(item => item.id) || [];
+        const isAdded = !!enterprise?.groups?.find(
+          item => item.id === Number(data.data?.id),
+        );
+
+        if (!isAdded) {
+          await api.put(`/enterprises/${form?.enterprise?.value}`, {
+            data: {
+              groups: [...groupsIds, data.data.id],
+            },
+          });
+        }
       }
 
       handleSuccess('Cadastro realizado com sucesso.');
@@ -136,24 +142,31 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
     setIsLoading(true);
 
     try {
-      const { data } = await api.put<{ data: { id: number } }>(
-        `/groups/${groupId}}`,
-        {
-          data: {
-            name: form.name,
-          },
+      await api.put(`/groups/${groupId}`, {
+        data: {
+          name: form.name,
         },
-      );
+      });
 
-      if (data.data?.id && form?.enterprise?.value) {
-        await api.put(`/enterprises/${form?.enterprise?.value}`, {
-          data: {
-            groups: [data.data.id],
-          },
-        });
+      if (groupId && form?.enterprise?.value) {
+        const enterprise = enterprises?.find(
+          item => item.id === Number(form?.enterprise?.value),
+        );
+        const groupsIds = enterprise?.groups?.map(item => item.id) || [];
+        const isAdded = !!enterprise?.groups?.find(
+          item => item.id === Number(groupId),
+        );
+
+        if (!isAdded) {
+          await api.put(`/enterprises/${form?.enterprise?.value}`, {
+            data: {
+              groups: [...groupsIds, groupId],
+            },
+          });
+        }
       }
 
-      handleSuccess('Edição realizada com sucesso.');
+      handleSuccess('Alteração realizada com sucesso.');
       back();
     } catch (err: any) {
       handleError(err);
@@ -212,7 +225,12 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
                 placeholder="Selecione empreendimento"
                 onChange={onChange}
                 value={value}
-                options={enterprises || []}
+                options={
+                  enterprises?.map(item => ({
+                    value: item?.id || '',
+                    label: `${item?.title || ''}`,
+                  })) || []
+                }
               />
             )}
           />

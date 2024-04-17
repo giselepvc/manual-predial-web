@@ -30,7 +30,7 @@ const ManualPage = () => {
     'pagination[pageSize]': 7,
     'filters[title][$containsi]': search || undefined,
     'populate[0]': 'capters.titles.contents',
-    'populate[1]': 'enterprise',
+    'populate[1]': 'enterprise.company',
   };
 
   const { data: manualsdData } = useQuery({
@@ -69,20 +69,18 @@ const ManualPage = () => {
 
       <TableComponent
         fields={[
-          'ID',
+          'Nome do manual',
           'Construtora',
           'Empreendimento',
-          'Nome do manual',
           'Capitulos',
           'Ações',
         ]}
       >
         {manuals.map(manual => (
           <tr key={manual.id}>
-            <td>{manual.id}</td>
-            <td>--</td>
-            <td>{manual.enterprise?.title || '--'}</td>
             <td>{manual.title}</td>
+            <td>{manual.enterprise?.company?.name || '--'}</td>
+            <td>{manual.enterprise?.title || '--'}</td>
             <td>{manual.capters?.length || 0}</td>
             <td>
               <div

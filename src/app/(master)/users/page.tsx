@@ -75,7 +75,7 @@ const UsersPage = () => {
       >
         {clients.map(client => (
           <tr key={client.id}>
-            <td>{client.name.toLowerCase()}</td>
+            <td>{client.name}</td>
             <td>{client.users?.email}</td>
             <td>{cpfMask(client.cpf)}</td>
             <td>{cnpjMask(client.cnpj)}</td>

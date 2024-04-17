@@ -89,6 +89,20 @@ export interface EnterpriseDatum {
 export interface EnterpriseAttributes {
   title: string;
   active: boolean;
+  company: Company;
+}
+
+export interface Company {
+  data: CompanyDatum | null;
+}
+
+export interface CompanyDatum {
+  id: number;
+  attributes: CompanyAttributes;
+}
+
+export interface CompanyAttributes {
+  name: string;
 }
 
 export interface ResponseManual {
