@@ -58,7 +58,7 @@ const ManualForm = ({ editing }: ManualFormProps) => {
   });
 
   const manualsParams = {
-    'populate[0]': 'capters.titles.contents',
+    'populate[0]': 'capters.titles.containers',
     'populate[1]': 'enterprise',
     'populate[3]': 'capters.icon.image',
     'filters[id]': param?.id || manual?.id,

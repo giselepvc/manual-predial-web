@@ -56,7 +56,7 @@ export interface TitlesAttributes {
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
-  contents: Contents;
+  containers: Contents;
 }
 
 export interface Contents {
@@ -69,7 +69,9 @@ export interface ContentsDatum {
 }
 
 export interface ContentsAttributes {
-  key: string;
+  type: string;
+  title: string;
+  order: number;
   description: string;
   visible: boolean;
   createdAt: string;

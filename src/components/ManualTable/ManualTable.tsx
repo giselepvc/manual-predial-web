@@ -242,36 +242,38 @@ const ManualTable = ({
                         </Thread>
 
                         {title?.id === titles.id &&
-                          titles.contents.map((container, contIdx) => (
-                            <Thread style={{ paddingLeft: '3rem' }}>
-                              <ThreadSection>
-                                <ThreadLine />
-                              </ThreadSection>
+                          titles.containers
+                            .sort((a, b) => a.order - b.order)
+                            .map(container => (
+                              <Thread style={{ paddingLeft: '3rem' }}>
+                                <ThreadSection>
+                                  <ThreadLine />
+                                </ThreadSection>
 
-                              <TableDetails>
-                                <InfoSection>
-                                  <span>{contIdx + 1}</span>
-                                  <div>{container.key}</div>
-                                </InfoSection>
+                                <TableDetails>
+                                  <InfoSection>
+                                    <span>{container.order}</span>
+                                    <div>{container.title}</div>
+                                  </InfoSection>
 
-                                <div
-                                  style={{
-                                    display: 'flex',
-                                    gap: '1rem',
-                                    alignItems: 'center',
-                                  }}
-                                >
-                                  <Button
-                                    type="button"
-                                    text="Editar o conteúdo"
-                                    style={{ minHeight: '25px' }}
-                                    onClick={() => null}
-                                  />
-                                  <FaTrash />
-                                </div>
-                              </TableDetails>
-                            </Thread>
-                          ))}
+                                  <div
+                                    style={{
+                                      display: 'flex',
+                                      gap: '1rem',
+                                      alignItems: 'center',
+                                    }}
+                                  >
+                                    <Button
+                                      type="button"
+                                      text="Editar o conteúdo"
+                                      style={{ minHeight: '25px' }}
+                                      onClick={() => null}
+                                    />
+                                    <FaTrash />
+                                  </div>
+                                </TableDetails>
+                              </Thread>
+                            ))}
 
                         <div style={{ marginBottom: '1rem' }} />
                       </>
