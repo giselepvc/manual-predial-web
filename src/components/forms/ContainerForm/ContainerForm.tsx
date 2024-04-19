@@ -62,9 +62,10 @@ const ContainerForm = ({ onClose, control, manual }: ChapterPageProps) => {
       const { data } = await api.post<{ data: { id: number } }>('/containers', {
         data: {
           title: form.container?.label,
-          description: form.container?.value,
+          description: form.container?.label,
           order: form.order,
           visible: form.visible?.value === 'sim',
+          type: form.container?.value,
         },
       });
 
@@ -76,11 +77,11 @@ const ContainerForm = ({ onClose, control, manual }: ChapterPageProps) => {
           title => title?.id === Number(form.title.value),
         );
         const titlesContentsIds =
-          title?.contents?.map(content => content?.id) || [];
+          title?.containers?.map(content => content?.id) || [];
 
         await api.put(`/titles/${form?.title?.value}`, {
           data: {
-            contents: [...titlesContentsIds, data.data.id],
+            containers: [...titlesContentsIds, data.data.id],
           },
         });
       }

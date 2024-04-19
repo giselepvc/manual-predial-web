@@ -124,6 +124,7 @@ const ManualForm = ({ editing }: ManualFormProps) => {
 
   const onClose = () => {
     setSteps(1);
+    setBuildType('');
     setValue('type', undefined as any);
   };
 
@@ -152,6 +153,8 @@ const ManualForm = ({ editing }: ManualFormProps) => {
           cap={cap}
           setCap={setCap}
           setTitle={setTitle}
+          setSteps={setSteps}
+          setBuildType={setBuildType}
           title={title}
           manual={manual}
         />

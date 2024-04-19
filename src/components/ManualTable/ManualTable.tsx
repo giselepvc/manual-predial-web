@@ -49,6 +49,8 @@ interface ManualTableProps {
   setTitle: Dispatch<
     SetStateAction<RecursiveNormalize<TitlesDatum> | undefined>
   >;
+  setBuildType: Dispatch<SetStateAction<string>>;
+  setSteps: Dispatch<SetStateAction<number>>;
   manual: RecursiveNormalize<IManualList> | undefined;
 }
 
@@ -58,6 +60,8 @@ const ManualTable = ({
   cap,
   setCap,
   setTitle,
+  setBuildType,
+  setSteps,
   title,
   manual,
 }: ManualTableProps) => {
@@ -66,6 +70,7 @@ const ManualTable = ({
   const [listOtions, setListOptions] = useState(typeList);
   const [deletingId, setDeletingId] = useState<number>();
   const [deletingTitleId, setDeletingTitleId] = useState<number>();
+  const [deletingContainerId, setDeletingContainerId] = useState<number>();
   const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
@@ -117,6 +122,25 @@ const ManualTable = ({
 
       handleSuccess('Título deletado com sucesso.');
       setDeletingTitleId(undefined);
+      query.invalidateQueries({ queryKey: ['manualForm'] });
+    } catch (err: any) {
+      handleError(err);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const onDeleteContainer = async () => {
+    if (!deletingContainerId) {
+      return;
+    }
+
+    try {
+      setIsUpdating(true);
+      await api.delete(`/containers/${deletingContainerId}`);
+
+      handleSuccess('Conteúdo deletado com sucesso.');
+      setDeletingContainerId(undefined);
       query.invalidateQueries({ queryKey: ['manualForm'] });
     } catch (err: any) {
       handleError(err);
@@ -267,9 +291,17 @@ const ManualTable = ({
                                       type="button"
                                       text="Editar o conteúdo"
                                       style={{ minHeight: '25px' }}
-                                      onClick={() => null}
+                                      onClick={() => {
+                                        setSteps(5);
+                                        setBuildType(container.type);
+                                      }}
                                     />
-                                    <FaTrash />
+                                    <FaTrash
+                                      onClick={() =>
+                                        !isUpdating &&
+                                        setDeletingContainerId(container.id)
+                                      }
+                                    />
                                   </div>
                                 </TableDetails>
                               </Thread>
@@ -314,6 +346,22 @@ const ManualTable = ({
         >
           <ConfirmModal.Message>
             Tem certeza que deseja <strong>excluir</strong> esse título?
+          </ConfirmModal.Message>
+        </ConfirmModal>
+      )}
+
+      {deletingContainerId && (
+        <ConfirmModal
+          title="Atenção"
+          onClose={() => setDeletingContainerId(undefined)}
+          onConfirm={onDeleteContainer}
+          onCancel={() => setDeletingContainerId(undefined)}
+          cancelText="Cancelar"
+          confirmText="Sim, excluir"
+          isLoading={isUpdating}
+        >
+          <ConfirmModal.Message>
+            Tem certeza que deseja <strong>excluir</strong> esse conteúdo?
           </ConfirmModal.Message>
         </ConfirmModal>
       )}
