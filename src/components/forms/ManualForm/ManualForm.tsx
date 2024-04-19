@@ -9,6 +9,7 @@ import {
   TitlesDatum,
   ResponseManual,
   CaptersDatum,
+  ContentsDatum,
 } from '@/interfaces/manual';
 import ManualTable from '@/components/ManualTable/ManualTable';
 import handleError from '@/utils/handleToast';
@@ -25,6 +26,7 @@ import { RegisterForm } from './styles';
 import AbasForm from '../AbasForm/AbasForm';
 import ImageForm from '../ImageForm/ImageForm';
 import FileForm from '../FileForm/FileForm';
+import ParagraphForm from '../ParagraphForm/ParagraphForm';
 
 interface ManualFormProps {
   editing?: boolean;
@@ -36,7 +38,7 @@ const ManualForm = ({ editing }: ManualFormProps) => {
   const [isLoading, setIsloading] = useState<boolean>(false);
   const [steps, setSteps] = useState<number>(editing ? 1 : 0);
   const [buildType, setBuildType] = useState<string>('');
-  const [cap, setCap] = useState<
+  const [chapter, setChapter] = useState<
     RecursiveNormalize<CaptersDatum> | undefined
   >();
   const [title, setTitle] = useState<
@@ -44,6 +46,9 @@ const ManualForm = ({ editing }: ManualFormProps) => {
   >();
   const [manual, setManual] = useState<
     RecursiveNormalize<IManualList> | undefined
+  >();
+  const [content, setContent] = useState<
+    RecursiveNormalize<ContentsDatum> | undefined
   >();
 
   const {
@@ -58,9 +63,11 @@ const ManualForm = ({ editing }: ManualFormProps) => {
   });
 
   const manualsParams = {
-    'populate[0]': 'capters.titles.containers',
+    'populate[0]': 'capters.titles.containers.image',
     'populate[1]': 'enterprise',
     'populate[3]': 'capters.icon.image',
+    'populate[4]': 'capters.titles.containers.pdf',
+    'populate[5]': 'capters.titles.containers.icon.image',
     'filters[id]': param?.id || manual?.id,
   };
 
@@ -129,9 +136,12 @@ const ManualForm = ({ editing }: ManualFormProps) => {
   };
 
   const builder = {
-    abas: <AbasForm onClose={onClose} />,
-    pdf: <FileForm onClose={onClose} />,
-    image: <ImageForm onClose={onClose} />,
+    abas: <AbasForm onClose={onClose} content={content} />,
+    pdf: <FileForm onClose={onClose} content={content} />,
+    image: <ImageForm onClose={onClose} content={content} />,
+    paragraph: <ParagraphForm onClose={onClose} content={content} />,
+    paragraphIcon: <ParagraphForm onClose={onClose} content={content} />,
+    keys: <ParagraphForm onClose={onClose} content={content} />,
   } as any;
 
   return (
@@ -150,13 +160,14 @@ const ManualForm = ({ editing }: ManualFormProps) => {
         <ManualTable
           control={control}
           watch={watch}
-          cap={cap}
-          setCap={setCap}
-          setTitle={setTitle}
-          setSteps={setSteps}
-          setBuildType={setBuildType}
+          cap={chapter}
           title={title}
           manual={manual}
+          setCap={setChapter}
+          setTitle={setTitle}
+          setContent={setContent}
+          setSteps={setSteps}
+          setBuildType={setBuildType}
         />
       )}
       {steps === 2 && (

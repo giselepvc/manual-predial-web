@@ -1,6 +1,12 @@
+/* eslint-disable prettier/prettier */
 import { Control, Controller, UseFormWatch } from 'react-hook-form';
 import Image from 'next/image';
-import { CaptersDatum, IManualList, TitlesDatum } from '@/interfaces/manual';
+import {
+  CaptersDatum,
+  ContentsDatum,
+  IManualList,
+  TitlesDatum,
+} from '@/interfaces/manual';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { IManualForm } from '@/validations/ManualSchema';
 import { RecursiveNormalize } from '@/utils/normalizeStrapi';
@@ -43,27 +49,31 @@ interface ManualTableProps {
   watch: UseFormWatch<IManualForm>;
   cap: RecursiveNormalize<CaptersDatum> | undefined;
   title: RecursiveNormalize<TitlesDatum> | undefined;
+  manual: RecursiveNormalize<IManualList> | undefined;
   setCap: Dispatch<
     SetStateAction<RecursiveNormalize<CaptersDatum> | undefined>
   >;
   setTitle: Dispatch<
     SetStateAction<RecursiveNormalize<TitlesDatum> | undefined>
   >;
+  setContent: Dispatch<
+    SetStateAction<RecursiveNormalize<ContentsDatum> | undefined>
+  >;
   setBuildType: Dispatch<SetStateAction<string>>;
   setSteps: Dispatch<SetStateAction<number>>;
-  manual: RecursiveNormalize<IManualList> | undefined;
 }
 
 const ManualTable = ({
   control,
   watch,
   cap,
+  title,
+  manual,
   setCap,
   setTitle,
   setBuildType,
   setSteps,
-  title,
-  manual,
+  setContent,
 }: ManualTableProps) => {
   const query = useQueryClient();
 
@@ -269,7 +279,10 @@ const ManualTable = ({
                           titles.containers
                             .sort((a, b) => a.order - b.order)
                             .map(container => (
-                              <Thread style={{ paddingLeft: '3rem' }}>
+                              <Thread
+                                key={container.id}
+                                style={{ paddingLeft: '3rem' }}
+                              >
                                 <ThreadSection>
                                   <ThreadLine />
                                 </ThreadSection>
@@ -277,7 +290,13 @@ const ManualTable = ({
                                 <TableDetails>
                                   <InfoSection>
                                     <span>{container.order}</span>
-                                    <div>{container.title}</div>
+                                    <div>
+                                      {container.type === 'abas'
+                                        ? 'Abas'
+                                        : container.type === 'keys'
+                                          ? 'Parágrafo - par de chaves'
+                                          : container.title}
+                                    </div>
                                   </InfoSection>
 
                                   <div
@@ -292,6 +311,7 @@ const ManualTable = ({
                                       text="Editar o conteúdo"
                                       style={{ minHeight: '25px' }}
                                       onClick={() => {
+                                        setContent(container);
                                         setSteps(5);
                                         setBuildType(container.type);
                                       }}

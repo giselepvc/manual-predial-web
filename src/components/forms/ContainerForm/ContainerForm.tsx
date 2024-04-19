@@ -62,7 +62,7 @@ const ContainerForm = ({ onClose, control, manual }: ChapterPageProps) => {
       const { data } = await api.post<{ data: { id: number } }>('/containers', {
         data: {
           title: form.container?.label,
-          description: form.container?.label,
+          description: '',
           order: form.order,
           visible: form.visible?.value === 'sim',
           type: form.container?.value,
@@ -235,24 +235,20 @@ const ContainerForm = ({ onClose, control, manual }: ChapterPageProps) => {
                     value: 'pdf',
                   },
                   {
-                    label: 'Imagem unica com legenda abaixo paragrafo multiplo',
+                    label: 'Imagem única com legenda abaixo parágrafo múltiplo',
                     value: 'image',
                   },
                   {
-                    label: 'Paragrafo - par de chaves',
+                    label: 'Parágrafo - par de chaves',
                     value: 'keys',
                   },
                   {
-                    label: 'Paragrafo multiplo',
-                    value: 'multi',
+                    label: 'Parágrafo único ou múltiplo',
+                    value: 'paragraph',
                   },
                   {
-                    label: 'Paragrafo multiplo itens não numerados',
-                    value: 'multi not number',
-                  },
-                  {
-                    label: 'Paragrafo unico',
-                    value: 'unique',
+                    label: 'Parágrafo múltiplo itens não numerados',
+                    value: 'paragraphIcon',
                   },
                 ]}
               />

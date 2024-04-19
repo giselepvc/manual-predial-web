@@ -77,6 +77,34 @@ export interface ContentsAttributes {
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
+  image: Images;
+  pdf: PDF;
+  icon: IIcon;
+}
+
+export interface Images {
+  data: ImagesDatum[] | null;
+}
+
+export interface IconDatum {
+  id: number;
+  attributes: ImagesAttributes;
+}
+
+export interface PDF {
+  data: ImagesDatum | null;
+}
+
+export interface ImagesDatum {
+  id: number;
+  attributes: ImagesAttributes;
+}
+
+export interface ImagesAttributes {
+  name: string;
+  url: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Enterprise {

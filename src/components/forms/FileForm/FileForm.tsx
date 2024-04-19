@@ -1,5 +1,10 @@
 import Button from '@/components/Button/Button';
 import { useState } from 'react';
+import { ContentsDatum } from '@/interfaces/manual';
+import { RecursiveNormalize } from '@/utils/normalizeStrapi';
+import api from '@/services/api';
+import handleError, { handleSuccess } from '@/utils/handleToast';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   ButtonSection,
   Field,
@@ -13,11 +18,43 @@ import {
 
 interface FileProps {
   onClose: () => void;
+  content: RecursiveNormalize<ContentsDatum> | undefined;
 }
 
-const FileForm = ({ onClose }: FileProps) => {
+const FileForm = ({ onClose, content }: FileProps) => {
+  const query = useQueryClient();
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [image, setImage] = useState<File>();
+
+  const onSubmitPhoto = async () => {
+    setIsLoading(true);
+
+    if (image) {
+      try {
+        const formData = new FormData();
+
+        formData.append('ref', 'api::container.container');
+        formData.append('refId', content?.id?.toString() || '');
+        formData.append('field', 'pdf');
+        formData.append('files', image);
+
+        await api.post('/upload', formData);
+
+        if (content?.pdf?.id) {
+          await api.delete(`/upload/files/${content?.pdf?.id}`);
+        }
+
+        handleSuccess('Conteúdo alterado com sucesso');
+        query.invalidateQueries({ queryKey: ['manualForm'] });
+        onClose();
+      } catch (error) {
+        handleError(error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
 
   return (
     <RegisterForm>
@@ -28,10 +65,14 @@ const FileForm = ({ onClose }: FileProps) => {
           <Label>Arquivo PDF</Label>
           <InputSection>
             <FileButton>Escolher arquivo</FileButton>
-            {image ? image.name : 'Nenhum arquivo escolhido'}
+            <div>
+              {image
+                ? image.name
+                : content?.pdf?.name || 'Nenhum arquivo escolhido'}
+            </div>
             <input
               type="file"
-              accept="image/*"
+              accept="pdf/*"
               hidden
               onChange={e => {
                 if (e.target?.files?.[0]) {
@@ -47,9 +88,11 @@ const FileForm = ({ onClose }: FileProps) => {
       <ButtonSection>
         <Button outlined text="Voltar" type="button" onClick={onClose} />
         <Button
-          text="Cadastrar"
+          text="Editar"
           type="button"
-          onClick={() => null}
+          onClick={() =>
+            image ? onSubmitPhoto() : handleError('Selecione um arquivo')
+          }
           disabled={isLoading}
         />
       </ButtonSection>

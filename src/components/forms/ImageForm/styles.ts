@@ -40,6 +40,14 @@ export const Field = styled.div`
   flex-direction: column;
 `;
 
+export const Img = styled.img`
+  width: 140px;
+  height: 140px;
+
+  margin-top: 8px;
+  border-radius: 6px;
+`;
+
 export const Label = styled.label`
   padding-left: 0.75rem;
 
@@ -77,6 +85,13 @@ export const InputSection = styled.label`
   flex-direction: row;
   align-items: center;
   gap: 1.5rem;
+
+  div {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+  }
 `;
 
 export const FileButton = styled.div`

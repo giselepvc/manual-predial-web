@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Select from '@/components/Select/Select';
@@ -5,11 +6,13 @@ import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
 import handleError, { handleSuccess } from '@/utils/handleToast';
 import Image from 'next/image';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getIcons } from '@/services/querys/icons';
-import { normalizeStrapi } from '@/utils/normalizeStrapi';
+import { RecursiveNormalize, normalizeStrapi } from '@/utils/normalizeStrapi';
 import { urlBuild } from '@/utils/urlBuild';
 import { AbaSchema, IAbaForm } from '@/validations/AbaSchema';
+import { ContentsDatum } from '@/interfaces/manual';
+import api from '@/services/api';
 import {
   ButtonSection,
   Checkbox,
@@ -26,9 +29,12 @@ import {
 
 interface ChapterPageProps {
   onClose: () => void;
+  content: RecursiveNormalize<ContentsDatum> | undefined;
 }
 
-const AbasForm = ({ onClose }: ChapterPageProps) => {
+const AbasForm = ({ onClose, content }: ChapterPageProps) => {
+  const query = useQueryClient();
+
   const {
     control,
     register,
@@ -36,6 +42,21 @@ const AbasForm = ({ onClose }: ChapterPageProps) => {
     formState: { errors },
   } = useForm<IAbaForm>({
     resolver: yupResolver(AbaSchema),
+    defaultValues: {
+      description: content?.description || '',
+      title: content?.title || '',
+      order: content?.order,
+      visible: content?.visible
+        ? {
+          label: 'Sim',
+          value: 'sim',
+        }
+        : {
+          label: 'Não',
+          value: 'nao',
+        },
+      icon: 0,
+    },
   });
 
   const iconsParams = {
@@ -55,8 +76,28 @@ const AbasForm = ({ onClose }: ChapterPageProps) => {
 
   const onSubmit: SubmitHandler<IAbaForm> = async form => {
     try {
-      console.log(form);
-      handleSuccess('Aba cadastrada com sucesso.');
+      const { data } = await api.put<{ data: { id: number } }>(
+        `/containers/${content?.id}`,
+        {
+          data: {
+            title: form.title,
+            description: form.description,
+            order: form.order,
+            visible: form.visible?.value === 'sim',
+          },
+        },
+      );
+
+      if (data.data?.id && form?.icon && form?.icon !== 0) {
+        await api.put(`/icons/${form?.icon}`, {
+          data: {
+            container: [data.data.id],
+          },
+        });
+      }
+
+      handleSuccess('Conteúdo alterado com sucesso.');
+      query.invalidateQueries({ queryKey: ['manualForm'] });
       onClose();
     } catch (error) {
       handleError(error);
@@ -76,6 +117,9 @@ const AbasForm = ({ onClose }: ChapterPageProps) => {
             style={{ width: '250px' }}
             {...register('order')}
           />
+          {errors?.order?.message && (
+            <ErrorMessage>{errors.order.message}</ErrorMessage>
+          )}
         </Field>
 
         <Field>
@@ -114,6 +158,9 @@ const AbasForm = ({ onClose }: ChapterPageProps) => {
             style={{ width: '250px' }}
             {...register('title')}
           />
+          {errors?.title?.message && (
+            <ErrorMessage>{errors.title.message}</ErrorMessage>
+          )}
         </Field>
       </FormSection>
 
@@ -123,7 +170,11 @@ const AbasForm = ({ onClose }: ChapterPageProps) => {
           <TextArea
             placeholder="Insira uma legenda"
             style={{ width: '845px' }}
+            {...register('description')}
           />
+          {errors?.description?.message && (
+            <ErrorMessage>{errors.description.message}</ErrorMessage>
+          )}
         </Field>
       </FormSection>
 
@@ -153,7 +204,7 @@ const AbasForm = ({ onClose }: ChapterPageProps) => {
       <ButtonSection>
         <Button outlined text="Voltar" type="button" onClick={onClose} />
         <Button
-          text="Cadastrar"
+          text="Editar"
           type="button"
           onClick={handleSubmit(onSubmit)}
         />
