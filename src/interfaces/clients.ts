@@ -45,7 +45,23 @@ export interface IEnterpriseDatum {
 export interface IUserClientAttributes {
   username: string;
   email: string;
+  image: IImage;
 }
+
+export interface IImage {
+  data: IImageDatum;
+}
+
+export interface IImageDatum {
+  id: number;
+  attributes: IImagesttributes;
+}
+
+export interface IImagesttributes {
+  name: string;
+  url: string;
+}
+
 export interface IEnterpriseAttributes {
   title: string;
 }

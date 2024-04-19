@@ -3,7 +3,9 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '@/hooks/useAuth';
 import { useState } from 'react';
 import api from '@/services/api';
-import handleError from '@/utils/handleToast';
+import handleError, { handleSuccess } from '@/utils/handleToast';
+import { urlBuild } from '@/utils/urlBuild';
+import { useQueryClient } from '@tanstack/react-query';
 import UserIcon from '../../../../public/icons/peaple.svg';
 import {
   Field,
@@ -19,26 +21,26 @@ import {
 } from './styles';
 
 const SettingsForm = () => {
-  const { user } = useAuth();
+  const { user, setUserId } = useAuth();
+  const query = useQueryClient();
 
-  const [imageError, setImageError] = useState(false);
   const [image, setImage] = useState<File>();
 
   const { register } = useForm({
     defaultValues: {
-      email: user?.email || '',
-      name: user?.username || '',
+      email: user?.users?.email || '',
+      name: user?.name || '',
     },
   });
 
-  const onErrorImage = () => setImageError(true);
-
   const renderImage = () => {
-    return '/icons/image.svg';
+    return user?.users?.image?.url
+      ? urlBuild(user?.users?.image?.url)
+      : '/icons/image.svg';
   };
 
   const photoHandler = () => {
-    if (image && !imageError) {
+    if (image) {
       return URL.createObjectURL(image);
     }
 
@@ -46,19 +48,24 @@ const SettingsForm = () => {
   };
 
   const onSubmit = async (file: File) => {
-    try {
-      const formData = new FormData();
+    if (file && user?.users?.id) {
+      try {
+        const formData = new FormData();
 
-      formData.append('ref', 'plugin::users-permissions.user');
-      formData.append('refId', `${user?.id}`);
-      formData.append('field', 'image');
-      if (file) {
+        formData.append('ref', 'plugin::users-permissions.user');
+        formData.append('refId', `${user?.users?.id}`);
+        formData.append('field', 'image');
+
         formData.append('files', file);
-      }
 
-      await api.post('/upload', formData);
-    } catch (error) {
-      handleError(error);
+        await api.post('/upload', formData);
+
+        query.invalidateQueries({ queryKey: ['userData'] });
+        setUserId(user?.users?.id);
+        handleSuccess('Imagem de perfil alterada.');
+      } catch (error) {
+        handleError(error);
+      }
     }
   };
 
@@ -72,14 +79,7 @@ const SettingsForm = () => {
       <FormSection>
         <PhotoSection data-com="PhotoSection">
           <PhotoChangeButton data-com="PhotoChangeButton">
-            <Photo
-              data-com="Photo"
-              src={image ? photoHandler() : renderImage()}
-              alt="profile"
-              width={100}
-              height={100}
-              onError={onErrorImage}
-            />
+            <Photo src={image ? photoHandler() : renderImage()} alt="profile" />
             <input
               type="file"
               accept="image/*"

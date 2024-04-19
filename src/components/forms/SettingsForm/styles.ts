@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import styled from 'styled-components';
 
 export const RegisterForm = styled.div`
@@ -55,7 +54,9 @@ export const PhotoSection = styled.div`
   margin-top: 20px;
 `;
 
-export const Photo = styled(Image)`
+export const Photo = styled.img`
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   object-fit: cover;
   object-position: center;

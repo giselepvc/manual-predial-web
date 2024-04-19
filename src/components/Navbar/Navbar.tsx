@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { urlBuild } from '@/utils/urlBuild';
 import UserIcon from '../../../public/icons/user.svg';
 import TractorIcon from '../../../public/icons/tractor.svg';
 import EnterpriseIcon from '../../../public/icons/enterprise.svg';
@@ -27,6 +28,11 @@ const Navbar = () => {
   const { logout, user } = useAuth();
   const [expanded, setExpanded] = useState(true);
   const pathname = usePathname();
+  const renderImage = () => {
+    return user?.users?.image?.url
+      ? urlBuild(user?.users?.image?.url)
+      : '/icons/image.svg';
+  };
 
   return (
     <NavbarContainer>
@@ -93,8 +99,8 @@ const Navbar = () => {
             <div
               style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}
             >
-              <ProfileImg src="/icons/image.svg" />
-              <span>{user.username}</span>
+              <ProfileImg src={renderImage()} alt="imagem progile" />
+              <span>{user?.name || ''}</span>
             </div>
           )}
 

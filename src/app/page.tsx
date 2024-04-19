@@ -26,7 +26,7 @@ import {
 
 const Login = () => {
   const router = useRouter();
-  const { setUser } = useAuth();
+  const { setUserId } = useAuth();
 
   const [show, setShow] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,7 +55,7 @@ const Login = () => {
       //   return;
       // }
 
-      setUser(data.user);
+      setUserId(data.user?.id);
 
       localStorage.setItem(localStorageKeys.accessToken, data.jwt);
       localStorage.setItem(localStorageKeys.user, JSON.stringify(data.user));
