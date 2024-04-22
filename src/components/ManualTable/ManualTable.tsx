@@ -35,6 +35,7 @@ import {
   Thread,
   ThreadLine,
   Content,
+  ThreadLineTwo,
 } from './styles';
 
 export const typeList = [
@@ -278,13 +279,16 @@ const ManualTable = ({
                         {title?.id === titles.id &&
                           titles.containers
                             .sort((a, b) => a.order - b.order)
-                            .map(container => (
+                            .map((container, containerIndex) => (
                               <Thread
                                 key={container.id}
                                 style={{ paddingLeft: '3rem' }}
                               >
                                 <ThreadSection>
                                   <ThreadLine />
+                                  {!!(titles.containers.length !== (containerIndex + 1)) && (
+                                    <ThreadLineTwo />
+                                  )}
                                 </ThreadSection>
 
                                 <TableDetails>

@@ -76,6 +76,7 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
 
       return enterprises?.[0];
     },
+    enabled: !!companyId,
   });
 
   const {
@@ -206,7 +207,6 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
         setValue('state', '');
         setValue('address', '');
         setValue('neighborhood', '');
-        setValue('number', '');
 
         return;
       }
@@ -216,7 +216,6 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
       setValue('city', address.localidade);
       setValue('address', address.logradouro);
       setValue('neighborhood', address.bairro);
-      setValue('number', '');
     } catch (error) {
       handleError(error);
     }

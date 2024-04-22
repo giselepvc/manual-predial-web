@@ -200,7 +200,6 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
         setValue('state', '');
         setValue('address', '');
         setValue('neighborhood', '');
-        setValue('number', '');
 
         return;
       }
@@ -210,7 +209,6 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
       setValue('city', address.localidade);
       setValue('address', address.logradouro);
       setValue('neighborhood', address.bairro);
-      setValue('number', '');
     } catch (error) {
       handleError(error);
     }

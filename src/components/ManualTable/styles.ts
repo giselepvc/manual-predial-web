@@ -235,7 +235,15 @@ export const ThreadSection = styled.div`
 `;
 
 export const ThreadLine = styled.div`
-  height: 25px;
+  min-height: 25px;
+  min-width: 24px;
+  border-left: ${({ theme }) => `2px solid ${theme.colors.grayaa}`};
+  border-bottom: ${({ theme }) => `2px solid ${theme.colors.grayaa}`};
+`;
+
+export const ThreadLineTwo = styled.div`
+  min-height: 100px;
+  height: 100%;
   width: 24px;
   border-left: ${({ theme }) => `2px solid ${theme.colors.grayaa}`};
   border-bottom: ${({ theme }) => `2px solid ${theme.colors.grayaa}`};

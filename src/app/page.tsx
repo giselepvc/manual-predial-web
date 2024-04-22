@@ -6,10 +6,15 @@ import { useRouter } from 'next/navigation';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import Button from '@/components/Button/Button';
-import { ILoginForm, LoginSchema } from '@/validations/LoginSchema';
+import {
+  ForgotSchema,
+  IForgotForm,
+  ILoginForm,
+  LoginSchema,
+} from '@/validations/LoginSchema';
 import { ILoginResponse, useAuth } from '@/hooks/useAuth';
 import api from '@/services/api';
-import handleError from '@/utils/handleToast';
+import handleError, { handleSuccess } from '@/utils/handleToast';
 import { localStorageKeys } from '@/utils/localStorageKeys';
 import {
   ErrorMessage,
@@ -30,6 +35,7 @@ const Login = () => {
 
   const [show, setShow] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [step, setStep] = useState<'login' | 'forgot'>('login');
 
   const {
     register,
@@ -61,7 +67,32 @@ const Login = () => {
       localStorage.setItem(localStorageKeys.user, JSON.stringify(data.user));
       localStorage.setItem(localStorageKeys.refreshToken, data.refreshToken);
 
-      router.push('/users');
+      router.push('/company');
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const {
+    register: registerForgot,
+    handleSubmit: handleSubmitForgot,
+    formState: { errors: errorsForgot },
+  } = useForm<IForgotForm>({
+    resolver: yupResolver(ForgotSchema),
+  });
+
+  const onForgot: SubmitHandler<IForgotForm> = async form => {
+    try {
+      setIsSubmitting(true);
+
+      await api.post<ILoginResponse>('/auth/forgot-password', {
+        email: form.email.trim(),
+      });
+
+      handleSuccess('Nova senha enviada por e-mail.');
+      setStep('login');
     } catch (error) {
       handleError(error);
     } finally {
@@ -75,53 +106,101 @@ const Login = () => {
         <LogoImg src="/img/logo.svg" alt="Logomarca Manual Predial" />
       </LogoContainer>
 
-      <FormContainer onSubmit={handleSubmit(onSubmit)}>
-        <LoginTitle>Login</LoginTitle>
+      {step === 'login' && (
+        <FormContainer onSubmit={handleSubmit(onSubmit)}>
+          <LoginTitle>Login</LoginTitle>
 
-        <InputSection>
-          <LoginLabel>E-mail</LoginLabel>
-          <LoginInput placeholder="Insira seu e-mail" {...register('email')} />
-          {errors?.email?.message && (
-            <ErrorMessage>{errors.email.message}</ErrorMessage>
-          )}
-        </InputSection>
-
-        <InputSection>
-          <LoginLabel>Senha</LoginLabel>
-          <LoginInput
-            placeholder="Insira sua senha"
-            type={show ? 'text' : 'password'}
-            {...register('password')}
-          />
-          {show ? (
-            <VscEye className="icon" size={22} onClick={() => setShow(false)} />
-          ) : (
-            <VscEyeClosed
-              className="icon"
-              size={22}
-              onClick={() => setShow(true)}
+          <InputSection>
+            <LoginLabel>E-mail</LoginLabel>
+            <LoginInput
+              placeholder="Insira seu e-mail"
+              {...register('email')}
             />
-          )}
-          {errors?.password?.message && (
-            <ErrorMessage>{errors.password.message}</ErrorMessage>
-          )}
-        </InputSection>
+            {errors?.email?.message && (
+              <ErrorMessage>{errors.email.message}</ErrorMessage>
+            )}
+          </InputSection>
 
-        <RegisterText style={{ margin: '-0.6rem 0 1rem 0' }}>
-          Esqueci minha senha
-        </RegisterText>
+          <InputSection>
+            <LoginLabel>Senha</LoginLabel>
+            <LoginInput
+              placeholder="Insira sua senha"
+              type={show ? 'text' : 'password'}
+              {...register('password')}
+            />
+            {show ? (
+              <VscEye
+                className="icon"
+                size={22}
+                onClick={() => setShow(false)}
+              />
+            ) : (
+              <VscEyeClosed
+                className="icon"
+                size={22}
+                onClick={() => setShow(true)}
+              />
+            )}
+            {errors?.password?.message && (
+              <ErrorMessage>{errors.password.message}</ErrorMessage>
+            )}
+          </InputSection>
 
-        <Button
-          type="submit"
-          text="Fazer Login"
-          disabled={isSubmitting}
-          style={{ width: '170px', marginBottom: '2rem' }}
-        />
+          <RegisterText
+            style={{ margin: '-0.6rem 0 1rem 0' }}
+            onClick={() => setStep('forgot')}
+          >
+            Esqueci minha senha
+          </RegisterText>
 
-        <RegisterText>
-          Ainda não possui uma conta? <span>Cadastre-se já</span>
-        </RegisterText>
-      </FormContainer>
+          <Button
+            type="submit"
+            text="Fazer Login"
+            disabled={isSubmitting}
+            style={{ width: '170px', marginBottom: '2rem' }}
+          />
+
+          <RegisterText>
+            Ainda não possui uma conta? <span>Cadastre-se já</span>
+          </RegisterText>
+        </FormContainer>
+      )}
+
+      {step === 'forgot' && (
+        <FormContainer onSubmit={handleSubmitForgot(onForgot)}>
+          <LoginTitle style={{ textAlign: 'center', width: '500px' }}>
+            Recuperar senha
+          </LoginTitle>
+
+          <InputSection>
+            <LoginLabel>E-mail</LoginLabel>
+            <LoginInput
+              placeholder="Insira seu e-mail"
+              {...registerForgot('email')}
+            />
+            {errorsForgot?.email?.message && (
+              <ErrorMessage>{errorsForgot.email.message}</ErrorMessage>
+            )}
+          </InputSection>
+
+          <Button
+            type="submit"
+            text="Recuperar"
+            disabled={isSubmitting}
+            style={{ width: '170px', marginTop: '2rem' }}
+          />
+
+          <RegisterText
+            style={{
+              marginTop: '-1rem',
+              textDecoration: 'underline',
+            }}
+            onClick={() => setStep('login')}
+          >
+            Voltar
+          </RegisterText>
+        </FormContainer>
+      )}
     </FullPage>
   );
 };

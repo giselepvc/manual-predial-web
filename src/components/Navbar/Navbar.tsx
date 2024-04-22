@@ -42,12 +42,6 @@ const Navbar = () => {
       </LogoButton>
 
       <Nav open={expanded}>
-        <NavLink href="/users" selected={pathname.startsWith('/users')}>
-          <UserIcon />
-          <NavLinkText selected={pathname.startsWith('/users')}>
-            Listagem de usuário
-          </NavLinkText>
-        </NavLink>
         <NavLink href="/company" selected={pathname.startsWith('/company')}>
           <TractorIcon />
           <NavLinkText selected={pathname.startsWith('/company')}>
@@ -67,6 +61,12 @@ const Navbar = () => {
           <EnterpriseIcon />
           <NavLinkText selected={pathname.startsWith('/group')}>
             Listagem de grupos
+          </NavLinkText>
+        </NavLink>
+        <NavLink href="/users" selected={pathname.startsWith('/users')}>
+          <UserIcon />
+          <NavLinkText selected={pathname.startsWith('/users')}>
+            Listagem de usuário
           </NavLinkText>
         </NavLink>
         <NavLink href="/manual" selected={pathname.startsWith('/manual')}>
