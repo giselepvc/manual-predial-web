@@ -10,7 +10,7 @@ import {
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { IManualForm } from '@/validations/ManualSchema';
 import { RecursiveNormalize } from '@/utils/normalizeStrapi';
-import { FaTrash } from 'react-icons/fa6';
+import { FaTrash, FaPen } from 'react-icons/fa6';
 import handleError, { handleSuccess } from '@/utils/handleToast';
 import { useQueryClient } from '@tanstack/react-query';
 import api from '@/services/api';
@@ -240,7 +240,9 @@ const ManualTable = ({
                       <>
                         <Thread>
                           <ThreadSection>
-                            <ThreadLine />
+                            {index + 1 === 1 && (
+                              <ThreadLine />
+                            )}
                           </ThreadSection>
 
                           <TableMore
@@ -310,16 +312,27 @@ const ManualTable = ({
                                       alignItems: 'center',
                                     }}
                                   >
-                                    <Button
-                                      type="button"
-                                      text="Editar o conteúdo"
-                                      style={{ minHeight: '25px' }}
+                                    {container.type === 'abas' && (
+                                      <Button
+                                        type="button"
+                                        text="Adicionar o conteúdo"
+                                        style={{ minHeight: '25px' }}
+                                        onClick={() => {
+                                          setContent(container);
+                                          setSteps(5);
+                                          setBuildType('content');
+                                        }}
+                                      />
+                                    )}
+
+                                    <FaPen
                                       onClick={() => {
                                         setContent(container);
                                         setSteps(5);
                                         setBuildType(container.type);
                                       }}
                                     />
+
                                     <FaTrash
                                       onClick={() =>
                                         !isUpdating &&

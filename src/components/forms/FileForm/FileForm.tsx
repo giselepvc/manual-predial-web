@@ -47,6 +47,7 @@ const FileForm = ({ onClose, content }: FileProps) => {
 
         handleSuccess('Conteúdo alterado com sucesso');
         query.invalidateQueries({ queryKey: ['manualForm'] });
+        query.invalidateQueries({ queryKey: ['contentsData'] });
         onClose();
       } catch (error) {
         handleError(error);

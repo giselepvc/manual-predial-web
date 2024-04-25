@@ -27,6 +27,7 @@ import AbasForm from '../AbasForm/AbasForm';
 import ImageForm from '../ImageForm/ImageForm';
 import FileForm from '../FileForm/FileForm';
 import ParagraphForm from '../ParagraphForm/ParagraphForm';
+import ContentForm from '../ContentForm/ContentForm';
 
 interface ManualFormProps {
   editing?: boolean;
@@ -142,6 +143,15 @@ const ManualForm = ({ editing }: ManualFormProps) => {
     paragraph: <ParagraphForm onClose={onClose} content={content} />,
     paragraphIcon: <ParagraphForm onClose={onClose} content={content} />,
     keys: <ParagraphForm onClose={onClose} content={content} />,
+    content: (
+      <ContentForm
+        onClose={onClose}
+        content={content}
+        setBuildType={setBuildType}
+        setContent={setContent}
+        setSteps={setSteps}
+      />
+    ),
   } as any;
 
   return (

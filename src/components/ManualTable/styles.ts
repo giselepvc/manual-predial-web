@@ -34,8 +34,8 @@ export const Label = styled.label`
 
 export const Content = styled.section`
   width: 100%;
-  height: calc(100vh - 24rem);
-  max-height: calc(100vh - 24rem);
+  height: 100%;
+  min-height: calc(100vh - 24rem);
   padding: 1.875rem 1.75rem;
 
   border-radius: 0.625rem;
@@ -158,7 +158,7 @@ export const TableDetails = styled.div<TableProps>`
   width: 100%;
   min-height: 100px;
   padding: 0 2.5rem;
-  margin-top: -1rem;
+  margin-top: -0.5rem;
   margin-bottom: 1rem;
 
   background: ${({ theme }) => theme.colors.gray41};
@@ -243,10 +243,9 @@ export const ThreadLine = styled.div`
 
 export const ThreadLineTwo = styled.div`
   min-height: 100px;
-  height: 100%;
+  padding-top: auto;
   width: 24px;
   border-left: ${({ theme }) => `2px solid ${theme.colors.grayaa}`};
-  border-bottom: ${({ theme }) => `2px solid ${theme.colors.grayaa}`};
 `;
 
 export const Thread = styled.div`
