@@ -8,17 +8,20 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getManuals } from '@/services/querys/manual';
 import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import { useRouter } from 'next/navigation';
-import { FaTrash } from 'react-icons/fa6';
+import { FaEye } from 'react-icons/fa6';
 import handleError, { handleSuccess } from '@/utils/handleToast';
 import api from '@/services/api';
 import { useState } from 'react';
 import ConfirmModal from '@/components/ConfirmeModal/ConfirmeModal';
+import { useAuth } from '@/hooks/useAuth';
 import { ActionButton } from './styles';
-import EditIcon from '../../../../public/icons/edit.svg';
 
 const ManualPage = () => {
   const { push } = useRouter();
+  const { role, user } = useAuth();
   const query = useQueryClient();
+
+  const isCompany = role === 1;
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -29,6 +32,7 @@ const ManualPage = () => {
     'pagination[page]': page,
     'pagination[pageSize]': 7,
     'filters[title][$containsi]': search || undefined,
+    'filters[enterprise][id]': user?.enterprise?.id,
     'populate[0]': 'capters.titles.contents',
     'populate[1]': 'enterprise.company',
   };
@@ -62,8 +66,8 @@ const ManualPage = () => {
   return (
     <PageLayout title="Listagem de manuais">
       <Action
-        title="Cadastrar novo manual"
-        href="/manual/create"
+        title={isCompany ? undefined : 'Cadastrar novo manual'}
+        href={isCompany ? undefined : '/manual/create'}
         setSearch={setSearch}
       />
 
@@ -91,13 +95,8 @@ const ManualPage = () => {
                 }}
               >
                 <ActionButton onClick={() => push(`/manual/edit/${manual.id}`)}>
-                  <EditIcon />
-                  Editar
-                </ActionButton>
-                <ActionButton
-                  onClick={() => (isUpdating ? null : setDeletingId(manual.id))}
-                >
-                  <FaTrash />
+                  <FaEye />
+                  Visualizar
                 </ActionButton>
               </div>
             </td>

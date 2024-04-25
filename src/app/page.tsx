@@ -31,7 +31,7 @@ import {
 
 const Login = () => {
   const router = useRouter();
-  const { setUserId } = useAuth();
+  const { setUserId, setRole } = useAuth();
 
   const [show, setShow] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,19 +55,24 @@ const Login = () => {
         rememberMe: true,
       });
 
-      // const allowedRoleIds = [3, 4];
-      // if (!allowedRoleIds.includes(data.role)) {
-      //   handleError('Usuário não pode acessar a plataforma');
-      //   return;
-      // }
-
       setUserId(data.user?.id);
+      setRole(data.role);
 
       localStorage.setItem(localStorageKeys.accessToken, data.jwt);
       localStorage.setItem(localStorageKeys.user, JSON.stringify(data.user));
       localStorage.setItem(localStorageKeys.refreshToken, data.refreshToken);
+      localStorage.setItem(localStorageKeys.role, data.role.toString());
 
-      router.push('/company');
+      if (data.role === 3) {
+        router.push('/company');
+      }
+      if (data.role === 1) {
+        router.push('/users');
+      }
+
+      if (data.role === 4) {
+        router.push('/panel');
+      }
     } catch (error) {
       handleError(error);
     } finally {

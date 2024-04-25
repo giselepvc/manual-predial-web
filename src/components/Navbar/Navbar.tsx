@@ -25,7 +25,7 @@ import {
 } from './styles';
 
 const Navbar = () => {
-  const { logout, user } = useAuth();
+  const { logout, user, role } = useAuth();
   const [expanded, setExpanded] = useState(true);
   const pathname = usePathname();
   const renderImage = () => {
@@ -33,6 +33,10 @@ const Navbar = () => {
       ? urlBuild(user?.users?.image?.url)
       : '/icons/image.svg';
   };
+
+  const isCompany = role === 1;
+  const isViewer = role === 4;
+  const isMaster = role === 3;
 
   return (
     <NavbarContainer>
@@ -42,45 +46,72 @@ const Navbar = () => {
       </LogoButton>
 
       <Nav open={expanded}>
-        <NavLink href="/company" selected={pathname.startsWith('/company')}>
-          <TractorIcon />
-          <NavLinkText selected={pathname.startsWith('/company')}>
-            Listagem de construtora
-          </NavLinkText>
-        </NavLink>
-        <NavLink
-          href="/enterprise"
-          selected={pathname.startsWith('/enterprise')}
-        >
-          <EnterpriseIcon />
-          <NavLinkText selected={pathname.startsWith('/enterprise')}>
-            Listagem de empreendimento
-          </NavLinkText>
-        </NavLink>
-        <NavLink href="/group" selected={pathname.startsWith('/group')}>
-          <EnterpriseIcon />
-          <NavLinkText selected={pathname.startsWith('/group')}>
-            Listagem de grupos
-          </NavLinkText>
-        </NavLink>
-        <NavLink href="/users" selected={pathname.startsWith('/users')}>
-          <UserIcon />
-          <NavLinkText selected={pathname.startsWith('/users')}>
-            Listagem de usuário
-          </NavLinkText>
-        </NavLink>
-        <NavLink href="/manual" selected={pathname.startsWith('/manual')}>
-          <BookIcon />
-          <NavLinkText selected={pathname.startsWith('/manual')}>
-            Listagem de manual
-          </NavLinkText>
-        </NavLink>
-        <NavLink href="/icons" selected={pathname.startsWith('/icons')}>
-          <BookIcon />
-          <NavLinkText selected={pathname.startsWith('/icons')}>
-            Listagem de ícones
-          </NavLinkText>
-        </NavLink>
+        {isMaster && (
+          <NavLink href="/company" selected={pathname.startsWith('/company')}>
+            <TractorIcon />
+            <NavLinkText selected={pathname.startsWith('/company')}>
+              Listagem de construtora
+            </NavLinkText>
+          </NavLink>
+        )}
+
+        {isMaster && (
+          <NavLink
+            href="/enterprise"
+            selected={pathname.startsWith('/enterprise')}
+          >
+            <EnterpriseIcon />
+            <NavLinkText selected={pathname.startsWith('/enterprise')}>
+              Listagem de empreendimento
+            </NavLinkText>
+          </NavLink>
+        )}
+
+        {isMaster && (
+          <NavLink href="/group" selected={pathname.startsWith('/group')}>
+            <EnterpriseIcon />
+            <NavLinkText selected={pathname.startsWith('/group')}>
+              Listagem de grupos
+            </NavLinkText>
+          </NavLink>
+        )}
+
+        {(isMaster || isCompany) && (
+          <NavLink href="/users" selected={pathname.startsWith('/users')}>
+            <UserIcon />
+            <NavLinkText selected={pathname.startsWith('/users')}>
+              Listagem de usuário
+            </NavLinkText>
+          </NavLink>
+        )}
+
+        {(isMaster || isCompany) && (
+          <NavLink href="/manual" selected={pathname.startsWith('/manual')}>
+            <BookIcon />
+            <NavLinkText selected={pathname.startsWith('/manual')}>
+              Listagem de manual
+            </NavLinkText>
+          </NavLink>
+        )}
+
+        {isMaster && (
+          <NavLink href="/icons" selected={pathname.startsWith('/icons')}>
+            <BookIcon />
+            <NavLinkText selected={pathname.startsWith('/icons')}>
+              Listagem de ícones
+            </NavLinkText>
+          </NavLink>
+        )}
+
+        {isViewer && (
+          <NavLink href="/panel" selected={pathname.startsWith('/panel')}>
+            <BookIcon />
+            <NavLinkText selected={pathname.startsWith('/panel')}>
+              Painel do empreendimento
+            </NavLinkText>
+          </NavLink>
+        )}
+
         <NavLink
           href="/config"
           selected={pathname.startsWith('/config')}
@@ -100,7 +131,7 @@ const Navbar = () => {
               style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}
             >
               <ProfileImg src={renderImage()} alt="imagem progile" />
-              <span>{user?.name || ''}</span>
+              <span>{user?.name || 'Cliente'}</span>
             </div>
           )}
 

@@ -18,6 +18,7 @@ import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { getManuals } from '@/services/querys/manual';
 import { RecursiveNormalize, normalizeStrapi } from '@/utils/normalizeStrapi';
+import { getEnterprise } from '@/services/querys/enterprise';
 import ContainerForm from '../ContainerForm/ContainerForm';
 import TitleForm from '../TitleForm/TitleForm';
 import ChapterForm from '../ChapterForm/ChapterForm';
@@ -91,6 +92,20 @@ const ManualForm = ({ editing }: ManualFormProps) => {
     enabled: (!!param?.id && editing) || !!manual?.id,
   });
 
+  const enterpriseParams = {
+    'sort[createdAt]': 'DESC',
+    'filters[manuals][id]': param?.id || manual?.id,
+    populate: ['manuals'],
+  };
+
+  const { data: enterprise } = useQuery({
+    queryKey: ['enterpriseData', enterpriseParams],
+    queryFn: async () => {
+      const data = await getEnterprise(enterpriseParams);
+      return normalizeStrapi(data || []);
+    },
+  });
+
   const onSubmit: SubmitHandler<IManualForm> = async form => {
     setIsloading(true);
 
@@ -103,11 +118,18 @@ const ManualForm = ({ editing }: ManualFormProps) => {
         },
       });
 
-      await api.put(`/enterprises/${form.enterprise?.value}`, {
-        data: {
-          manuals: [data.data.id],
-        },
-      });
+      if (data.data?.id && form.enterprise?.value) {
+        const enterpriseFind = enterprise?.find(
+          item => item.id === Number(form.enterprise?.value),
+        );
+        const manualsIds = enterpriseFind?.manuals?.map(item => item.id) || [];
+
+        await api.put(`/enterprises/${form.enterprise.value}`, {
+          data: {
+            manuals: [...manualsIds, data.data.id],
+          },
+        });
+      }
 
       setManual({
         ...data.data.attributes,

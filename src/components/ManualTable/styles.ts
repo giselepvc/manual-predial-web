@@ -35,7 +35,7 @@ export const Label = styled.label`
 export const Content = styled.section`
   width: 100%;
   height: 100%;
-  min-height: calc(100vh - 24rem);
+  min-height: calc(100vh - 20rem);
   padding: 1.875rem 1.75rem;
 
   border-radius: 0.625rem;

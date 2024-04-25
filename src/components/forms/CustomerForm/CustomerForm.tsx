@@ -18,6 +18,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getEnterprise } from '@/services/querys/enterprise';
 import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import { getClients } from '@/services/querys/clients';
+import { useAuth } from '@/hooks/useAuth';
 import UserIcon from '../../../../public/icons/peaple.svg';
 import HpuseIcon from '../../../../public/icons/house.svg';
 import {
@@ -37,7 +38,10 @@ interface CustomerProps {
 
 const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
   const { back } = useRouter();
+  const { role, user } = useAuth();
   const query = useQueryClient();
+
+  const isCompany = role === 1;
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -121,20 +125,32 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
     setIsLoading(true);
 
     try {
-      const { data } = await api.post<{ data: { id: number } }>(
-        '/registerUser',
-        {
-          ...form,
-          confirmPassword: undefined,
-        },
-      );
-
-      if (form?.enterprise?.value && data.data?.id) {
-        await api.put(`/enterprises/${form.enterprise.value}`, {
-          data: {
-            client: [data.data?.id],
+      if (isCompany) {
+        await api.post<{ data: { id: number } }>(
+          '/registerViewer',
+          {
+            ...form,
+            confirmPassword: undefined,
+            group: 6,
+            enterprise: user?.enterprise?.id,
           },
-        });
+        );
+      } else {
+        const { data } = await api.post<{ data: { id: number } }>(
+          '/registerUser',
+          {
+            ...form,
+            confirmPassword: undefined,
+          },
+        );
+
+        if (form?.enterprise?.value && data.data?.id) {
+          await api.put(`/enterprises/${form.enterprise.value}`, {
+            data: {
+              client: [data.data?.id],
+            },
+          });
+        }
       }
 
       query.invalidateQueries({ queryKey: ['usersData', 'enterpriseData'] });

@@ -26,6 +26,7 @@ export interface ILoginResponse {
   jwt: string;
   refreshToken: string;
   user: User;
+  role: number;
 }
 
 interface IUserProvider {
@@ -33,6 +34,8 @@ interface IUserProvider {
   setUserId: React.Dispatch<React.SetStateAction<number | undefined>>;
   isAuthenticated: boolean;
   logout: () => void;
+  role: number | undefined;
+  setRole: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
 
 interface ChildrenProps {
@@ -44,11 +47,12 @@ const AuthContext = createContext({} as IUserProvider);
 const AuthProvider = ({ children }: ChildrenProps) => {
   const [userId, setUserId] = useState<number | undefined>();
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState<number>();
   const pathname = usePathname();
 
   const userParams = {
     'filters[users][id]': userId,
-    populate: 'users.image',
+    populate: ['users.image', 'enterprise'],
   };
 
   const { data: user } = useQuery({
@@ -63,10 +67,14 @@ const AuthProvider = ({ children }: ChildrenProps) => {
 
   useEffect(() => {
     const dataUser = localStorage.getItem(localStorageKeys.user);
+    const roleUser = localStorage.getItem(localStorageKeys.role);
+
+    if (roleUser) {
+      setRole(Number(roleUser));
+    }
 
     if (dataUser) {
       const usr = JSON.parse(dataUser) as User;
-
       setUserId(usr.id ? Number(usr.id) : 0);
     }
 
@@ -77,6 +85,7 @@ const AuthProvider = ({ children }: ChildrenProps) => {
 
   const logout = () => {
     localStorage.removeItem(localStorageKeys.user);
+    localStorage.removeItem(localStorageKeys.role);
     localStorage.removeItem(localStorageKeys.accessToken);
     localStorage.removeItem(localStorageKeys.refreshToken);
 
@@ -94,7 +103,9 @@ const AuthProvider = ({ children }: ChildrenProps) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, setUserId, isAuthenticated, logout }}>
+    <AuthContext.Provider
+      value={{ user, setUserId, isAuthenticated, logout, role, setRole }}
+    >
       {children}
     </AuthContext.Provider>
   );

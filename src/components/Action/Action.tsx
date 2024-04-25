@@ -40,10 +40,12 @@ const Action = ({ title, href, setSearch, notFilter }: ActionProps) => {
         </FilterSection>
       )}
 
-      <FilterRegister onClick={handleNavigation}>
-        <PlusIcon />
-        {title}
-      </FilterRegister>
+      {href && title && (
+        <FilterRegister onClick={handleNavigation}>
+          <PlusIcon />
+          {title}
+        </FilterRegister>
+      )}
     </FilterRow>
   );
 };

@@ -16,11 +16,13 @@ import ConfirmModal from '@/components/ConfirmeModal/ConfirmeModal';
 import api from '@/services/api';
 import handleError, { handleSuccess } from '@/utils/handleToast';
 import { FaTrash } from 'react-icons/fa6';
+import { useAuth } from '@/hooks/useAuth';
 import EditIcon from '../../../../public/icons/edit.svg';
 import { ActionButton } from './styles';
 
 const UsersPage = () => {
   const { push } = useRouter();
+  const { user } = useAuth();
   const query = useQueryClient();
 
   const [page, setPage] = useState(1);
@@ -32,8 +34,9 @@ const UsersPage = () => {
     'pagination[page]': page,
     'pagination[pageSize]': 7,
     'filters[name][$containsi]': search || undefined,
+    'filters[group][enterprise][id]': user?.enterprise?.id || undefined,
     'sort[createdAt]': 'DESC',
-    populate: 'users',
+    populate: ['users', 'users.image', 'group.enterprise', 'enterprise'],
   };
 
   const { data: clientsData } = useQuery({

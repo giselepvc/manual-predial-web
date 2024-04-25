@@ -113,9 +113,9 @@ const ContentForm = ({
       }
 
       reset({
-        container: undefined,
+        container: {},
         order: undefined,
-        visible: undefined,
+        visible: {},
       });
 
       handleSuccess('Conteúdo cadastrado com sucesso.');
