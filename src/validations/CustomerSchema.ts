@@ -3,16 +3,16 @@ import * as yup from 'yup';
 export type ICustomerForm = yup.InferType<typeof CustomerSchema>;
 
 export const CustomerSchema = yup.object({
-  address: yup.string().required('Endereço é obrigatório'),
-  city: yup.string().required('Cidade é obrigatória'),
+  address: yup.string(),
+  city: yup.string(),
   cpf: yup.string(),
   cnpj: yup.string(),
-  neighborhood: yup.string().required('Bairro é obrigatório'),
-  number: yup.string().required('Número é obrigatório'),
+  neighborhood: yup.string(),
+  number: yup.string(),
   phone: yup.string(),
   cellPhone: yup.string(),
-  state: yup.string().required('Estado é obrigatório'),
-  zipCode: yup.string().required('CEP é obrigatório'),
+  state: yup.string(),
+  zipCode: yup.string(),
   name: yup.string(),
   complement: yup.string(),
   email: yup.string().email('Email inválido').required('Email é obrigatório'),

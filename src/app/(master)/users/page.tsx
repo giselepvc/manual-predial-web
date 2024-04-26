@@ -8,8 +8,6 @@ import TableComponent from '@/components/Table/Table';
 import { getClients } from '@/services/querys/clients';
 import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import cpfMask from '@/utils/masks/cpfMask';
-import cnpjMask from '@/utils/masks/cnpjMask';
-import telephoneMask from '@/utils/masks/phone';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import ConfirmModal from '@/components/ConfirmeModal/ConfirmeModal';
@@ -47,9 +45,7 @@ const UsersPage = () => {
   const clients = normalizeStrapi(clientsData || []);
 
   const onDelete = async () => {
-    if (!deletingId) {
-      return;
-    }
+    if (!deletingId) return;
 
     try {
       setIsUpdating(true);
@@ -74,15 +70,14 @@ const UsersPage = () => {
       />
 
       <TableComponent
-        fields={['Nome', 'E-mail', 'CPF', 'CNPJ', 'Celular', 'Ações']}
+        fields={['Nome', 'E-mail', 'Empreendimento', 'CPF', 'Ações']}
       >
         {clients.map(client => (
           <tr key={client.id}>
-            <td>{client.name}</td>
-            <td>{client.users?.email}</td>
-            <td>{cpfMask(client.cpf)}</td>
-            <td>{cnpjMask(client.cnpj)}</td>
-            <td>{telephoneMask(client.cellPhone || client.phone || '')}</td>
+            <td>{client.name || '--'}</td>
+            <td>{client.users?.email || '--'}</td>
+            <td>{client.enterprise?.title || '--'}</td>
+            <td>{client.cpf ? cpfMask(client.cpf) : '--'}</td>
             <td>
               <div
                 style={{

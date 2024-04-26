@@ -8,8 +8,6 @@ import TableComponent from '@/components/Table/Table';
 import { getClients } from '@/services/querys/clients';
 import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import cpfMask from '@/utils/masks/cpfMask';
-import cnpjMask from '@/utils/masks/cnpjMask';
-import telephoneMask from '@/utils/masks/phone';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import ConfirmModal from '@/components/ConfirmeModal/ConfirmeModal';
@@ -48,9 +46,7 @@ const UsersPage = () => {
   const clients = normalizeStrapi(clientsData || []);
 
   const onDelete = async () => {
-    if (!deletingId) {
-      return;
-    }
+    if (!deletingId) return;
 
     try {
       setIsUpdating(true);
@@ -70,20 +66,17 @@ const UsersPage = () => {
     <PageLayout title="Listagem de usuários final">
       <Action
         title="Cadastrar novo usuário"
-        href="/users/create"
+        href="/final/create"
         setSearch={setSearch}
       />
 
-      <TableComponent
-        fields={['Nome', 'Login', 'CPF', 'CNPJ', 'Celular', 'Ações']}
-      >
+      <TableComponent fields={['Nome', 'Login', 'Grupo', 'CPF', 'Ações']}>
         {clients.map(client => (
           <tr key={client.id}>
-            <td>{client.name}</td>
-            <td>{client.users?.email}</td>
-            <td>{cpfMask(client.cpf)}</td>
-            <td>{cnpjMask(client.cnpj)}</td>
-            <td>{telephoneMask(client.cellPhone || client.phone || '')}</td>
+            <td>{client.name || '--'}</td>
+            <td>{client.users?.email || '--'}</td>
+            <td>{client.group?.name || '--'}</td>
+            <td>{client.cpf ? cpfMask(client.cpf) : '--'}</td>
             <td>
               <div
                 style={{
@@ -92,7 +85,7 @@ const UsersPage = () => {
                   gap: '1.5rem',
                 }}
               >
-                <ActionButton onClick={() => push(`/users/edit/${client.id}`)}>
+                <ActionButton onClick={() => push(`/final/edit/${client.id}`)}>
                   <EditIcon />
                   Editar
                 </ActionButton>

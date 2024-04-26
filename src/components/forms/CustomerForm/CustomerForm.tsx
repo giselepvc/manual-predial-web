@@ -41,9 +41,7 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
   const { back } = useRouter();
   const { role, user } = useAuth();
   const query = useQueryClient();
-
   const isCompany = role === 1;
-
   const [isLoading, setIsLoading] = useState(false);
 
   const enterpriseParams = {
@@ -86,7 +84,7 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
     populate: '*',
   };
 
-  const { data: client } = useQuery({
+  useQuery({
     queryKey: ['clientInfoData', clientsParams],
     queryFn: async () => {
       const clientsData = await getClients(clientsParams);
@@ -128,33 +126,11 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
     formState: { errors },
   } = useForm<ICustomerForm>({
     resolver: yupResolver(CustomerSchema),
-    defaultValues: {
-      ...(isEditing && {
-        ...client,
-        ...(client?.enterprise?.id
-          ? {
-            enterprise: {
-              label: client?.enterprise?.title || '',
-              value: client?.enterprise?.id?.toString() || '',
-            },
-          } : { enterprise: undefined }),
-        ...(client?.group?.id ? {
-          group: {
-            label: client?.group?.name || '',
-            value: client?.group?.id?.toString() || '',
-          },
-        } : { group: undefined }),
-        email: client?.users?.email || undefined,
-        password: '12345678',
-        confirmPassword: '12345678',
-      }),
-    },
   });
 
   const onSubmit: SubmitHandler<ICustomerForm> = async form => {
-    setIsLoading(true);
-
     try {
+      setIsLoading(true);
       if (isCompany) {
         await api.post<{ data: { id: number } }>(
           '/registerViewer',
@@ -170,6 +146,7 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
           '/registerUser',
           {
             ...form,
+            cpf: form?.cpf || undefined,
             enterprise: Number(form?.enterprise?.value),
             group: undefined,
             confirmPassword: undefined,
@@ -178,9 +155,7 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
 
         if (form?.enterprise?.value && data.data?.id && !isCompany) {
           await api.put(`/enterprises/${form.enterprise.value}`, {
-            data: {
-              client: [data.data?.id],
-            },
+            data: { client: [data.data?.id] },
           });
         }
       }
@@ -196,9 +171,8 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
   };
 
   const onUpdate: SubmitHandler<ICustomerForm> = async form => {
-    setIsLoading(true);
-
     try {
+      setIsLoading(true);
       await api.put(`/clients/${customerId}`, {
         data: {
           ...form,
@@ -230,37 +204,31 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
 
   const handleCepBlur = async () => {
     const isValid = await trigger('zipCode');
-    if (!isValid) {
-      return;
-    }
-
+    if (!isValid) return;
     const cep = getValues('zipCode');
 
-    try {
-      const address = await getAddressFromCep(cep);
+    if (cep) {
+      try {
+        const address = await getAddressFromCep(cep);
 
-      if (address.erro) {
-        setError('zipCode', {
-          message: 'CEP inválido',
-          type: 'invalid-cep',
-        });
+        if (address.erro) {
+          setError('zipCode', { message: 'CEP inválido', type: 'invalid-cep' });
+          setValue('zipCode', '');
+          setValue('city', '');
+          setValue('state', '');
+          setValue('address', '');
+          setValue('neighborhood', '');
+          return;
+        }
 
-        setValue('zipCode', '');
-        setValue('city', '');
-        setValue('state', '');
-        setValue('address', '');
-        setValue('neighborhood', '');
-
-        return;
+        setValue('state', address.uf);
+        setValue('zipCode', address.cep);
+        setValue('city', address.localidade);
+        setValue('address', address.logradouro);
+        setValue('neighborhood', address.bairro);
+      } catch (error) {
+        handleError(error);
       }
-
-      setValue('state', address.uf);
-      setValue('zipCode', address.cep);
-      setValue('city', address.localidade);
-      setValue('address', address.logradouro);
-      setValue('neighborhood', address.bairro);
-    } catch (error) {
-      handleError(error);
     }
   };
 
