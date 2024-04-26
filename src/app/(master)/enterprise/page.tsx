@@ -41,9 +41,7 @@ const EnterprisePage = () => {
   const enterprises = normalizeStrapi(enterpriseData || []);
 
   const onDelete = async () => {
-    if (!deletingId) {
-      return;
-    }
+    if (!deletingId) return;
 
     try {
       setIsUpdating(true);
@@ -60,7 +58,7 @@ const EnterprisePage = () => {
   };
 
   return (
-    <PageLayout title="Listagem de empreendimento">
+    <PageLayout title="Listagem de empreendimentos">
       <Action
         title="Cadastrar novo empreendimento"
         setSearch={setSearch}

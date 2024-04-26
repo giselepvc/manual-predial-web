@@ -58,7 +58,7 @@ const CompanyPage = () => {
   };
 
   return (
-    <PageLayout title="Listagem de construtora">
+    <PageLayout title="Listagem de construtoras">
       <Action
         title="Cadastrar nova construtora"
         setSearch={setSearch}

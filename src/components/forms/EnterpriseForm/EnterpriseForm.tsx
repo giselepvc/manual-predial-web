@@ -38,19 +38,17 @@ interface CompanProps {
 
 const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
   const { back } = useRouter();
-
   const [isLoading, setIsLoading] = useState(false);
 
   const companiesParams = {
     populate: '*',
   };
 
-  const { data: companiesData } = useQuery({
+  const { data: companies } = useQuery({
     queryKey: ['CompaniesData', companiesParams],
     queryFn: async () => {
       const data = await getCompanies(companiesParams);
-      const result = normalizeStrapi(data || []);
-      return result;
+      return normalizeStrapi(data || []);
     },
   });
 
@@ -61,11 +59,12 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
     populate: 'company',
   };
 
-  const { data: company } = useQuery({
+  useQuery({
     queryKey: ['enterpriseData', enterpriseParams],
     queryFn: async () => {
       const data = await getEnterprise(enterpriseParams);
       const enterprises = normalizeStrapi(data || []);
+
       reset({
         ...enterprises?.[0],
         company: {
@@ -91,43 +90,18 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
     formState: { errors },
   } = useForm<IEnterpriseForm>({
     resolver: yupResolver(EnterpriseSchema),
-    defaultValues: {
-      complement: '',
-      ...(isEditing && {
-        company: {
-          label: company?.company?.name || '',
-          value: `${company?.company?.id || ''}`,
-        },
-        cnpj: company?.cnpj,
-        neighborhood: company?.neighborhood,
-        phone: company?.phone,
-        title: company?.title,
-        email: company?.email,
-        zipCode: company?.zipCode,
-        address: company?.address,
-        state: company?.state,
-        complement: company?.complement || '',
-        number: company?.number,
-        city: company?.city,
-      }),
-    },
   });
 
   const onSubmit: SubmitHandler<IEnterpriseForm> = async form => {
-    setIsLoading(true);
-
     try {
+      setIsLoading(true);
       const { data } = await api.post<{ data: { id: number } }>(
         '/enterprises',
-        {
-          data: {
-            ...form,
-          },
-        },
+        { data: { ...form } },
       );
 
       if (data.data?.id && form?.company?.value) {
-        const company = companiesData?.find(
+        const company = companies?.find(
           item => item.id === Number(form?.company?.value),
         );
         const enterprisesIds = company?.enterprises?.map(item => item.id) || [];
@@ -149,19 +123,15 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
   };
 
   const onUpdate: SubmitHandler<IEnterpriseForm> = async form => {
-    setIsLoading(true);
-
     try {
+      setIsLoading(true);
       api.put<{ data: { id: number } }>(`/enterprises/${companyId}`, {
-        data: {
-          ...form,
-        },
+        data: { ...form },
       });
 
       if (companyId && form?.company?.value) {
-        const company = companiesData?.find(
-          item => item.id === Number(form?.company?.value),
-        );
+        const valueId = Number(form?.company?.value);
+        const company = companies?.find(i => i.id === valueId);
         const enterprisesIds = company?.enterprises?.map(item => item.id) || [];
         const isAdded = !!company?.enterprises?.find(
           item => item.id === Number(companyId),
@@ -187,37 +157,31 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
 
   const handleCepBlur = async () => {
     const isValid = await trigger('zipCode');
-    if (!isValid) {
-      return;
-    }
-
+    if (!isValid) return;
     const cep = getValues('zipCode');
 
-    try {
-      const address = await getAddressFromCep(cep);
+    if (cep) {
+      try {
+        const address = await getAddressFromCep(cep);
 
-      if (address.erro) {
-        setError('zipCode', {
-          message: 'CEP inválido',
-          type: 'invalid-cep',
-        });
+        if (address.erro) {
+          setError('zipCode', { message: 'CEP inválido', type: 'invalid-cep' });
+          setValue('zipCode', '');
+          setValue('city', '');
+          setValue('state', '');
+          setValue('address', '');
+          setValue('neighborhood', '');
+          return;
+        }
 
-        setValue('zipCode', '');
-        setValue('city', '');
-        setValue('state', '');
-        setValue('address', '');
-        setValue('neighborhood', '');
-
-        return;
+        setValue('state', address.uf);
+        setValue('zipCode', address.cep);
+        setValue('city', address.localidade);
+        setValue('address', address.logradouro);
+        setValue('neighborhood', address.bairro);
+      } catch (error) {
+        handleError(error);
       }
-
-      setValue('state', address.uf);
-      setValue('zipCode', address.cep);
-      setValue('city', address.localidade);
-      setValue('address', address.logradouro);
-      setValue('neighborhood', address.bairro);
-    } catch (error) {
-      handleError(error);
     }
   };
 
@@ -248,7 +212,7 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
                 onChange={onChange}
                 value={value}
                 options={
-                  companiesData?.map(companies => ({
+                  companies?.map(companies => ({
                     label: companies?.name || '',
                     value: `${companies?.id || ''}`,
                   })) || []
