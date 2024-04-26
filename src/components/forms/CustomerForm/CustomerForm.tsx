@@ -35,13 +35,13 @@ import {
 interface CustomerProps {
   isEditing?: boolean;
   customerId?: number;
+  isCompany?: boolean;
 }
 
-const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
+const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
   const { back } = useRouter();
-  const { role, user } = useAuth();
+  const { user } = useAuth();
   const query = useQueryClient();
-  const isCompany = role === 1;
   const [isLoading, setIsLoading] = useState(false);
 
   const enterpriseParams = {
