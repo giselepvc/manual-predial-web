@@ -300,9 +300,11 @@ export const Thread = styled.div`
 
 export const InfoText = styled.div`
   min-height: 45px;
+  min-width: 150px;
 
   display: flex;
   align-items: center;
+  justify-content: center;
 
   padding: 1rem 1.5rem;
 
@@ -319,6 +321,8 @@ export const Img = styled.img`
 
   margin-top: 8px;
   border-radius: 6px;
+
+  object-fit: cover;
 `;
 
 export const Icon = styled.img`

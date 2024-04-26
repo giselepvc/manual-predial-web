@@ -63,7 +63,7 @@ const PanelPage = () => {
 
   return (
     <PageLayout title="Manuais">
-      <Content style={{ minHeight: 'calc(100vh - 10 rem)' }}>
+      <Content style={{ minHeight: 'calc(100vh - 10rem)' }}>
         <TableSection>
           {manuals?.capters && manuals.capters.length > 0 ? (
             manuals.capters
@@ -165,6 +165,9 @@ const PanelPage = () => {
                                         {container.type === 'abas' && 'Abas'}
                                         {container.type === 'keys' &&
                                           'Parágrafo - par de chaves'}
+                                        {container.type !== 'abas' &&
+                                          container.type !== 'keys' &&
+                                          container.title}
                                       </div>
                                     </InfoSection>
 

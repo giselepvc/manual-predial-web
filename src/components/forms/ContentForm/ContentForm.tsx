@@ -95,7 +95,7 @@ const ContentForm = ({
         data: {
           title: form.container?.label,
           description: '',
-          order: form.order,
+          order: Number(form.order),
           visible: form.visible?.value === 'sim',
           type: form.container?.value,
         },
@@ -114,7 +114,7 @@ const ContentForm = ({
 
       reset({
         container: {},
-        order: undefined,
+        order: '',
         visible: {},
       });
 

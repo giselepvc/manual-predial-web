@@ -46,6 +46,8 @@ export const Img = styled.img`
 
   margin-top: 8px;
   border-radius: 6px;
+
+  object-fit: cover;
 `;
 
 export const Label = styled.label`

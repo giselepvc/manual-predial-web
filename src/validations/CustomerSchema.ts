@@ -6,7 +6,7 @@ export const CustomerSchema = yup.object({
   address: yup.string().required('Endereço é obrigatório'),
   city: yup.string().required('Cidade é obrigatória'),
   cpf: yup.string().required('CPF é obrigatório'),
-  cnpj: yup.string().required('CNPJ é obrigatório'),
+  cnpj: yup.string(),
   neighborhood: yup.string().required('Bairro é obrigatório'),
   number: yup.string().required('Número é obrigatório'),
   phone: yup.string().required('Telefone é obrigatório'),

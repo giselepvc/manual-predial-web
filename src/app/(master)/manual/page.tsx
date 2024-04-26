@@ -8,13 +8,14 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getManuals } from '@/services/querys/manual';
 import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import { useRouter } from 'next/navigation';
-import { FaEye } from 'react-icons/fa6';
+import { FaEye, FaTrash } from 'react-icons/fa6';
 import handleError, { handleSuccess } from '@/utils/handleToast';
 import api from '@/services/api';
 import { useState } from 'react';
 import ConfirmModal from '@/components/ConfirmeModal/ConfirmeModal';
 import { useAuth } from '@/hooks/useAuth';
 import { ActionButton } from './styles';
+import EditIcon from '../../../../public/icons/edit.svg';
 
 const ManualPage = () => {
   const { push } = useRouter();
@@ -87,18 +88,45 @@ const ManualPage = () => {
             <td>{manual.enterprise?.title || '--'}</td>
             <td>{manual.capters?.length || 0}</td>
             <td>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  gap: '1.5rem',
-                }}
-              >
-                <ActionButton onClick={() => push(`/manual/edit/${manual.id}`)}>
-                  <FaEye />
-                  Visualizar
-                </ActionButton>
-              </div>
+              {isCompany && (
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    gap: '1.5rem',
+                  }}
+                >
+                  <ActionButton
+                    onClick={() => push(`/manual/edit/${manual.id}`)}
+                  >
+                    <FaEye />
+                    Visualizar
+                  </ActionButton>
+                </div>
+              )}
+              {!isCompany && (
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    gap: '1.5rem',
+                  }}
+                >
+                  <ActionButton
+                    onClick={() => push(`/manual/edit/${manual.id}`)}
+                  >
+                    <EditIcon />
+                    Editar
+                  </ActionButton>
+                  <ActionButton
+                    onClick={() =>
+                      isUpdating ? null : setDeletingId(manual.id)
+                    }
+                  >
+                    <FaTrash />
+                  </ActionButton>
+                </div>
+              )}
             </td>
           </tr>
         ))}

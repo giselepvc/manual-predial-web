@@ -319,6 +319,8 @@ export const Img = styled.img`
 
   margin-top: 8px;
   border-radius: 6px;
+
+  object-fit: cover;
 `;
 
 export const Icon = styled.img`
