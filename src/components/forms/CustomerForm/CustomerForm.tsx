@@ -146,7 +146,6 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
           '/registerUser',
           {
             ...form,
-            cpf: form?.cpf || undefined,
             enterprise: Number(form?.enterprise?.value),
             group: undefined,
             confirmPassword: undefined,
