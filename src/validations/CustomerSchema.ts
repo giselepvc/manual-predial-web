@@ -29,4 +29,8 @@ export const CustomerSchema = yup.object({
     value: yup.string(),
     label: yup.string(),
   }),
+  group: yup.object({
+    value: yup.string(),
+    label: yup.string(),
+  }),
 });

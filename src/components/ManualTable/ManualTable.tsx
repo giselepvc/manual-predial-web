@@ -10,11 +10,12 @@ import {
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { IManualForm } from '@/validations/ManualSchema';
 import { RecursiveNormalize } from '@/utils/normalizeStrapi';
-import { FaTrash, FaPen } from 'react-icons/fa6';
+import { FaTrash, FaPen, FaEye } from 'react-icons/fa6';
 import handleError, { handleSuccess } from '@/utils/handleToast';
 import { useQueryClient } from '@tanstack/react-query';
 import api from '@/services/api';
 import { urlBuild } from '@/utils/urlBuild';
+import { useAuth } from '@/hooks/useAuth';
 import Select from '../Select/Select';
 import Button from '../Button/Button';
 import ConfirmModal from '../ConfirmeModal/ConfirmeModal';
@@ -76,7 +77,10 @@ const ManualTable = ({
   setSteps,
   setContent,
 }: ManualTableProps) => {
+  const { role } = useAuth();
   const query = useQueryClient();
+
+  const isCompany = role === 1;
 
   const [listOtions, setListOptions] = useState(typeList);
   const [deletingId, setDeletingId] = useState<number>();
@@ -171,25 +175,27 @@ const ManualTable = ({
         </RegisterTitle>
       </Header>
 
-      <FormSection>
-        <Field>
-          <Label>Tipo de cadastro</Label>
-          <Controller
-            control={control}
-            name="type"
-            render={({ field: { onChange, value } }) => (
-              <Select
-                placeholder="Selecione uma opção"
-                onChange={onChange}
-                value={value}
-                options={listOtions}
-              />
-            )}
-          />
-        </Field>
-      </FormSection>
+      {!isCompany && (
+        <FormSection>
+          <Field>
+            <Label>Tipo de cadastro</Label>
+            <Controller
+              control={control}
+              name="type"
+              render={({ field: { onChange, value } }) => (
+                <Select
+                  placeholder="Selecione uma opção"
+                  onChange={onChange}
+                  value={value}
+                  options={listOtions}
+                />
+              )}
+            />
+          </Field>
+        </FormSection>
+      )}
 
-      <Content>
+      <Content style={isCompany ? { minHeight: 'calc(100vh - 14rem)' } : {}}>
         <TableSection>
           {manual?.capters && manual.capters.length > 0 ? (
             manual.capters
@@ -219,9 +225,11 @@ const ManualTable = ({
                     </InfoSection>
 
                     <div>
-                      <FaTrash
-                        onClick={() => !isUpdating && setDeletingId(capter.id)}
-                      />
+                      {!isCompany && (
+                        <FaTrash
+                          onClick={() => !isUpdating && setDeletingId(capter.id)}
+                        />
+                      )}
                       <Image
                         src={
                           cap?.id === capter.id
@@ -259,11 +267,13 @@ const ManualTable = ({
                             </InfoSection>
 
                             <div>
-                              <FaTrash
-                                onClick={() =>
-                                  !isUpdating && setDeletingTitleId(titles.id)
-                                }
-                              />
+                              {!isCompany && (
+                                <FaTrash
+                                  onClick={() =>
+                                    !isUpdating && setDeletingTitleId(titles.id)
+                                  }
+                                />
+                              )}
                               <Image
                                 src={
                                   title?.id === titles.id
@@ -312,7 +322,7 @@ const ManualTable = ({
                                       alignItems: 'center',
                                     }}
                                   >
-                                    {container.type === 'abas' && (
+                                    {container.type === 'abas' && !isCompany && (
                                       <Button
                                         type="button"
                                         text="Adicionar o conteúdo"
@@ -325,20 +335,35 @@ const ManualTable = ({
                                       />
                                     )}
 
-                                    <FaPen
-                                      onClick={() => {
-                                        setContent(container);
-                                        setSteps(5);
-                                        setBuildType(container.type);
-                                      }}
-                                    />
+                                    {isCompany && (
+                                      <FaEye
+                                        size={20}
+                                        onClick={() => {
+                                          setContent(container);
+                                          setSteps(5);
+                                          setBuildType(container.type);
+                                        }}
+                                      />
+                                    )}
 
-                                    <FaTrash
-                                      onClick={() =>
-                                        !isUpdating &&
-                                        setDeletingContainerId(container.id)
-                                      }
-                                    />
+                                    {!isCompany && (
+                                      <FaPen
+                                        onClick={() => {
+                                          setContent(container);
+                                          setSteps(5);
+                                          setBuildType(container.type);
+                                        }}
+                                      />
+                                    )}
+
+                                    {!isCompany && (
+                                      <FaTrash
+                                        onClick={() =>
+                                          !isUpdating &&
+                                          setDeletingContainerId(container.id)
+                                        }
+                                      />
+                                    )}
                                   </div>
                                 </TableDetails>
                               </Thread>

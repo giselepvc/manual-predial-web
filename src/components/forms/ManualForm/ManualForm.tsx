@@ -19,6 +19,8 @@ import { useQuery } from '@tanstack/react-query';
 import { getManuals } from '@/services/querys/manual';
 import { RecursiveNormalize, normalizeStrapi } from '@/utils/normalizeStrapi';
 import { getEnterprise } from '@/services/querys/enterprise';
+import { useAuth } from '@/hooks/useAuth';
+import ManualDetails from '@/components/ManualDetails/ManualDetails';
 import ContainerForm from '../ContainerForm/ContainerForm';
 import TitleForm from '../TitleForm/TitleForm';
 import ChapterForm from '../ChapterForm/ChapterForm';
@@ -36,6 +38,9 @@ interface ManualFormProps {
 
 const ManualForm = ({ editing }: ManualFormProps) => {
   const param = useParams();
+  const { role } = useAuth();
+
+  const isCompany = role === 1;
 
   const [isLoading, setIsloading] = useState<boolean>(false);
   const [steps, setSteps] = useState<number>(editing ? 1 : 0);
@@ -70,6 +75,7 @@ const ManualForm = ({ editing }: ManualFormProps) => {
     'populate[3]': 'capters.icon.image',
     'populate[4]': 'capters.titles.containers.pdf',
     'populate[5]': 'capters.titles.containers.icon.image',
+    'populate[6]': 'capters.group',
     'filters[id]': param?.id || manual?.id,
   };
 
@@ -188,13 +194,28 @@ const ManualForm = ({ editing }: ManualFormProps) => {
           isLoading={isLoading}
         />
       )}
-      {steps === 1 && (
+      {steps === 1 && !isCompany && (
         <ManualTable
           control={control}
           watch={watch}
           cap={chapter}
           title={title}
           manual={manual}
+          setCap={setChapter}
+          setTitle={setTitle}
+          setContent={setContent}
+          setSteps={setSteps}
+          setBuildType={setBuildType}
+        />
+      )}
+      {steps === 1 && isCompany && (
+        <ManualDetails
+          control={control}
+          watch={watch}
+          cap={chapter}
+          title={title}
+          manual={manual}
+          content={content}
           setCap={setChapter}
           setTitle={setTitle}
           setContent={setContent}

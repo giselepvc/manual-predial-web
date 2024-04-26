@@ -19,6 +19,7 @@ import { getEnterprise } from '@/services/querys/enterprise';
 import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import { getClients } from '@/services/querys/clients';
 import { useAuth } from '@/hooks/useAuth';
+import { getGroups } from '@/services/querys/groups';
 import UserIcon from '../../../../public/icons/peaple.svg';
 import HpuseIcon from '../../../../public/icons/house.svg';
 import {
@@ -61,6 +62,23 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
     },
   });
 
+  const groupsParams = {
+    'sort[createdAt]': 'DESC',
+    populate: '*',
+  };
+
+  const { data: groupsOptions } = useQuery({
+    queryKey: ['groupList', groupsParams],
+    queryFn: async () => {
+      const data = await getGroups(groupsParams);
+      const groups = normalizeStrapi(data || []);
+      return groups?.map(item => ({
+        label: item?.name || '',
+        value: item?.id.toString() || '',
+      }));
+    },
+  });
+
   const clientsParams = {
     'pagination[page]': 1,
     'pagination[pageSize]': 1,
@@ -83,6 +101,12 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
             value: clients?.[0]?.enterprise?.id?.toString() || '',
           },
         } : { enterprise: undefined }),
+        ...(clients?.[0]?.group?.id ? {
+          group: {
+            label: clients?.[0]?.group?.name || '',
+            value: clients?.[0]?.group?.id?.toString() || '',
+          },
+        } : { group: undefined }),
         password: '12345678',
         confirmPassword: '12345678',
       });
@@ -114,6 +138,12 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
               value: client?.enterprise?.id?.toString() || '',
             },
           } : { enterprise: undefined }),
+        ...(client?.group?.id ? {
+          group: {
+            label: client?.group?.name || '',
+            value: client?.group?.id?.toString() || '',
+          },
+        } : { group: undefined }),
         email: client?.users?.email || undefined,
         password: '12345678',
         confirmPassword: '12345678',
@@ -131,8 +161,8 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
           {
             ...form,
             confirmPassword: undefined,
-            group: 6,
-            enterprise: user?.enterprise?.id,
+            group: Number(form?.group?.value),
+            enterprise: undefined,
           },
         );
       } else {
@@ -140,11 +170,13 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
           '/registerUser',
           {
             ...form,
+            enterprise: Number(form?.enterprise?.value),
+            group: undefined,
             confirmPassword: undefined,
           },
         );
 
-        if (form?.enterprise?.value && data.data?.id) {
+        if (form?.enterprise?.value && data.data?.id && !isCompany) {
           await api.put(`/enterprises/${form.enterprise.value}`, {
             data: {
               client: [data.data?.id],
@@ -170,13 +202,15 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
       await api.put(`/clients/${customerId}`, {
         data: {
           ...form,
+          enterprise: Number(form?.enterprise?.value || user?.enterprise?.id),
+          group: Number(form?.group?.value),
           password: undefined,
           confirmPassword: undefined,
           title: '',
         },
       });
 
-      if (form?.enterprise?.value && customerId) {
+      if (form?.enterprise?.value && customerId && !isCompany) {
         await api.put(`/enterprises/${form.enterprise.value}`, {
           data: {
             client: [customerId],
@@ -310,21 +344,41 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
           )}
         </Field>
 
-        <Field>
-          <Label>Empreendimento</Label>
-          <Controller
-            control={control}
-            name="enterprise"
-            render={({ field: { onChange, value } }) => (
-              <Select
-                placeholder="Selecione empreendimento"
-                onChange={onChange}
-                value={value}
-                options={enterprises || []}
-              />
-            )}
-          />
-        </Field>
+        {!isCompany && (
+          <Field>
+            <Label>Empreendimento</Label>
+            <Controller
+              control={control}
+              name="enterprise"
+              render={({ field: { onChange, value } }) => (
+                <Select
+                  placeholder="Selecione empreendimento"
+                  onChange={onChange}
+                  value={value}
+                  options={enterprises || []}
+                />
+              )}
+            />
+          </Field>
+        )}
+
+        {isCompany && (
+          <Field>
+            <Label>Grupo</Label>
+            <Controller
+              control={control}
+              name="group"
+              render={({ field: { onChange, value } }) => (
+                <Select
+                  placeholder="Selecione um grupo"
+                  onChange={onChange}
+                  value={value}
+                  options={groupsOptions || []}
+                />
+              )}
+            />
+          </Field>
+        )}
 
       </FormSection>
 

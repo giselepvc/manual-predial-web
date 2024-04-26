@@ -22,10 +22,27 @@ export interface IClientsAttributes {
   complement: string;
   users: IUsers;
   enterprise: IEnterprise;
+  group: Group;
 }
 
 export interface IUsers {
   data: IUserClient;
+}
+
+export interface Group {
+  data: IGroupClient;
+}
+
+export interface IGroupClient {
+  id: number;
+  attributes: IGroupAttributes;
+}
+
+export interface IGroupAttributes {
+  createdAt: string;
+  name: string;
+  publishedAt: string;
+  updatedAt: string;
 }
 
 export interface IEnterprise {

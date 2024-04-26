@@ -1,80 +1,150 @@
-'use client';
-
-import PageLayout from '@/components/PageLayout/PageLayout';
-import { useAuth } from '@/hooks/useAuth';
-import { getManuals } from '@/services/querys/manual';
-import { RecursiveNormalize, normalizeStrapi } from '@/utils/normalizeStrapi';
-import { useQuery } from '@tanstack/react-query';
+/* eslint-disable max-len */
+/* eslint-disable prettier/prettier */
+import { Control, Controller, UseFormWatch } from 'react-hook-form';
 import Image from 'next/image';
-import { urlBuild } from '@/utils/urlBuild';
-import { useState } from 'react';
-import { CaptersDatum, ContentsDatum, TitlesDatum } from '@/interfaces/manual';
 import {
-  Content,
-  Description,
-  Icon,
-  Img,
+  CaptersDatum,
+  ContentsDatum,
+  IManualList,
+  TitlesDatum,
+} from '@/interfaces/manual';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { IManualForm } from '@/validations/ManualSchema';
+import { RecursiveNormalize } from '@/utils/normalizeStrapi';
+import { urlBuild } from '@/utils/urlBuild';
+import { useAuth } from '@/hooks/useAuth';
+import Select from '../Select/Select';
+import Button from '../Button/Button';
+import {
+  Field,
+  FormSection,
+  Header,
   InfoSection,
-  InfoText,
+  Label,
   NotListText,
-  TableContentMore,
+  RegisterTitle,
+  StepsPage,
   TableDetails,
   TableMore,
   TableRow,
   TableSection,
+  ThreadSection,
   Thread,
   ThreadLine,
-  ThreadSection,
+  Content,
+  InfoText,
+  TableContentMore,
+  Img,
+  Description,
+  Icon,
 } from './styles';
 
-const PanelPage = () => {
-  const { user } = useAuth();
+export const typeList = [
+  {
+    label: 'Capítulo',
+    value: 'capitulo',
+  },
+];
 
-  const [chapter, setChapter] = useState<
-    RecursiveNormalize<CaptersDatum> | undefined
-  >();
-  const [title, setTitle] = useState<
-    RecursiveNormalize<TitlesDatum> | undefined
-  >();
-  const [content, setContent] = useState<
-    RecursiveNormalize<ContentsDatum> | undefined
-  >();
+interface ManualTableProps {
+  control: Control<IManualForm, any>;
+  watch: UseFormWatch<IManualForm>;
+  cap: RecursiveNormalize<CaptersDatum> | undefined;
+  title: RecursiveNormalize<TitlesDatum> | undefined;
+  manual: RecursiveNormalize<IManualList> | undefined;
+  content: RecursiveNormalize<ContentsDatum> | undefined;
+  setCap: Dispatch<
+    SetStateAction<RecursiveNormalize<CaptersDatum> | undefined>
+  >;
+  setTitle: Dispatch<
+    SetStateAction<RecursiveNormalize<TitlesDatum> | undefined>
+  >;
+  setContent: Dispatch<
+    SetStateAction<RecursiveNormalize<ContentsDatum> | undefined>
+  >;
+  setBuildType: Dispatch<SetStateAction<string>>;
+  setSteps: Dispatch<SetStateAction<number>>;
+}
 
-  const manualsParams = {
-    'populate[0]': 'capters.titles.containers.image',
-    'populate[1]': 'enterprise',
-    'populate[3]': 'capters.icon.image',
-    'populate[4]': 'capters.titles.containers.pdf',
-    'populate[5]': 'capters.titles.containers.icon.image',
-    'populate[6]': 'capters.group',
-    'filters[capters][group][id]': user?.group?.id,
-  };
+const ManualDetails = ({
+  control,
+  watch,
+  cap,
+  title,
+  manual,
+  content,
+  setCap,
+  setTitle,
+  setBuildType,
+  setSteps,
+  setContent,
+}: ManualTableProps) => {
+  const { role } = useAuth();
+  const isCompany = role === 1;
 
-  const { data: manuals } = useQuery({
-    queryKey: ['manualForm', manualsParams],
-    queryFn: async () => {
-      const data = await getManuals(manualsParams);
-      const results = normalizeStrapi(data || []);
-      const result = results?.[0];
-      return result;
-    },
-    enabled: !!user?.group?.id,
-  });
+  const [listOtions, setListOptions] = useState(typeList);
+
+  useEffect(() => {
+    if (manual?.capters && manual?.capters.length > 0) {
+      const list = [
+        ...typeList,
+        {
+          label: 'Título',
+          value: 'titulo',
+        },
+        {
+          label: 'Container',
+          value: 'container',
+        },
+      ];
+
+      setListOptions(list);
+    }
+  }, [manual]);
 
   return (
-    <PageLayout title="Manuais">
-      <Content style={{ minHeight: 'calc(100vh - 10 rem)' }}>
+    <StepsPage>
+      <Header>
+        <RegisterTitle>
+          Empreendimento: <span>{watch('enterprise.label')}</span>
+        </RegisterTitle>
+        <RegisterTitle>
+          Nome do manual: <span>{watch('name')}</span>
+        </RegisterTitle>
+      </Header>
+
+      {!isCompany && (
+        <FormSection>
+          <Field>
+            <Label>Tipo de cadastro</Label>
+            <Controller
+              control={control}
+              name="type"
+              render={({ field: { onChange, value } }) => (
+                <Select
+                  placeholder="Selecione uma opção"
+                  onChange={onChange}
+                  value={value}
+                  options={listOtions}
+                />
+              )}
+            />
+          </Field>
+        </FormSection>
+      )}
+
+      <Content style={{ minHeight: 'calc(100vh - 14rem)' }}>
         <TableSection>
-          {manuals?.capters && manuals.capters.length > 0 ? (
-            manuals.capters
+          {manual?.capters && manual.capters.length > 0 ? (
+            manual.capters
               .sort((a, b) => a.order - b.order)
               .map(capter => (
                 <>
                   <TableRow
                     key={capter.id}
-                    selected={chapter?.id === capter.id}
+                    selected={cap?.id === capter.id}
                     onClick={() => {
-                      setChapter(chapter === capter ? undefined : capter);
+                      setCap(props => (props === capter ? undefined : capter));
                     }}
                   >
                     <InfoSection>
@@ -95,7 +165,7 @@ const PanelPage = () => {
                     <div>
                       <Image
                         src={
-                          chapter?.id === capter.id
+                          cap?.id === capter.id
                             ? '/icons/up-arrow.svg'
                             : '/icons/down-arrow.svg'
                         }
@@ -106,12 +176,14 @@ const PanelPage = () => {
                     </div>
                   </TableRow>
 
-                  {chapter?.id === capter.id &&
+                  {cap?.id === capter.id &&
                     capter.titles.map((titles, index) => (
                       <>
                         <Thread>
                           <ThreadSection>
-                            {index + 1 === 1 && <ThreadLine />}
+                            {index + 1 === 1 && (
+                              <ThreadLine />
+                            )}
                           </ThreadSection>
 
                           <TableMore
@@ -145,26 +217,24 @@ const PanelPage = () => {
                         {title?.id === titles.id &&
                           titles.containers
                             .sort((a, b) => a.order - b.order)
-                            .map(container => (
+                            .map((container) => (
                               <>
                                 <Thread
                                   key={container.id}
                                   style={{ paddingLeft: '3rem' }}
                                   onClick={() => {
-                                    setContent(props =>
-                                      props === container
-                                        ? undefined
-                                        : container,
-                                    );
+                                    setContent(props => props === container ? undefined : container);
                                   }}
                                 >
                                   <TableDetails>
                                     <InfoSection>
                                       <span>{container.order}</span>
                                       <div>
-                                        {container.type === 'abas' && 'Abas'}
-                                        {container.type === 'keys' &&
-                                          'Parágrafo - par de chaves'}
+                                        {container.type === 'abas'
+                                          ? 'Abas'
+                                          : container.type === 'keys'
+                                            ? 'Parágrafo - par de chaves'
+                                            : container.title}
                                       </div>
                                     </InfoSection>
 
@@ -175,6 +245,19 @@ const PanelPage = () => {
                                         alignItems: 'center',
                                       }}
                                     >
+                                      {container.type === 'abas' && !isCompany && (
+                                        <Button
+                                          type="button"
+                                          text="Adicionar o conteúdo"
+                                          style={{ minHeight: '25px' }}
+                                          onClick={() => {
+                                            setContent(container);
+                                            setSteps(5);
+                                            setBuildType('content');
+                                          }}
+                                        />
+                                      )}
+
                                       <Image
                                         src={
                                           container?.id === content?.id
@@ -191,57 +274,40 @@ const PanelPage = () => {
 
                                 {container?.id === content?.id && (
                                   <Thread style={{ paddingLeft: '3rem' }}>
-                                    <TableContentMore key={container?.id}>
-                                      {container.type === 'pdf' &&
-                                        container.pdf?.name && (
-                                          <InfoSection>
-                                            <InfoText>
-                                              {container.pdf?.name}
-                                            </InfoText>
-                                          </InfoSection>
-                                        )}
+                                    <TableContentMore
+                                      key={container?.id}
+                                    >
+                                      {container.pdf?.name && (
+                                        <InfoSection>
+                                          <InfoText>{container.pdf?.name}</InfoText>
+                                        </InfoSection>
+                                      )}
 
                                       {container.type === 'abas' && (
                                         <InfoSection>
                                           <InfoText>
                                             {container?.icon?.image?.url && (
-                                              <Icon
-                                                src={urlBuild(
-                                                  container?.icon?.image?.url,
-                                                )}
-                                                alt="imagem do container"
-                                              />
+                                              <Icon src={urlBuild(container?.icon?.image?.url)} alt="imagem do container" />
                                             )}
                                             {container.title || ''}
                                           </InfoText>
                                         </InfoSection>
                                       )}
 
-                                      {container.type === 'image' &&
-                                        container?.image?.[0]?.url && (
-                                          <InfoSection>
-                                            <Img
-                                              src={urlBuild(
-                                                container?.image?.[0]?.url,
-                                              )}
-                                              alt="imagem do container"
-                                            />
+                                      {container?.image?.[0]?.url && (
+                                        <InfoSection>
+                                          <Img src={urlBuild(container?.image?.[0]?.url)} alt="imagem do container" />
 
-                                            <Description>
-                                              Legenda: {container?.description}
-                                            </Description>
-                                          </InfoSection>
-                                        )}
+                                          <Description>
+                                            Legenda: {container?.description}
+                                          </Description>
+                                        </InfoSection>
+                                      )}
 
                                       {container?.type === 'paragraph' && (
                                         <InfoSection>
                                           {container?.icon?.image?.url && (
-                                            <Icon
-                                              src={urlBuild(
-                                                container?.icon?.image?.url,
-                                              )}
-                                              alt="imagem do container"
-                                            />
+                                            <Icon src={urlBuild(container?.icon?.image?.url)} alt="imagem do container" />
                                           )}
                                           <Description>
                                             {container?.description}
@@ -252,12 +318,7 @@ const PanelPage = () => {
                                       {container?.type === 'paragraphIcon' && (
                                         <InfoSection>
                                           {container?.icon?.image?.url && (
-                                            <Icon
-                                              src={urlBuild(
-                                                container?.icon?.image?.url,
-                                              )}
-                                              alt="imagem do container"
-                                            />
+                                            <Icon src={urlBuild(container?.icon?.image?.url)} alt="imagem do container" />
                                           )}
                                           <Description>
                                             {container?.description}
@@ -268,12 +329,7 @@ const PanelPage = () => {
                                       {container?.type === 'keys' && (
                                         <InfoSection>
                                           {container?.icon?.image?.url && (
-                                            <Icon
-                                              src={urlBuild(
-                                                container?.icon?.image?.url,
-                                              )}
-                                              alt="imagem do container"
-                                            />
+                                            <Icon src={urlBuild(container?.icon?.image?.url)} alt="imagem do container" />
                                           )}
                                           Chave: {container?.title}
                                           <Description>
@@ -297,8 +353,8 @@ const PanelPage = () => {
           )}
         </TableSection>
       </Content>
-    </PageLayout>
+    </StepsPage>
   );
 };
 
-export default PanelPage;
+export default ManualDetails;

@@ -37,7 +37,24 @@ export interface CaptersAttributes {
   publishedAt: string;
   visible: boolean;
   titles: Titles;
+  group: Group;
   icon: IIcon;
+}
+
+export interface Group {
+  data: GroupDatum;
+}
+
+export interface GroupDatum {
+  id: number;
+  attributes: GroupAttributes;
+}
+
+export interface GroupAttributes {
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
 }
 
 export interface Titles {
