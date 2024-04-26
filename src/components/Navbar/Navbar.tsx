@@ -50,7 +50,7 @@ const Navbar = () => {
           <NavLink href="/company" selected={pathname.startsWith('/company')}>
             <TractorIcon />
             <NavLinkText selected={pathname.startsWith('/company')}>
-              Listagem de construtora
+              Listagem de construtoras
             </NavLinkText>
           </NavLink>
         )}
@@ -62,7 +62,7 @@ const Navbar = () => {
           >
             <EnterpriseIcon />
             <NavLinkText selected={pathname.startsWith('/enterprise')}>
-              Listagem de empreendimento
+              Listagem de empreendimentos
             </NavLinkText>
           </NavLink>
         )}
@@ -76,11 +76,20 @@ const Navbar = () => {
           </NavLink>
         )}
 
-        {(isMaster || isCompany) && (
+        {isMaster && (
           <NavLink href="/users" selected={pathname.startsWith('/users')}>
             <UserIcon />
             <NavLinkText selected={pathname.startsWith('/users')}>
-              Listagem de usuário
+              Listagem de usuários
+            </NavLinkText>
+          </NavLink>
+        )}
+
+        {(isMaster || isCompany) && (
+          <NavLink href="/final" selected={pathname.startsWith('/final')}>
+            <UserIcon />
+            <NavLinkText selected={pathname.startsWith('/final')}>
+              Listagem de usuários final
             </NavLinkText>
           </NavLink>
         )}
@@ -89,7 +98,7 @@ const Navbar = () => {
           <NavLink href="/manual" selected={pathname.startsWith('/manual')}>
             <BookIcon />
             <NavLinkText selected={pathname.startsWith('/manual')}>
-              Listagem de manual
+              Listagem de manuais
             </NavLinkText>
           </NavLink>
         )}

@@ -281,7 +281,7 @@ const CustomerForm = ({ isEditing, customerId }: CustomerProps) => {
         </Field>
 
         <Field>
-          <Label>E-mail</Label>
+          <Label>Login</Label>
           <Input
             type="email"
             placeholder="Insirir e-mail"

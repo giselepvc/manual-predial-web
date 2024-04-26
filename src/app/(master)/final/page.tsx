@@ -1,23 +1,28 @@
 'use client';
 
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Action from '@/components/Action/Action';
 import PageLayout from '@/components/PageLayout/PageLayout';
 import Pagination from '@/components/Pagination/Pagination';
 import TableComponent from '@/components/Table/Table';
-import { getCompanies } from '@/services/querys/company';
+import { getClients } from '@/services/querys/clients';
 import { normalizeStrapi } from '@/utils/normalizeStrapi';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import cpfMask from '@/utils/masks/cpfMask';
+import cnpjMask from '@/utils/masks/cnpjMask';
+import telephoneMask from '@/utils/masks/phone';
 import { useRouter } from 'next/navigation';
-import { FaTrash } from 'react-icons/fa6';
+import { useState } from 'react';
+import ConfirmModal from '@/components/ConfirmeModal/ConfirmeModal';
 import api from '@/services/api';
 import handleError, { handleSuccess } from '@/utils/handleToast';
-import ConfirmModal from '@/components/ConfirmeModal/ConfirmeModal';
+import { FaTrash } from 'react-icons/fa6';
+import { useAuth } from '@/hooks/useAuth';
 import EditIcon from '../../../../public/icons/edit.svg';
 import { ActionButton } from './styles';
 
-const CompanyPage = () => {
+const UsersPage = () => {
   const { push } = useRouter();
+  const { user } = useAuth();
   const query = useQueryClient();
 
   const [page, setPage] = useState(1);
@@ -25,31 +30,35 @@ const CompanyPage = () => {
   const [deletingId, setDeletingId] = useState<number>();
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const companiesParams = {
+  const clientsParams = {
     'pagination[page]': page,
     'pagination[pageSize]': 7,
     'filters[name][$containsi]': search || undefined,
+    'filters[group][enterprise][id]': user?.enterprise?.id || undefined,
+    'filters[enterprise][id]': null,
     'sort[createdAt]': 'DESC',
-    populate: '*',
+    populate: ['users', 'users.image', 'group.enterprise', 'enterprise'],
   };
 
-  const { data: companiesData } = useQuery({
-    queryKey: ['CompaniesData', companiesParams],
-    queryFn: async () => getCompanies(companiesParams),
+  const { data: clientsData } = useQuery({
+    queryKey: ['usersData', clientsParams],
+    queryFn: async () => getClients(clientsParams),
   });
 
-  const companies = normalizeStrapi(companiesData || []);
+  const clients = normalizeStrapi(clientsData || []);
 
   const onDelete = async () => {
-    if (!deletingId) return;
+    if (!deletingId) {
+      return;
+    }
 
     try {
       setIsUpdating(true);
-      await api.delete(`/companies/${deletingId}`);
+      await api.delete(`/clients/${deletingId}`);
 
-      handleSuccess('Construtora deletada com sucesso.');
+      handleSuccess('Manual deletado com sucesso.');
       setDeletingId(undefined);
-      query.invalidateQueries({ queryKey: ['CompaniesData'] });
+      query.invalidateQueries({ queryKey: ['usersData'] });
     } catch (err: any) {
       handleError(err);
     } finally {
@@ -58,23 +67,23 @@ const CompanyPage = () => {
   };
 
   return (
-    <PageLayout title="Listagem de construtora">
+    <PageLayout title="Listagem de usuários final">
       <Action
-        title="Cadastrar nova construtora"
+        title="Cadastrar novo usuário"
+        href="/users/create"
         setSearch={setSearch}
-        href="/company/create"
       />
 
       <TableComponent
-        fields={['Nome', 'E-mail', 'CNPJ', 'CEP', 'Status', 'Ações']}
+        fields={['Nome', 'Login', 'CPF', 'CNPJ', 'Celular', 'Ações']}
       >
-        {companies.map(order => (
-          <tr key={order.id}>
-            <td>{order.name}</td>
-            <td>{order.email || '--'}</td>
-            <td>{order.cnpj || '--'}</td>
-            <td>{order.zipCode || '--'}</td>
-            <td>{order.active ? 'Ativo' : 'Desativado'}</td>
+        {clients.map(client => (
+          <tr key={client.id}>
+            <td>{client.name}</td>
+            <td>{client.users?.email}</td>
+            <td>{cpfMask(client.cpf)}</td>
+            <td>{cnpjMask(client.cnpj)}</td>
+            <td>{telephoneMask(client.cellPhone || client.phone || '')}</td>
             <td>
               <div
                 style={{
@@ -83,12 +92,12 @@ const CompanyPage = () => {
                   gap: '1.5rem',
                 }}
               >
-                <ActionButton onClick={() => push(`/company/edit/${order.id}`)}>
+                <ActionButton onClick={() => push(`/users/edit/${client.id}`)}>
                   <EditIcon />
                   Editar
                 </ActionButton>
                 <ActionButton
-                  onClick={() => (isUpdating ? null : setDeletingId(order.id))}
+                  onClick={() => (isUpdating ? null : setDeletingId(client.id))}
                 >
                   <FaTrash />
                 </ActionButton>
@@ -99,7 +108,7 @@ const CompanyPage = () => {
       </TableComponent>
 
       <Pagination
-        pageCount={companiesData?.meta?.pagination?.pageCount || 0}
+        pageCount={clientsData?.meta?.pagination?.pageCount || 0}
         forcePage={page - 1}
         onPageChange={p => setPage(p.selected + 1)}
       />
@@ -115,7 +124,7 @@ const CompanyPage = () => {
           isLoading={isUpdating}
         >
           <ConfirmModal.Message>
-            Tem certeza que deseja <strong>excluir</strong> essa construtora?
+            Tem certeza que deseja <strong>excluir</strong> esse usuário?
           </ConfirmModal.Message>
         </ConfirmModal>
       )}
@@ -123,4 +132,4 @@ const CompanyPage = () => {
   );
 };
 
-export default CompanyPage;
+export default UsersPage;

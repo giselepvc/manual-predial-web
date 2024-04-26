@@ -218,7 +218,7 @@ export const InfoSection = styled.div`
 
 export const Description = styled.div`
   height: 140px;
-  width: 400px;
+  width: 500px;
 
   margin-top: 6px;
   padding: 0 1.5rem;

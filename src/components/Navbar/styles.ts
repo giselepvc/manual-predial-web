@@ -127,7 +127,7 @@ export const Nav = styled.nav<NavProps>`
 
   display: flex;
   flex-direction: column;
-  gap: 0.875rem;
+  gap: 0.275rem;
 
   ${({ open }) =>
     open

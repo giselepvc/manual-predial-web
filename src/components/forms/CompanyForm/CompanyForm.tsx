@@ -44,7 +44,7 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
     populate: '*',
   };
 
-  const { data: company } = useQuery({
+  useQuery({
     queryKey: ['usersData', companiesParams],
     queryFn: async () => {
       const companysData = await getCompanies(companiesParams);
@@ -80,32 +80,13 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
     formState: { errors },
   } = useForm<ICompanyForm>({
     resolver: yupResolver(CompanySchema),
-    defaultValues: {
-      ...(isEditing && {
-        address: company?.address,
-        complement: company?.complement || undefined,
-        number: company?.number,
-        city: company?.city,
-        cnpj: company?.cnpj,
-        neighborhood: company?.neighborhood,
-        phone: company?.phone,
-        state: company?.state,
-        zipCode: company?.zipCode,
-        name: company?.name,
-        email: company?.email,
-      }),
-    },
   });
 
   const onSubmit: SubmitHandler<ICompanyForm> = async form => {
     setIsLoading(true);
 
     try {
-      await api.post('/companies', {
-        data: {
-          ...form,
-        },
-      });
+      await api.post('/companies', { data: { ...form } });
 
       query.invalidateQueries({ queryKey: ['CompaniesData'] });
       handleSuccess('Cadastro realizado com sucesso.');
@@ -121,11 +102,7 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
     setIsLoading(true);
 
     try {
-      await api.put(`/companies/${companyId}`, {
-        data: {
-          ...form,
-        },
-      });
+      await api.put(`/companies/${companyId}`, { data: { ...form } });
 
       query.invalidateQueries({ queryKey: ['CompaniesData'] });
       handleSuccess('Alteração realizada com sucesso.');
@@ -139,37 +116,31 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
 
   const handleCepBlur = async () => {
     const isValid = await trigger('zipCode');
-    if (!isValid) {
-      return;
-    }
-
+    if (!isValid) return;
     const cep = getValues('zipCode');
 
-    try {
-      const address = await getAddressFromCep(cep);
+    if (cep) {
+      try {
+        const address = await getAddressFromCep(cep);
 
-      if (address.erro) {
-        setError('zipCode', {
-          message: 'CEP inválido',
-          type: 'invalid-cep',
-        });
+        if (address.erro) {
+          setError('zipCode', { message: 'CEP inválido', type: 'invalid-cep' });
+          setValue('zipCode', '');
+          setValue('city', '');
+          setValue('state', '');
+          setValue('address', '');
+          setValue('neighborhood', '');
+          return;
+        }
 
-        setValue('zipCode', '');
-        setValue('city', '');
-        setValue('state', '');
-        setValue('address', '');
-        setValue('neighborhood', '');
-
-        return;
+        setValue('state', address.uf);
+        setValue('zipCode', address.cep);
+        setValue('city', address.localidade);
+        setValue('address', address.logradouro);
+        setValue('neighborhood', address.bairro);
+      } catch (error) {
+        handleError(error);
       }
-
-      setValue('state', address.uf);
-      setValue('zipCode', address.cep);
-      setValue('city', address.localidade);
-      setValue('address', address.logradouro);
-      setValue('neighborhood', address.bairro);
-    } catch (error) {
-      handleError(error);
     }
   };
 
