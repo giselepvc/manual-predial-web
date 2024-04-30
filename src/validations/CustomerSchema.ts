@@ -26,8 +26,8 @@ export const CustomerSchema = yup.object({
     .required('Confirmação de senha é obrigatória'),
   title: yup.string(),
   enterprise: yup.object({
-    value: yup.string(),
-    label: yup.string(),
+    value: yup.string().required('Empreendimento obrigatório'),
+    label: yup.string().required('Empreendimento obrigatório'),
   }),
   group: yup.object({
     value: yup.string(),

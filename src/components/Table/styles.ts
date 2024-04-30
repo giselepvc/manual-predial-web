@@ -27,6 +27,11 @@ export const Table = styled.table`
     font-size: 1.15rem;
     font-weight: 600;
     color: ${({ theme }) => theme.colors.white};
+    text-align: left;
+
+    &:last-child {
+      text-align: center;
+    }
   }
 
   td {
@@ -39,6 +44,7 @@ export const Table = styled.table`
     height: 3.4375rem;
     text-align: center;
     background: ${({ theme }) => theme.colors.gray41};
+    text-align: left;
 
     &:first-child {
       border-top-left-radius: 0.625rem;

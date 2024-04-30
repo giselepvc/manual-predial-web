@@ -60,23 +60,6 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
     },
   });
 
-  const groupsParams = {
-    'sort[createdAt]': 'DESC',
-    populate: '*',
-  };
-
-  const { data: groupsOptions } = useQuery({
-    queryKey: ['groupList', groupsParams],
-    queryFn: async () => {
-      const data = await getGroups(groupsParams);
-      const groups = normalizeStrapi(data || []);
-      return groups?.map(item => ({
-        label: item?.name || '',
-        value: item?.id.toString() || '',
-      }));
-    },
-  });
-
   const clientsParams = {
     'pagination[page]': 1,
     'pagination[pageSize]': 1,
@@ -121,11 +104,31 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
     setValue,
     setError,
     getValues,
+    watch,
     reset,
     control,
     formState: { errors },
   } = useForm<ICustomerForm>({
     resolver: yupResolver(CustomerSchema),
+  });
+
+  const groupsParams = {
+    'sort[createdAt]': 'DESC',
+    populate: '*',
+    'filters[enterprise][id]': watch('enterprise.value'),
+  };
+
+  const { data: groupsOptions } = useQuery({
+    queryKey: ['groupList', groupsParams],
+    queryFn: async () => {
+      const data = await getGroups(groupsParams);
+      const groups = normalizeStrapi(data || []);
+      return groups?.map(item => ({
+        label: item?.name || '',
+        value: item?.id.toString() || '',
+      }));
+    },
+    enabled: !!watch('enterprise'),
   });
 
   const onSubmit: SubmitHandler<ICustomerForm> = async form => {
@@ -311,23 +314,24 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
           )}
         </Field>
 
-        {!isCompany && (
-          <Field>
-            <Label>Empreendimento</Label>
-            <Controller
-              control={control}
-              name="enterprise"
-              render={({ field: { onChange, value } }) => (
-                <Select
-                  placeholder="Selecione empreendimento"
-                  onChange={onChange}
-                  value={value}
-                  options={enterprises || []}
-                />
-              )}
-            />
-          </Field>
-        )}
+        <Field>
+          <Label>Empreendimento</Label>
+          <Controller
+            control={control}
+            name="enterprise"
+            render={({ field: { onChange, value } }) => (
+              <Select
+                placeholder="Selecione empreendimento"
+                onChange={onChange}
+                value={value}
+                options={enterprises || []}
+              />
+            )}
+          />
+          {errors?.enterprise?.value?.message && (
+            <ErrorMessage>{errors.enterprise.value.message}</ErrorMessage>
+          )}
+        </Field>
 
         {isCompany && (
           <Field>

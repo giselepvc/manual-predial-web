@@ -7,8 +7,23 @@ export const GlobalStyle = createGlobalStyle`
     box-sizing: border-box;
   }
   * {
-   scroll-behavior: smooth;
+    scroll-behavior: smooth;
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #444444;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cccccc;
+      border-radius: 10px;
+    }
   }
+
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
     -webkit-appearance: none;

@@ -30,12 +30,12 @@ const Providers = ({ children }: PropsWithChildren) => {
     <StyledComponentsRegistry>
       <ThemeProvider theme={theme}>
         <QueryClientProvider client={queryClient}>
-          <GlobalStyle />
           <AuthProvider>
             <NextNProgress
               color={theme.colors.primary}
               options={{ easing: 'ease', speed: 500 }}
             />
+            <GlobalStyle />
             {children}
           </AuthProvider>
           <ToastContainer
