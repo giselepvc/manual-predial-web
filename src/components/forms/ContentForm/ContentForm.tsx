@@ -116,6 +116,8 @@ const ContentForm = ({
         container: {},
         order: '',
         visible: {},
+        description: '',
+        title: '',
       });
 
       handleSuccess('Conteúdo cadastrado com sucesso.');

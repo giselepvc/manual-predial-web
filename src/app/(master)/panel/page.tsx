@@ -1,3 +1,5 @@
+/* eslint-disable prettier/prettier */
+
 'use client';
 
 import PageLayout from '@/components/PageLayout/PageLayout';
@@ -205,11 +207,9 @@ const PanelPage = () => {
                                     <InfoSection>
                                       <span>{container.order}</span>
                                       <div>
-                                        {container.type === 'abas' && 'Abas'}
                                         {container.type === 'keys' &&
                                           'Parágrafo - par de chaves'}
-                                        {container.type !== 'abas' &&
-                                          container.type !== 'keys' &&
+                                        {container.type !== 'keys' &&
                                           container.title}
                                       </div>
                                     </InfoSection>
@@ -238,14 +238,13 @@ const PanelPage = () => {
                                 {container?.id === content?.id && (
                                   <Thread style={{ paddingLeft: '3rem' }}>
                                     <TableContentMore key={container?.id}>
-                                      {container.type === 'pdf' &&
-                                        container.pdf?.name && (
-                                          <InfoSection>
-                                            <InfoText>
-                                              {container.pdf?.name}
-                                            </InfoText>
-                                          </InfoSection>
-                                        )}
+                                      {container.pdf?.name && (
+                                        <InfoSection>
+                                          <InfoText>
+                                            {container.pdf?.name}
+                                          </InfoText>
+                                        </InfoSection>
+                                      )}
 
                                       {container.type === 'abas' &&
                                         contentSelected?.sub_containers && (
@@ -274,6 +273,11 @@ const PanelPage = () => {
                                       {container.type === 'abas' &&
                                         subContent?.id && (
                                           <InfoSection>
+                                            {subContent?.pdf?.name && (
+                                              <InfoText>
+                                                {subContent.pdf?.name}
+                                              </InfoText>
+                                            )}
                                             {subContent?.image?.[0]?.url && (
                                               <Img
                                                 src={urlBuild(
@@ -283,16 +287,20 @@ const PanelPage = () => {
                                               />
                                             )}
 
-                                            <Description
-                                              style={{
-                                                width: subContent?.image?.[0]
-                                                  ?.url
-                                                  ? '500px'
-                                                  : '680px',
-                                              }}
-                                            >
-                                              {subContent?.description}
-                                            </Description>
+                                            {subContent?.type !== 'pdf' && (
+                                              <Description
+                                                style={{
+                                                  width:
+                                                    subContent?.image?.[0]
+                                                      ?.url ||
+                                                      subContent?.type === 'keys'
+                                                      ? '580px'
+                                                      : '730px',
+                                                }}
+                                              >
+                                                {subContent?.description}
+                                              </Description>
+                                            )}
                                           </InfoSection>
                                         )}
 
@@ -345,7 +353,7 @@ const PanelPage = () => {
                                       )}
 
                                       {container?.type === 'keys' && (
-                                        <InfoSection>
+                                        <InfoSection style={{ flexDirection: 'column' }}>
                                           {container?.icon?.image?.url && (
                                             <Icon
                                               src={urlBuild(
