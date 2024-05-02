@@ -9,6 +9,10 @@ import Image from 'next/image';
 import { urlBuild } from '@/utils/urlBuild';
 import { useState } from 'react';
 import { CaptersDatum, ContentsDatum, TitlesDatum } from '@/interfaces/manual';
+import handleError from '@/utils/handleToast';
+import api from '@/services/api';
+import { ContainerData, IContent } from '@/interfaces/content';
+import { Paginated } from '@/interfaces/paginated';
 import {
   Content,
   Description,
@@ -39,6 +43,12 @@ const PanelPage = () => {
   const [content, setContent] = useState<
     RecursiveNormalize<ContentsDatum> | undefined
   >();
+  const [contentSelected, setContentSelected] = useState<
+    RecursiveNormalize<IContent> | undefined
+  >();
+  const [subContent, setSubContent] = useState<
+    RecursiveNormalize<ContainerData> | undefined
+  >();
 
   const manualsParams = {
     'populate[0]': 'capters.titles.containers.image',
@@ -61,6 +71,34 @@ const PanelPage = () => {
     enabled: !!user?.group?.id,
   });
 
+  const getContent = async (id: number) => {
+    try {
+      const { data } = await api.get<Paginated<IContent>>('/containers', {
+        params: {
+          'pagination[page]': 1,
+          'pagination[pageSize]': 1,
+          'filters[id]': id,
+          populate: [
+            'sub_containers.pdf',
+            'sub_containers.icon.image',
+            'container',
+            'sub_containers.image',
+            'icon.image',
+            'pdf',
+            'image',
+          ],
+        },
+      });
+
+      const result = normalizeStrapi(data.data?.[0]);
+
+      setContentSelected(result);
+      setSubContent(result?.sub_containers?.[0]);
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
   return (
     <PageLayout title="Manuais">
       <Content style={{ minHeight: 'calc(100vh - 10rem)' }}>
@@ -75,6 +113,7 @@ const PanelPage = () => {
                     selected={chapter?.id === capter.id}
                     onClick={() => {
                       setChapter(chapter === capter ? undefined : capter);
+                      setSubContent(undefined);
                     }}
                   >
                     <InfoSection>
@@ -151,6 +190,10 @@ const PanelPage = () => {
                                   key={container.id}
                                   style={{ paddingLeft: '3rem' }}
                                   onClick={() => {
+                                    if (container.type === 'abas') {
+                                      setSubContent(undefined);
+                                      getContent(container.id);
+                                    }
                                     setContent(props =>
                                       props === container
                                         ? undefined
@@ -204,21 +247,54 @@ const PanelPage = () => {
                                           </InfoSection>
                                         )}
 
-                                      {container.type === 'abas' && (
-                                        <InfoSection>
-                                          <InfoText>
-                                            {container?.icon?.image?.url && (
-                                              <Icon
+                                      {container.type === 'abas' &&
+                                        contentSelected?.sub_containers && (
+                                          <InfoSection>
+                                            {contentSelected?.sub_containers?.map(
+                                              item => (
+                                                <InfoText
+                                                  selected={
+                                                    item?.id === subContent?.id
+                                                  }
+                                                  onClick={() => {
+                                                    setSubContent(props =>
+                                                      props === item
+                                                        ? undefined
+                                                        : item,
+                                                    );
+                                                  }}
+                                                >
+                                                  {item.title || ''}
+                                                </InfoText>
+                                              ),
+                                            )}
+                                          </InfoSection>
+                                        )}
+
+                                      {container.type === 'abas' &&
+                                        subContent?.id && (
+                                          <InfoSection>
+                                            {subContent?.image?.[0]?.url && (
+                                              <Img
                                                 src={urlBuild(
-                                                  container?.icon?.image?.url,
+                                                  subContent.image?.[0].url,
                                                 )}
                                                 alt="imagem do container"
                                               />
                                             )}
-                                            {container.title || ''}
-                                          </InfoText>
-                                        </InfoSection>
-                                      )}
+
+                                            <Description
+                                              style={{
+                                                width: subContent?.image?.[0]
+                                                  ?.url
+                                                  ? '500px'
+                                                  : '680px',
+                                              }}
+                                            >
+                                              {subContent?.description}
+                                            </Description>
+                                          </InfoSection>
+                                        )}
 
                                       {container.type === 'image' &&
                                         container?.image?.[0]?.url && (

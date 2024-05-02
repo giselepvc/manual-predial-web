@@ -253,7 +253,7 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
         <Field>
           <Label>Login</Label>
           <Input
-            type="email"
+            type="text"
             placeholder="Insirir e-mail"
             {...register('email')}
           />

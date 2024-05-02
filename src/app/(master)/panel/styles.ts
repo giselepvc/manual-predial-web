@@ -145,8 +145,9 @@ export const TableContentMore = styled.div`
   overflow: hidden;
 
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: space-between;
+  gap: 2rem;
 
   width: 100%;
   min-height: 50px;
@@ -212,16 +213,15 @@ export const TableDetails = styled.div<TableProps>`
 
 export const InfoSection = styled.div`
   display: flex;
-  align-items: center;
   gap: 1rem;
 `;
 
 export const Description = styled.div`
-  height: 140px;
+  min-height: 140px;
   width: 500px;
 
   margin-top: 6px;
-  padding: 0 1.5rem;
+  padding: 1rem 1.5rem;
   border-radius: 6px;
   background-color: ${({ theme }) => theme.colors.gray3d};
 
@@ -298,7 +298,11 @@ export const Thread = styled.div`
   width: 100%;
 `;
 
-export const InfoText = styled.div`
+interface NavProps {
+  selected?: boolean;
+}
+
+export const InfoText = styled.div<NavProps>`
   min-height: 45px;
   min-width: 150px;
 
@@ -308,8 +312,14 @@ export const InfoText = styled.div`
 
   padding: 1rem 1.5rem;
 
+  border-top: ${({ theme, selected }) =>
+    selected ? `1px solid${theme.colors.grayaa}` : 'none'};
+  border-left: ${({ theme, selected }) =>
+    selected ? `1px solid${theme.colors.grayaa}` : 'none'};
+  border-right: ${({ theme, selected }) =>
+    selected ? `1px solid${theme.colors.grayaa}` : 'none'};
   background-color: ${({ theme }) => theme.colors.gray3d};
-  border-radius: 6px;
+  border-radius: 6px 6px 0 0;
 
   color: ${({ theme }) => theme.colors.grayaa};
   font-weight: 600;

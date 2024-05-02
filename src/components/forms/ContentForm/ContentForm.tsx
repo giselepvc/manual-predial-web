@@ -93,8 +93,8 @@ const ContentForm = ({
     try {
       const { data } = await api.post<{ data: { id: number } }>('/containers', {
         data: {
-          title: form.container?.label,
-          description: '',
+          title: form.title,
+          description: form.description,
           order: Number(form.order),
           visible: form.visible?.value === 'sim',
           type: form.container?.value,
@@ -232,6 +232,33 @@ const ContentForm = ({
           />
           {errors?.container?.value?.message && (
             <ErrorMessage>{errors.container.value.message}</ErrorMessage>
+          )}
+        </Field>
+
+        <Field>
+          <Label>Título</Label>
+          <Input
+            placeholder="Insira um título"
+            type="text"
+            style={{ width: '230px' }}
+            {...register('title')}
+          />
+          {errors?.title?.message && (
+            <ErrorMessage>{errors.title.message}</ErrorMessage>
+          )}
+        </Field>
+      </FormSection>
+
+      <FormSection>
+        <Field>
+          <Label>Legenda</Label>
+          <Input
+            placeholder="Insira uma legenda"
+            style={{ width: '965px' }}
+            {...register('description')}
+          />
+          {errors?.description?.message && (
+            <ErrorMessage>{errors.description.message}</ErrorMessage>
           )}
         </Field>
       </FormSection>

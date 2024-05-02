@@ -4,6 +4,8 @@ export type IContentForm = yup.InferType<typeof ContentSchema>;
 
 export const ContentSchema = yup.object({
   order: yup.string().required('Ordem é obrigatório'),
+  title: yup.string().required('Título é obrigatório'),
+  description: yup.string().required('Legenda é obrigatório'),
   visible: yup.object({
     value: yup.string().required('Status é obrigatório'),
     label: yup.string().required('Status é obrigatório'),
