@@ -37,12 +37,12 @@ interface ChapterPageProps {
 
 const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
   const query = useQueryClient();
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const chaptesIds = manual?.capters?.map(capter => capter.id) || [];
 
   const groupsParams = {
     populate: '*',
+    'filters[enterprise][id]': manual?.enterprise?.id,
   };
 
   const { data: groupsData } = useQuery({
@@ -62,10 +62,7 @@ const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
     queryFn: async () => {
       const result = await getIcons(iconsParams);
       const iconsResult = normalizeStrapi(result || []);
-
-      iconsResult.sort((a, b) => a.id - b.id);
-
-      return iconsResult;
+      return iconsResult.sort((a, b) => a.id - b.id);
     },
   });
 
@@ -79,9 +76,9 @@ const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
   });
 
   const onSubmit: SubmitHandler<IChapterForm> = async form => {
-    setIsLoading(true);
-
     try {
+      setIsLoading(true);
+
       const { data } = await api.post<{ data: { id: number } }>('/capters', {
         data: {
           ...form,
@@ -109,9 +106,7 @@ const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
       }
 
       if (data.data?.id && form?.group?.value) {
-        const group = groups?.find(
-          group => group?.id === Number(form?.group?.value),
-        );
+        const group = groups?.find(g => g?.id === Number(form?.group?.value));
         const groupChapterIds = group?.capters?.map(capter => capter?.id) || [];
 
         await api.put(`/groups/${form.group.value}`, {
@@ -121,12 +116,11 @@ const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
         });
       }
 
-      handleSuccess('Capítulo cadastrado com sucesso.');
-
       query.invalidateQueries({ queryKey: ['manualForm'] });
       query.invalidateQueries({ queryKey: ['manualList'] });
       query.invalidateQueries({ queryKey: ['groupList'] });
 
+      handleSuccess('Capítulo cadastrado com sucesso.');
       onClose();
     } catch (err: any) {
       handleError(err);
