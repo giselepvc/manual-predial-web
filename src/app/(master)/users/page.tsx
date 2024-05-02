@@ -16,7 +16,7 @@ import handleError, { handleSuccess } from '@/utils/handleToast';
 import { FaTrash } from 'react-icons/fa6';
 import { useAuth } from '@/hooks/useAuth';
 import EditIcon from '../../../../public/icons/edit.svg';
-import { ActionButton } from './styles';
+import { ActionButton, ActionsRows } from './styles';
 
 const UsersPage = () => {
   const { push } = useRouter();
@@ -80,23 +80,16 @@ const UsersPage = () => {
             <td>{client.enterprise?.title || '--'}</td>
             <td>{client.cpf ? cpfMask(client.cpf) : '--'}</td>
             <td>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  gap: '1.5rem',
-                }}
-              >
+              <ActionsRows>
                 <ActionButton onClick={() => push(`/users/edit/${client.id}`)}>
-                  <EditIcon />
-                  Editar
+                  <EditIcon /> Editar
                 </ActionButton>
                 <ActionButton
-                  onClick={() => (isUpdating ? null : setDeletingId(client.id))}
+                  onClick={() => !isUpdating && setDeletingId(client.id)}
                 >
                   <FaTrash />
                 </ActionButton>
-              </div>
+              </ActionsRows>
             </td>
           </tr>
         ))}

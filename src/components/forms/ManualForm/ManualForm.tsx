@@ -192,6 +192,7 @@ const ManualForm = ({ editing }: ManualFormProps) => {
           onSubmit={onSubmit}
           register={register}
           isLoading={isLoading}
+          watch={watch}
         />
       )}
       {steps === 1 && !isCompany && (

@@ -63,16 +63,9 @@ const Login = () => {
       localStorage.setItem(localStorageKeys.refreshToken, data.refreshToken);
       localStorage.setItem(localStorageKeys.role, data.role.toString());
 
-      if (data.role === 3) {
-        router.push('/company');
-      }
-      if (data.role === 1) {
-        router.push('/users');
-      }
-
-      if (data.role === 4) {
-        router.push('/panel');
-      }
+      if (data.role === 3) router.push('/company');
+      if (data.role === 1) router.push('/users');
+      if (data.role === 4) router.push('/panel');
     } catch (error) {
       handleError(error);
     } finally {

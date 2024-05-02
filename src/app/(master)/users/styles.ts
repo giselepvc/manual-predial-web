@@ -14,3 +14,9 @@ export const ActionButton = styled.div`
     color: ${({ theme }) => theme.colors.white};
   }
 `;
+
+export const ActionsRows = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+`;
