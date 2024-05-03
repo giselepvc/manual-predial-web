@@ -8,4 +8,8 @@ export const GroupSchema = yup.object({
     value: yup.string().required('Empreendimento é obrigatório'),
     label: yup.string().required('Empreendimento é obrigatório'),
   }),
+  company: yup.object({
+    value: yup.string().required('Construtora é obrigatório'),
+    label: yup.string().required('Construtora é obrigatório'),
+  }),
 });

@@ -76,17 +76,17 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
       reset({
         ...clients?.[0],
         email: clients?.[0]?.users?.email || undefined,
-        ...(clients?.[0]?.group?.enterprise?.id ? {
+        ...(clients?.[0]?.enterprise?.id ? {
           enterprise: {
-            label: clients?.[0]?.group?.enterprise?.title || '',
-            value: clients?.[0]?.group?.enterprise?.id?.toString() || '',
+            label: clients?.[0]?.enterprise?.title || '',
+            value: clients?.[0]?.enterprise?.id?.toString() || '',
           },
         } : { enterprise: undefined }),
         ...(clients?.[0]?.group?.id ? {
-          group: [{
+          group: {
             label: clients?.[0]?.group?.name || '',
             value: clients?.[0]?.group?.id?.toString() || '',
-          }],
+          },
         } : { group: undefined }),
         password: '12345678',
         confirmPassword: '12345678',
@@ -142,7 +142,7 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
           {
             ...form,
             confirmPassword: undefined,
-            group: Number(form?.group?.[0]?.value),
+            group: Number(form?.group?.value),
             enterprise: undefined,
           },
         );
@@ -181,7 +181,7 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
         data: {
           ...form,
           enterprise: Number(form?.enterprise?.value || user?.enterprise?.id),
-          group: Number(form?.group?.[0]?.value),
+          group: Number(form?.group?.value),
           password: undefined,
           confirmPassword: undefined,
           title: '',
@@ -346,14 +346,12 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
                   placeholder="Selecione um grupo"
                   onChange={onChange}
                   value={value}
-                  isMulti
                   options={groupsOptions || []}
                 />
               )}
             />
           </Field>
         )}
-
       </FormSection>
 
       {!isEditing && (
@@ -444,17 +442,6 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
           <Input placeholder="Insirir estado" {...register('state')} />
           {errors?.state?.message && (
             <ErrorMessage>{errors.state.message}</ErrorMessage>
-          )}
-        </Field>
-
-        <Field>
-          <Label>Complemento</Label>
-          <Input
-            placeholder="Insirir complemento"
-            {...register('complement')}
-          />
-          {errors?.complement?.message && (
-            <ErrorMessage>{errors.complement.message}</ErrorMessage>
           )}
         </Field>
       </FormSection>

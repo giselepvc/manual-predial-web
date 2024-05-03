@@ -14,6 +14,7 @@ import { GroupSchema, IGroupForm } from '@/validations/GroupSchema';
 import { FaTrash } from 'react-icons/fa6';
 import { getGroups } from '@/services/querys/groups';
 import ConfirmModal from '@/components/ConfirmeModal/ConfirmeModal';
+import { getCompanies } from '@/services/querys/company';
 import {
   ButtonSection,
   FormSection,
@@ -36,10 +37,20 @@ interface CustomerProps {
 const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
   const { back } = useRouter();
   const query = useQueryClient();
-
   const [isLoading, setIsLoading] = useState(false);
   const [groupsId] = useState<number>();
   const [deletingId, setDeletingId] = useState<number>();
+
+  const {
+    handleSubmit,
+    register,
+    reset,
+    watch,
+    control,
+    formState: { errors },
+  } = useForm<IGroupForm>({
+    resolver: yupResolver(GroupSchema),
+  });
 
   const groupsParams = {
     'pagination[page]': 1,
@@ -69,8 +80,25 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
     enabled: !!groupId || !!groupsId,
   });
 
+  const companiesParams = {
+    populate: '*',
+  };
+
+  const { data: companies } = useQuery({
+    queryKey: ['companiesOptions', companiesParams],
+    queryFn: async () => {
+      const data = await getCompanies(companiesParams);
+      const companiesList = normalizeStrapi(data || []);
+      return companiesList?.map(enter => ({
+        label: enter.name || '',
+        value: enter.id ? `${enter.id}` : '',
+      }));
+    },
+  });
+
   const enterpriseParams = {
     populate: '*',
+    'filters[company][id]': watch('company.value'),
   };
 
   const { data: enterprises } = useQuery({
@@ -80,25 +108,7 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
       const enterprisesList = normalizeStrapi(data || []);
       return enterprisesList;
     },
-  });
-
-  const {
-    handleSubmit,
-    register,
-    reset,
-    control,
-    formState: { errors },
-  } = useForm<IGroupForm>({
-    resolver: yupResolver(GroupSchema),
-    defaultValues: {
-      ...(isEditing && {
-        name: group?.name || '',
-        enterprise: {
-          label: group?.enterprise?.title || undefined,
-          value: group?.enterprise?.id ? `${group.enterprise.id}` : undefined,
-        },
-      }),
-    },
+    enabled: !!watch('company'),
   });
 
   const onSubmit: SubmitHandler<IGroupForm> = async form => {
@@ -211,6 +221,26 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
           />
           {errors?.name?.message && (
             <ErrorMessage>{errors.name.message}</ErrorMessage>
+          )}
+        </Field>
+
+        <Field>
+          <Label>Construtora</Label>
+          <Controller
+            control={control}
+            name="company"
+            render={({ field: { onChange, value } }) => (
+              <Select
+                placeholder="Selecione uma construtora"
+                width="300px"
+                onChange={onChange}
+                value={value}
+                options={companies || []}
+              />
+            )}
+          />
+          {errors?.company?.value?.message && (
+            <ErrorMessage>{errors.company.value.message}</ErrorMessage>
           )}
         </Field>
 

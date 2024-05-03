@@ -80,7 +80,7 @@ const Navbar = () => {
           <NavLink href="/users" selected={pathname.startsWith('/users')}>
             <UserIcon />
             <NavLinkText selected={pathname.startsWith('/users')}>
-              Listagem de usuários
+              Usuários construtora
             </NavLinkText>
           </NavLink>
         )}
@@ -89,7 +89,7 @@ const Navbar = () => {
           <NavLink href="/final" selected={pathname.startsWith('/final')}>
             <UserIcon />
             <NavLinkText selected={pathname.startsWith('/final')}>
-              Listagem de usuários final
+              Listagem de usuários finais
             </NavLinkText>
           </NavLink>
         )}

@@ -225,11 +225,14 @@ const ManualTable = ({
                     </InfoSection>
 
                     <div>
+                      {!isCompany && <FaPen onClick={() => null} />}
+
                       {!isCompany && (
                         <FaTrash
                           onClick={() => !isUpdating && setDeletingId(capter.id)}
                         />
                       )}
+
                       <Image
                         src={
                           cap?.id === capter.id
