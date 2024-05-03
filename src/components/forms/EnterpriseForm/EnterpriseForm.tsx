@@ -4,10 +4,6 @@ import { useRouter } from 'next/navigation';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-  EnterpriseSchema,
-  IEnterpriseForm,
-} from '@/validations/EnterpriseSchema';
 import cnpjMask from '@/utils/masks/cnpjMask';
 import telephoneMask from '@/utils/masks/phone';
 import zipcodeMask from '@/utils/masks/cep';
@@ -20,6 +16,12 @@ import { getCompanies } from '@/services/querys/company';
 import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import { getEnterprise } from '@/services/querys/enterprise';
 import {
+  EnterpriseSchema,
+  IEnterpriseForm,
+} from '@/validations/EnterpriseSchema';
+import HpuseIcon from '../../../../public/icons/house.svg';
+import UserIcon from '../../../../public/icons/peaple.svg';
+import {
   ButtonSection,
   FormSection,
   RegisterForm,
@@ -28,8 +30,6 @@ import {
   Label,
   ErrorMessage,
 } from './styles';
-import HpuseIcon from '../../../../public/icons/house.svg';
-import UserIcon from '../../../../public/icons/peaple.svg';
 
 interface CompanProps {
   isEditing?: boolean;
@@ -64,7 +64,6 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
     queryFn: async () => {
       const data = await getEnterprise(enterpriseParams);
       const enterprises = normalizeStrapi(data || []);
-
       reset({
         ...enterprises?.[0],
         company: {
@@ -72,7 +71,6 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
           value: `${enterprises?.[0]?.company?.id || ''}`,
         },
       });
-
       return enterprises?.[0];
     },
     enabled: !!companyId,
@@ -101,15 +99,12 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
       );
 
       if (data.data?.id && form?.company?.value) {
-        const company = companies?.find(
-          item => item.id === Number(form?.company?.value),
-        );
+        const companyValue = form.company.value;
+        const company = companies?.find(i => i.id === Number(companyValue));
         const enterprisesIds = company?.enterprises?.map(item => item.id) || [];
 
-        await api.put(`/companies/${form.company.value}`, {
-          data: {
-            enterprises: [...enterprisesIds, data.data.id],
-          },
+        await api.put(`/companies/${companyValue}`, {
+          data: { enterprises: [...enterprisesIds, data.data.id] },
         });
       }
 
@@ -139,9 +134,7 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
 
         if (!isAdded) {
           await api.put(`/companies/${form.company.value}`, {
-            data: {
-              enterprises: [...enterprisesIds, Number(companyId)],
-            },
+            data: { enterprises: [...enterprisesIds, Number(companyId)] },
           });
         }
       }
@@ -200,7 +193,42 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
             <ErrorMessage>{errors.title.message}</ErrorMessage>
           )}
         </Field>
+        <Field>
+          <Label>E-mail</Label>
+          <Input
+            type="email"
+            placeholder="Insirir e-mail"
+            {...register('email')}
+          />
+          {errors?.email?.message && (
+            <ErrorMessage>{errors.email.message}</ErrorMessage>
+          )}
+        </Field>
+        <Field>
+          <Label>Telefone</Label>
+          <Input
+            placeholder="Insirir telefone"
+            maskFunction={telephoneMask}
+            {...register('phone')}
+          />
+          {errors?.phone?.message && (
+            <ErrorMessage>{errors.phone.message}</ErrorMessage>
+          )}
+        </Field>
+        <Field>
+          <Label>CNJP</Label>
+          <Input
+            placeholder="Insirir cnpj"
+            maskFunction={cnpjMask}
+            {...register('cnpj')}
+          />
+          {errors?.cnpj?.message && (
+            <ErrorMessage>{errors.cnpj.message}</ErrorMessage>
+          )}
+        </Field>
+      </FormSection>
 
+      <FormSection>
         <Field>
           <Label>Construtora</Label>
           <Controller
@@ -222,44 +250,6 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
           />
           {errors?.company?.value?.message && (
             <ErrorMessage>{errors.company.value.message}</ErrorMessage>
-          )}
-        </Field>
-
-        <Field>
-          <Label>CNJP</Label>
-          <Input
-            placeholder="Insirir cnpj"
-            maskFunction={cnpjMask}
-            {...register('cnpj')}
-          />
-          {errors?.cnpj?.message && (
-            <ErrorMessage>{errors.cnpj.message}</ErrorMessage>
-          )}
-        </Field>
-
-        <Field>
-          <Label>E-mail</Label>
-          <Input
-            type="email"
-            placeholder="Insirir e-mail"
-            {...register('email')}
-          />
-          {errors?.email?.message && (
-            <ErrorMessage>{errors.email.message}</ErrorMessage>
-          )}
-        </Field>
-      </FormSection>
-
-      <FormSection>
-        <Field>
-          <Label>Telefone</Label>
-          <Input
-            placeholder="Insirir telefone"
-            maskFunction={telephoneMask}
-            {...register('phone')}
-          />
-          {errors?.phone?.message && (
-            <ErrorMessage>{errors.phone.message}</ErrorMessage>
           )}
         </Field>
       </FormSection>
@@ -284,7 +274,6 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
             <ErrorMessage>{errors.zipCode.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>Rua</Label>
           <Input placeholder="Insirir rua" {...register('address')} />
@@ -292,7 +281,6 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
             <ErrorMessage>{errors.address.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>Número</Label>
           <Input placeholder="Insirir número" {...register('number')} />
@@ -300,7 +288,6 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
             <ErrorMessage>{errors.number.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>Bairro</Label>
           <Input placeholder="Insirir bairro" {...register('neighborhood')} />
@@ -318,23 +305,11 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
             <ErrorMessage>{errors.city.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>Estado</Label>
           <Input placeholder="Insirir estado" {...register('state')} />
           {errors?.state?.message && (
             <ErrorMessage>{errors.state.message}</ErrorMessage>
-          )}
-        </Field>
-
-        <Field>
-          <Label>Complemento</Label>
-          <Input
-            placeholder="Insirir complemento"
-            {...register('complement')}
-          />
-          {errors?.complement?.message && (
-            <ErrorMessage>{errors.complement.message}</ErrorMessage>
           )}
         </Field>
       </FormSection>

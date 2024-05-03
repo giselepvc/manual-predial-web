@@ -64,18 +64,15 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
     queryFn: async () => {
       const groupsData = await getGroups(groupsParams);
       const groups = normalizeStrapi(groupsData || []);
-
+      const result = groups?.[0];
       reset({
-        name: groups?.[0]?.name || '',
+        name: result?.name || '',
         enterprise: {
-          label: groups?.[0]?.enterprise?.title || undefined,
-          value: groups?.[0]?.enterprise?.id
-            ? `${groups?.[0].enterprise.id}`
-            : undefined,
+          label: result?.enterprise?.title || '',
+          value: result?.enterprise?.id.toString() || '',
         },
       });
-
-      return groups?.[0];
+      return result;
     },
     enabled: !!groupId || !!groupsId,
   });
@@ -91,7 +88,7 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
       const companiesList = normalizeStrapi(data || []);
       return companiesList?.map(enter => ({
         label: enter.name || '',
-        value: enter.id ? `${enter.id}` : '',
+        value: enter.id?.toString() || '',
       }));
     },
   });
@@ -112,13 +109,10 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
   });
 
   const onSubmit: SubmitHandler<IGroupForm> = async form => {
-    setIsLoading(true);
-
     try {
+      setIsLoading(true);
       const { data } = await api.post<{ data: { id: number } }>('/groups', {
-        data: {
-          name: form.name,
-        },
+        data: { name: form.name },
       });
 
       if (data.data?.id && form?.enterprise?.value) {
@@ -132,9 +126,7 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
 
         if (!isAdded) {
           await api.put(`/enterprises/${form?.enterprise?.value}`, {
-            data: {
-              groups: [...groupsIds, data.data.id],
-            },
+            data: { groups: [...groupsIds, data.data.id] },
           });
         }
       }
@@ -149,14 +141,9 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
   };
 
   const onUpdate: SubmitHandler<IGroupForm> = async form => {
-    setIsLoading(true);
-
     try {
-      await api.put(`/groups/${groupId}`, {
-        data: {
-          name: form.name,
-        },
-      });
+      setIsLoading(true);
+      await api.put(`/groups/${groupId}`, { data: { name: form.name } });
 
       if (groupId && form?.enterprise?.value) {
         const enterprise = enterprises?.find(
@@ -169,9 +156,7 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
 
         if (!isAdded) {
           await api.put(`/enterprises/${form?.enterprise?.value}`, {
-            data: {
-              groups: [...groupsIds, groupId],
-            },
+            data: { groups: [...groupsIds, groupId] },
           });
         }
       }
@@ -186,19 +171,12 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
   };
 
   const onRemoveChapters = async () => {
-    if (!deletingId) {
-      return;
-    }
-
-    setIsLoading(true);
+    if (!deletingId) return;
 
     try {
-      await api.put(`/groups/${groupId}`, {
-        data: {
-          capters:
-            group?.capters?.filter(chapter => chapter?.id !== deletingId) || [],
-        },
-      });
+      setIsLoading(true);
+      const capters = group?.capters?.filter(c => c?.id !== deletingId) || [];
+      await api.put(`/groups/${groupId}`, { data: { capters } });
 
       setDeletingId(undefined);
       query.invalidateQueries({ queryKey: ['groupData'] });
@@ -216,7 +194,7 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
           <Label>Nome do grupo</Label>
           <Input
             placeholder="Insirir nome"
-            style={{ width: '250px' }}
+            style={{ width: '300px' }}
             {...register('name')}
           />
           {errors?.name?.message && (
@@ -251,7 +229,7 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
             name="enterprise"
             render={({ field: { onChange, value } }) => (
               <Select
-                width="250px"
+                width="300px"
                 placeholder="Selecione empreendimento"
                 onChange={onChange}
                 value={value}
@@ -281,11 +259,8 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
                     <span>{index + 1}</span>
                     <div>{chapters?.title || ''}</div>
                   </InfoSection>
-
                   <div>
-                    <FaTrash
-                      onClick={() => !isLoading && setDeletingId(chapters.id)}
-                    />
+                    <FaTrash onClick={() => setDeletingId(chapters.id)} />
                   </div>
                 </TableRow>
               ))}

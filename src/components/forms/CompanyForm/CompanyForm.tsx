@@ -34,40 +34,7 @@ interface CompanProps {
 const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
   const { back } = useRouter();
   const query = useQueryClient();
-
   const [isLoading, setIsLoading] = useState(false);
-
-  const companiesParams = {
-    'pagination[page]': 1,
-    'pagination[pageSize]': 1,
-    'filters[id][$containsi]': companyId,
-    populate: '*',
-  };
-
-  useQuery({
-    queryKey: ['usersData', companiesParams],
-    queryFn: async () => {
-      const companysData = await getCompanies(companiesParams);
-      const companys = normalizeStrapi(companysData || []);
-
-      reset({
-        address: companys?.[0]?.address,
-        complement: companys?.[0]?.complement || undefined,
-        number: companys?.[0]?.number,
-        city: companys?.[0]?.city,
-        cnpj: companys?.[0]?.cnpj,
-        neighborhood: companys?.[0]?.neighborhood,
-        phone: companys?.[0]?.phone,
-        state: companys?.[0]?.state,
-        zipCode: companys?.[0]?.zipCode,
-        name: companys?.[0]?.name,
-        email: companys?.[0]?.email,
-      });
-
-      return companys?.[0];
-    },
-    enabled: !!companyId,
-  });
 
   const {
     handleSubmit,
@@ -82,12 +49,41 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
     resolver: yupResolver(CompanySchema),
   });
 
+  const companiesParams = {
+    'pagination[page]': 1,
+    'pagination[pageSize]': 1,
+    'filters[id][$containsi]': companyId,
+    populate: '*',
+  };
+
+  useQuery({
+    queryKey: ['usersData', companiesParams],
+    queryFn: async () => {
+      const companysData = await getCompanies(companiesParams);
+      const companies = normalizeStrapi(companysData || []);
+      const company = companies?.[0];
+      reset({
+        address: company?.address,
+        complement: company?.complement || undefined,
+        number: company?.number,
+        city: company?.city,
+        cnpj: company?.cnpj,
+        neighborhood: company?.neighborhood,
+        phone: company?.phone,
+        state: company?.state,
+        zipCode: company?.zipCode,
+        name: company?.name,
+        email: company?.email,
+      });
+      return company;
+    },
+    enabled: !!companyId,
+  });
+
   const onSubmit: SubmitHandler<ICompanyForm> = async form => {
-    setIsLoading(true);
-
     try {
+      setIsLoading(true);
       await api.post('/companies', { data: { ...form } });
-
       query.invalidateQueries({ queryKey: ['CompaniesData'] });
       handleSuccess('Cadastro realizado com sucesso.');
       back();
@@ -99,11 +95,9 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
   };
 
   const onUpdate: SubmitHandler<ICompanyForm> = async form => {
-    setIsLoading(true);
-
     try {
+      setIsLoading(true);
       await api.put(`/companies/${companyId}`, { data: { ...form } });
-
       query.invalidateQueries({ queryKey: ['CompaniesData'] });
       handleSuccess('Alteração realizada com sucesso.');
       back();
@@ -159,7 +153,6 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
             <ErrorMessage>{errors.name.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>CNJP</Label>
           <Input
@@ -171,7 +164,6 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
             <ErrorMessage>{errors.cnpj.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>E-mail</Label>
           <Input
@@ -183,7 +175,6 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
             <ErrorMessage>{errors.email.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>Telefone</Label>
           <Input
@@ -217,7 +208,6 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
             <ErrorMessage>{errors.zipCode.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>Rua</Label>
           <Input placeholder="Insirir rua" {...register('address')} />
@@ -225,7 +215,6 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
             <ErrorMessage>{errors.address.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>Número</Label>
           <Input placeholder="Insirir número" {...register('number')} />
@@ -233,7 +222,6 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
             <ErrorMessage>{errors.number.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>Bairro</Label>
           <Input placeholder="Insirir bairro" {...register('neighborhood')} />
@@ -251,7 +239,6 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
             <ErrorMessage>{errors.city.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>Estado</Label>
           <Input placeholder="Insirir estado" {...register('state')} />
@@ -259,7 +246,6 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
             <ErrorMessage>{errors.state.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>Complemento</Label>
           <Input
