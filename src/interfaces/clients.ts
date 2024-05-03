@@ -43,6 +43,7 @@ export interface IGroupAttributes {
   name: string;
   publishedAt: string;
   updatedAt: string;
+  enterprise: IEnterprise;
 }
 
 export interface IEnterprise {

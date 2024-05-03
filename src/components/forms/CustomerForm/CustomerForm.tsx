@@ -64,7 +64,7 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
     'pagination[page]': 1,
     'pagination[pageSize]': 1,
     'filters[id]': customerId,
-    populate: '*',
+    populate: ['users', 'group.enterprise', 'enterprise'],
   };
 
   useQuery({
@@ -76,17 +76,17 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
       reset({
         ...clients?.[0],
         email: clients?.[0]?.users?.email || undefined,
-        ...(clients?.[0]?.enterprise?.id ? {
+        ...(clients?.[0]?.group?.enterprise?.id ? {
           enterprise: {
-            label: clients?.[0]?.enterprise?.title || '',
-            value: clients?.[0]?.enterprise?.id?.toString() || '',
+            label: clients?.[0]?.group?.enterprise?.title || '',
+            value: clients?.[0]?.group?.enterprise?.id?.toString() || '',
           },
         } : { enterprise: undefined }),
         ...(clients?.[0]?.group?.id ? {
-          group: {
+          group: [{
             label: clients?.[0]?.group?.name || '',
             value: clients?.[0]?.group?.id?.toString() || '',
-          },
+          }],
         } : { group: undefined }),
         password: '12345678',
         confirmPassword: '12345678',
@@ -131,6 +131,8 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
     enabled: !!watch('enterprise'),
   });
 
+  console.log(errors);
+
   const onSubmit: SubmitHandler<ICustomerForm> = async form => {
     try {
       setIsLoading(true);
@@ -140,7 +142,7 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
           {
             ...form,
             confirmPassword: undefined,
-            group: Number(form?.group?.value),
+            group: Number(form?.group?.[0]?.value),
             enterprise: undefined,
           },
         );
@@ -179,7 +181,7 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
         data: {
           ...form,
           enterprise: Number(form?.enterprise?.value || user?.enterprise?.id),
-          group: Number(form?.group?.value),
+          group: Number(form?.group?.[0]?.value),
           password: undefined,
           confirmPassword: undefined,
           title: '',
@@ -344,6 +346,7 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
                   placeholder="Selecione um grupo"
                   onChange={onChange}
                   value={value}
+                  isMulti
                   options={groupsOptions || []}
                 />
               )}

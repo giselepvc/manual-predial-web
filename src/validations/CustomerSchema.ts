@@ -29,8 +29,10 @@ export const CustomerSchema = yup.object({
     value: yup.string().required('Empreendimento obrigatório'),
     label: yup.string().required('Empreendimento obrigatório'),
   }),
-  group: yup.object({
-    value: yup.string(),
-    label: yup.string(),
-  }),
+  group: yup.array().of(
+    yup.object({
+      value: yup.string().required(),
+      label: yup.string().required(),
+    }),
+  ),
 });
