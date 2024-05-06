@@ -25,7 +25,7 @@ export const FormSection = styled.section`
 
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  grid-column-gap: 2rem;
+  grid-column-gap: 1.56rem;
   grid-row-gap: 1.5rem;
 `;
 

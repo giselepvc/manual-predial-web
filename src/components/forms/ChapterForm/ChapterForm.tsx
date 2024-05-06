@@ -1,12 +1,10 @@
-import { Control, Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ChapterSchema, IChapterForm } from '@/validations/ChapterSchema';
 import Select from '@/components/Select/Select';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
 import handleError, { handleSuccess } from '@/utils/handleToast';
-import { typeList } from '@/components/ManualTable/ManualTable';
-import { IManualForm } from '@/validations/ManualSchema';
 import api from '@/services/api';
 import { useState } from 'react';
 import { RecursiveNormalize, normalizeStrapi } from '@/utils/normalizeStrapi';
@@ -16,6 +14,7 @@ import { getGroups } from '@/services/querys/groups';
 import { getIcons } from '@/services/querys/icons';
 import Image from 'next/image';
 import { urlBuild } from '@/utils/urlBuild';
+import { CaptersDatum } from '@/interfaces/grups';
 import {
   ButtonSection,
   Checkbox,
@@ -31,14 +30,15 @@ import {
 
 interface ChapterPageProps {
   onClose: () => void;
-  control: Control<IManualForm, any>;
+  chapter: RecursiveNormalize<CaptersDatum> | undefined;
   manual: RecursiveNormalize<IManualList> | undefined;
 }
 
-const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
+const ChapterForm = ({ onClose, manual, chapter }: ChapterPageProps) => {
   const query = useQueryClient();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const chaptesIds = manual?.capters?.map(capter => capter.id) || [];
+  const isEditing = !!chapter?.id;
 
   const groupsParams = {
     populate: '*',
@@ -73,46 +73,62 @@ const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
     formState: { errors },
   } = useForm<IChapterForm>({
     resolver: yupResolver(ChapterSchema),
+    defaultValues: {
+      title: chapter?.title,
+      order: chapter?.order,
+      ...(isEditing && {
+        visible: {
+          label: chapter?.visible ? 'Sim' : 'Não',
+          value: chapter?.visible ? 'sim' : 'nao',
+        },
+      }),
+      icon: chapter?.icon?.id || 0,
+      ...{
+        groups:
+          chapter?.groups?.map(group => ({
+            label: group?.name,
+            value: group?.id?.toString(),
+          })) || [],
+      },
+    },
   });
 
   const onSubmit: SubmitHandler<IChapterForm> = async form => {
     try {
       setIsLoading(true);
+      const formData = {
+        ...form,
+        company: undefined,
+        enterprise: undefined,
+        groups: form?.groups?.map(item => Number(item.value)) || [],
+        visible: form.visible?.value === 'sim',
+      };
 
-      const { data } = await api.post<{ data: { id: number } }>('/capters', {
-        data: {
-          ...form,
-          visible: form.visible?.value === 'sim',
-        },
-      });
+      const { data } = chapter?.id
+        ? await api.put<any>(`/capters/${chapter?.id}`, { data: formData })
+        : await api.post<any>('/capters', { data: formData });
 
       if (data.data?.id && manual?.id) {
         await api.put(`/manuals/${manual.id}`, {
-          data: {
-            capters: [...chaptesIds, data.data.id],
-          },
+          data: { capters: [...chaptesIds, data.data.id] },
         });
       }
 
       if (form?.icon && form?.icon !== 0 && data.data.id) {
         const iconSelected = icons?.find(item => item.id === form.icon);
         const captersList = iconSelected?.capters?.map(item => item.id) || [];
-
         await api.put(`/icons/${form?.icon}`, {
-          data: {
-            capters: [...captersList, data.data.id],
-          },
+          data: { capters: [...captersList, data.data.id] },
         });
       }
 
-      if (data.data?.id && form?.group?.value) {
-        const group = groups?.find(g => g?.id === Number(form?.group?.value));
-        const groupChapterIds = group?.capters?.map(capter => capter?.id) || [];
-
-        await api.put(`/groups/${form.group.value}`, {
-          data: {
-            capters: [...groupChapterIds, data.data.id],
-          },
+      if (data.data?.id && form?.groups && form?.groups?.length > 0) {
+        form?.groups?.map(async item => {
+          const group = groups?.find(g => g?.id === Number(item?.value));
+          const groupChapterIds = group?.capters?.map(c => c?.id) || [];
+          await api.put(`/groups/${item.value}`, {
+            data: { capters: [...groupChapterIds, data.data.id] },
+          });
         });
       }
 
@@ -120,7 +136,10 @@ const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
       query.invalidateQueries({ queryKey: ['manualList'] });
       query.invalidateQueries({ queryKey: ['groupList'] });
 
-      handleSuccess('Capítulo cadastrado com sucesso.');
+      if (isEditing) {
+        handleSuccess('Capítulo alterado com sucesso.');
+      } else handleSuccess('Capítulo cadastrado com sucesso.');
+
       onClose();
     } catch (err: any) {
       handleError(err);
@@ -129,26 +148,26 @@ const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
     }
   };
 
+  console.log(errors);
+
   return (
     <RegisterForm>
-      <RegisterTitle>Cadastro de capítulo</RegisterTitle>
+      <RegisterTitle>
+        {isEditing ? 'Edição do capítulo' : 'Cadastro de capítulo'}
+      </RegisterTitle>
 
       <FormSection>
         <Field>
           <Label>Tipo de cadastro</Label>
-          <Controller
-            control={control}
-            name="type"
-            render={({ field: { onChange, value } }) => (
-              <Select
-                width="250px"
-                placeholder="Capítulo"
-                onChange={onChange}
-                value={value}
-                options={typeList}
-                isDisabled
-              />
-            )}
+          <Select
+            width="270px"
+            placeholder="Capítulo"
+            value={{
+              label: 'Capítulo',
+              value: 'capitulo',
+            }}
+            options={[]}
+            isDisabled
           />
         </Field>
 
@@ -157,7 +176,7 @@ const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
           <Input
             placeholder="Insira uma ordem"
             type="number"
-            style={{ width: '250px' }}
+            style={{ width: '270px' }}
             {...register('order')}
           />
           {errors?.order?.message && (
@@ -172,7 +191,7 @@ const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
             name="visible"
             render={({ field: { onChange, value } }) => (
               <Select
-                width="250px"
+                width="270px"
                 placeholder="Selecione uma opção"
                 onChange={onChange}
                 value={value}
@@ -195,18 +214,19 @@ const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
         </Field>
       </FormSection>
 
-      <FormSection>
+      <FormSection style={{ display: 'flex' }}>
         <Field>
           <Label>Grupo</Label>
           <Controller
             control={controlManual}
-            name="group"
+            name="groups"
             render={({ field: { onChange, value } }) => (
               <Select
-                width="250px"
+                width="418px"
                 placeholder="Selecione um grupo"
                 onChange={onChange}
                 value={value}
+                isMulti
                 options={
                   groups?.map(group => ({
                     label: group?.name || '',
@@ -216,16 +236,13 @@ const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
               />
             )}
           />
-          {errors?.group?.value?.message && (
-            <ErrorMessage>{errors.group?.value?.message}</ErrorMessage>
-          )}
         </Field>
 
         <Field>
           <Label>Nome do capítulo</Label>
           <Input
             placeholder="Insira um nome"
-            style={{ width: '250px' }}
+            style={{ width: '418px' }}
             {...register('title')}
           />
           {errors?.title?.message && (
@@ -260,7 +277,7 @@ const ChapterForm = ({ onClose, control, manual }: ChapterPageProps) => {
       <ButtonSection>
         <Button outlined text="Voltar" type="button" onClick={onClose} />
         <Button
-          text="Cadastrar"
+          text={isEditing ? 'Editar' : 'Cadastrar'}
           type="button"
           onClick={handleSubmit(onSubmit)}
           disabled={isLoading}

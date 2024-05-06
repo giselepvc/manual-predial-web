@@ -14,8 +14,9 @@ export const CustomerSchema = yup.object({
   state: yup.string(),
   zipCode: yup.string(),
   name: yup.string(),
+  login: yup.string().required('Login é obrigatório'),
   complement: yup.string(),
-  email: yup.string().required('Email é obrigatório'),
+  email: yup.string(),
   password: yup
     .string()
     .min(8, 'A senha deve ter no mínimo 8 caracteres')

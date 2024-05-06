@@ -79,9 +79,7 @@ const ManualTable = ({
 }: ManualTableProps) => {
   const { role } = useAuth();
   const query = useQueryClient();
-
   const isCompany = role === 1;
-
   const [listOtions, setListOptions] = useState(typeList);
   const [deletingId, setDeletingId] = useState<number>();
   const [deletingTitleId, setDeletingTitleId] = useState<number>();
@@ -107,14 +105,11 @@ const ManualTable = ({
   }, [manual]);
 
   const onDelete = async () => {
-    if (!deletingId) {
-      return;
-    }
+    if (!deletingId) return;
 
     try {
       setIsUpdating(true);
       await api.delete(`/capters/${deletingId}`);
-
       handleSuccess('Capítulo deletado com sucesso.');
       setDeletingId(undefined);
       query.invalidateQueries({ queryKey: ['manualForm'] });
@@ -127,14 +122,11 @@ const ManualTable = ({
   };
 
   const onDeleteTitle = async () => {
-    if (!deletingTitleId) {
-      return;
-    }
+    if (!deletingTitleId) return;
 
     try {
       setIsUpdating(true);
       await api.delete(`/titles/${deletingTitleId}`);
-
       handleSuccess('Título deletado com sucesso.');
       setDeletingTitleId(undefined);
       query.invalidateQueries({ queryKey: ['manualForm'] });
@@ -146,14 +138,11 @@ const ManualTable = ({
   };
 
   const onDeleteContainer = async () => {
-    if (!deletingContainerId) {
-      return;
-    }
+    if (!deletingContainerId) return;
 
     try {
       setIsUpdating(true);
       await api.delete(`/containers/${deletingContainerId}`);
-
       handleSuccess('Conteúdo deletado com sucesso.');
       setDeletingContainerId(undefined);
       query.invalidateQueries({ queryKey: ['manualForm'] });
@@ -225,20 +214,18 @@ const ManualTable = ({
                     </InfoSection>
 
                     <div>
-                      {!isCompany && <FaPen onClick={() => null} />}
-
                       {!isCompany && (
-                        <FaTrash
-                          onClick={() => !isUpdating && setDeletingId(capter.id)}
+                        <FaPen
+                          onClick={() => {
+                            setCap(undefined);
+                            setSteps(2);
+                          }}
                         />
                       )}
+                      {!isCompany && <FaTrash onClick={() => setDeletingId(capter.id)} />}
 
                       <Image
-                        src={
-                          cap?.id === capter.id
-                            ? '/icons/up-arrow.svg'
-                            : '/icons/down-arrow.svg'
-                        }
+                        src={`/icons/${cap?.id === capter.id ? 'up' : 'down'}-arrow.svg`}
                         alt="icon"
                         width={20}
                         height={20}
@@ -251,17 +238,13 @@ const ManualTable = ({
                       <>
                         <Thread>
                           <ThreadSection>
-                            {index + 1 === 1 && (
-                              <ThreadLine />
-                            )}
+                            {index + 1 === 1 && <ThreadLine />}
                           </ThreadSection>
 
                           <TableMore
                             key={titles.id}
                             onClick={() =>
-                              setTitle(props =>
-                                props === titles ? undefined : titles,
-                              )
+                              setTitle(props => (props === titles ? undefined : titles))
                             }
                           >
                             <InfoSection>
@@ -271,18 +254,10 @@ const ManualTable = ({
 
                             <div>
                               {!isCompany && (
-                                <FaTrash
-                                  onClick={() =>
-                                    !isUpdating && setDeletingTitleId(titles.id)
-                                  }
-                                />
+                                <FaTrash onClick={() => setDeletingTitleId(titles.id)} />
                               )}
                               <Image
-                                src={
-                                  title?.id === titles.id
-                                    ? '/icons/up-arrow.svg'
-                                    : '/icons/down-arrow.svg'
-                                }
+                                src={`/icons/${title?.id === titles.id ? 'up' : 'down'}-arrow.svg`}
                                 alt="icon"
                                 width={20}
                                 height={20}

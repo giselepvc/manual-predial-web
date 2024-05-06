@@ -28,6 +28,24 @@ export interface FluffyAttributes {
   updatedAt: string;
   publishedAt: string;
   visible: boolean;
+  icon: IIcon;
+  groups: Group;
+}
+
+export interface Group {
+  data: GroupDatum[];
+}
+
+export interface GroupDatum {
+  id: number;
+  attributes: GroupAttributes;
+}
+
+export interface GroupAttributes {
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
 }
 
 export interface Enterprise {
@@ -42,4 +60,38 @@ export interface EnterpriseDatum {
 export interface EnterpriseAttributes {
   title: string;
   active: boolean;
+}
+
+export interface IIcon {
+  data: IIconData;
+}
+
+export interface IIconData {
+  id: number;
+  attributes: PurpleAttributes;
+}
+
+export interface PurpleAttributes {
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  active: boolean;
+  image: Image;
+}
+
+export interface Image {
+  data: ImageData;
+}
+
+export interface ImageData {
+  id: number;
+  attributes: ImageAttributes;
+}
+
+export interface ImageAttributes {
+  name: string;
+  url: string;
+  createdAt: string;
+  updatedAt: string;
 }

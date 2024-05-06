@@ -78,6 +78,7 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
 
       reset({
         ...clients?.[0],
+        login: clients?.[0]?.users?.username || undefined,
         email: clients?.[0]?.users?.email || undefined,
         ...(clients?.[0]?.enterprise?.id ? {
           enterprise: {
@@ -142,6 +143,7 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
           '/registerViewer',
           {
             ...form,
+            username: form.login,
             confirmPassword: undefined,
             group: Number(form?.group?.value),
             enterprise: undefined,
@@ -152,6 +154,7 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
           '/registerUser',
           {
             ...form,
+            username: form.login,
             enterprise: Number(form?.enterprise?.value),
             group: undefined,
             confirmPassword: undefined,
@@ -268,6 +271,14 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
 
         <Field>
           <Label>Login</Label>
+          <Input placeholder="Insirir login" {...register('login')} />
+          {errors?.login?.message && (
+            <ErrorMessage>{errors.login.message}</ErrorMessage>
+          )}
+        </Field>
+
+        <Field>
+          <Label>E-mail</Label>
           <Input
             type="text"
             placeholder="Insirir e-mail"
@@ -290,7 +301,9 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
             <ErrorMessage>{errors.cpf.message}</ErrorMessage>
           )}
         </Field>
+      </FormSection>
 
+      <FormSection>
         <Field>
           <Label>CNJP</Label>
           <Input
@@ -303,30 +316,16 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
             <ErrorMessage>{errors.cnpj.message}</ErrorMessage>
           )}
         </Field>
-      </FormSection>
 
-      <FormSection>
         <Field>
           <Label>Telefone</Label>
           <Input
             placeholder="Insirir telefone"
             maskFunction={telephoneMask}
-            {...register('phone')}
+            {...register('cellPhone')}
           />
           {errors?.cellPhone?.message && (
             <ErrorMessage>{errors.cellPhone.message}</ErrorMessage>
-          )}
-        </Field>
-
-        <Field>
-          <Label>Celular</Label>
-          <Input
-            placeholder="Insirir celular"
-            maskFunction={telephoneMask}
-            {...register('cellPhone')}
-          />
-          {errors?.phone?.message && (
-            <ErrorMessage>{errors.phone.message}</ErrorMessage>
           )}
         </Field>
 

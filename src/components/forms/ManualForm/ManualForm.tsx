@@ -39,9 +39,7 @@ interface ManualFormProps {
 const ManualForm = ({ editing }: ManualFormProps) => {
   const param = useParams();
   const { role } = useAuth();
-
   const isCompany = role === 1;
-
   const [isLoading, setIsloading] = useState<boolean>(false);
   const [steps, setSteps] = useState<number>(editing ? 1 : 0);
   const [buildType, setBuildType] = useState<string>('');
@@ -75,7 +73,7 @@ const ManualForm = ({ editing }: ManualFormProps) => {
     'populate[3]': 'capters.icon.image',
     'populate[4]': 'capters.titles.containers.pdf',
     'populate[5]': 'capters.titles.containers.icon.image',
-    'populate[6]': 'capters.group',
+    'populate[6]': 'capters.groups',
     'filters[id]': param?.id || manual?.id,
   };
 
@@ -85,7 +83,6 @@ const ManualForm = ({ editing }: ManualFormProps) => {
       const data = await getManuals(manualsParams);
       const results = normalizeStrapi(data || []);
       const result = results?.[0];
-
       setValue('enterprise', {
         value: result?.enterprise?.id?.toString() || '',
         label: result?.enterprise?.title || '',
@@ -113,9 +110,8 @@ const ManualForm = ({ editing }: ManualFormProps) => {
   });
 
   const onSubmit: SubmitHandler<IManualForm> = async form => {
-    setIsloading(true);
-
     try {
+      setIsloading(true);
       const { data } = await api.post<ResponseManual>('/manuals', {
         data: {
           title: form.name,
@@ -125,15 +121,11 @@ const ManualForm = ({ editing }: ManualFormProps) => {
       });
 
       if (data.data?.id && form.enterprise?.value) {
-        const enterpriseFind = enterprise?.find(
-          item => item.id === Number(form.enterprise?.value),
-        );
+        const etpId = form.enterprise.value;
+        const enterpriseFind = enterprise?.find(e => e.id === Number(etpId));
         const manualsIds = enterpriseFind?.manuals?.map(item => item.id) || [];
-
-        await api.put(`/enterprises/${form.enterprise.value}`, {
-          data: {
-            manuals: [...manualsIds, data.data.id],
-          },
+        await api.put(`/enterprises/${etpId}`, {
+          data: { manuals: [...manualsIds, data.data.id] },
         });
       }
 
@@ -153,9 +145,18 @@ const ManualForm = ({ editing }: ManualFormProps) => {
 
   useEffect(() => {
     if (watch('type.value') === undefined) return;
-    if (watch('type.value') === 'capitulo') setSteps(2);
-    if (watch('type.value') === 'titulo') setSteps(3);
-    if (watch('type.value') === 'container') setSteps(4);
+    if (watch('type.value') === 'capitulo') {
+      setChapter(undefined);
+      setSteps(2);
+    }
+    if (watch('type.value') === 'titulo') {
+      setTitle(undefined);
+      setSteps(3);
+    }
+    if (watch('type.value') === 'container') {
+      setContent(undefined);
+      setSteps(4);
+    }
   }, [watch('type')]);
 
   const onClose = () => {
@@ -225,7 +226,7 @@ const ManualForm = ({ editing }: ManualFormProps) => {
         />
       )}
       {steps === 2 && (
-        <ChapterForm control={control} onClose={onClose} manual={manual} />
+        <ChapterForm onClose={onClose} manual={manual} chapter={chapter} />
       )}
       {steps === 3 && (
         <TitleForm control={control} onClose={onClose} manual={manual} />

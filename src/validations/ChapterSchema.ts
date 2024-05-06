@@ -13,9 +13,19 @@ export const ChapterSchema = yup.object({
     value: yup.string().required('Status é obrigatório'),
     label: yup.string().required('Status é obrigatório'),
   }),
-  group: yup.object({
+  company: yup.object({
     value: yup.string(),
     label: yup.string(),
   }),
+  enterprise: yup.object({
+    value: yup.string(),
+    label: yup.string(),
+  }),
+  groups: yup.array().of(
+    yup.object({
+      value: yup.string(),
+      label: yup.string(),
+    }),
+  ),
   icon: yup.number(),
 });

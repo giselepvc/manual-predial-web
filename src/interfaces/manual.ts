@@ -37,12 +37,12 @@ export interface CaptersAttributes {
   publishedAt: string;
   visible: boolean;
   titles: Titles;
-  group: Group;
+  groups: Group;
   icon: IIcon;
 }
 
 export interface Group {
-  data: GroupDatum;
+  data: GroupDatum[];
 }
 
 export interface GroupDatum {
