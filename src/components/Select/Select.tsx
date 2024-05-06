@@ -115,11 +115,11 @@ const Select = <OptionType, T extends boolean = false>({
             border: 'none',
             borderRadius: '0.625rem',
             width: width || '230px',
-            background: theme.colors.gray41,
+            background: theme.colors.grayStronger,
           }),
           menuList: prev => ({
             ...prev,
-            background: theme.colors.gray41,
+            background: theme.colors.grayStronger,
             borderRadius: '0.625rem',
           }),
           singleValue: prev => ({
@@ -131,7 +131,7 @@ const Select = <OptionType, T extends boolean = false>({
           }),
           option: prev => ({
             ...prev,
-            background: theme.colors.gray41,
+            background: theme.colors.grayStronger,
             color: theme.colors.white,
             fontSize: '0.875rem',
             fontFamily: 'inherit',

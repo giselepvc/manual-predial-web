@@ -13,13 +13,14 @@ import zipcodeMask from '@/utils/masks/cep';
 import handleError, { handleSuccess } from '@/utils/handleToast';
 import { getAddressFromCep } from '@/services/addressApi';
 import api from '@/services/api';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getEnterprise } from '@/services/querys/enterprise';
-import { normalizeStrapi } from '@/utils/normalizeStrapi';
+import { RecursiveNormalize, normalizeStrapi } from '@/utils/normalizeStrapi';
 import { getClients } from '@/services/querys/clients';
 import { useAuth } from '@/hooks/useAuth';
 import { getGroups } from '@/services/querys/groups';
+import { IEnterprises } from '@/interfaces/enterprise';
 import UserIcon from '../../../../public/icons/peaple.svg';
 import HpuseIcon from '../../../../public/icons/house.svg';
 import {
@@ -43,6 +44,7 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
   const { user } = useAuth();
   const query = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
+  const [enterpriseList, setEnterprise] = useState<RecursiveNormalize<IEnterprises[]>>([]);
 
   const enterpriseParams = {
     populate: '*',
@@ -53,6 +55,7 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
     queryFn: async () => {
       const data = await getEnterprise(enterpriseParams);
       const enterpriseList = normalizeStrapi(data || []);
+      setEnterprise(enterpriseList);
       return enterpriseList?.map(enter => ({
         label: enter.title || '',
         value: enter.id ? `${enter.id}` : '',
@@ -130,8 +133,6 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
     },
     enabled: !!watch('enterprise'),
   });
-
-  console.log(errors);
 
   const onSubmit: SubmitHandler<ICustomerForm> = async form => {
     try {
@@ -235,6 +236,19 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
       }
     }
   };
+
+  useEffect(() => {
+    if (watch('enterprise.value')) {
+      const enterpriseFind = enterpriseList.find(etp => etp.id.toString() === watch('enterprise.value'));
+
+      setValue('state', enterpriseFind?.state);
+      setValue('zipCode', enterpriseFind?.zipCode);
+      setValue('city', enterpriseFind?.city);
+      setValue('address', enterpriseFind?.address);
+      setValue('neighborhood', enterpriseFind?.neighborhood);
+      setValue('number', enterpriseFind?.number);
+    }
+  }, [watch('enterprise')]);
 
   return (
     <RegisterForm onSubmit={handleSubmit(isEditing ? onUpdate : onSubmit)}>
