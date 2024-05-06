@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import Select from '@/components/Select/Select';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
@@ -39,12 +38,22 @@ interface CustomerProps {
   isCompany?: boolean;
 }
 
-const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
+const CustomerForm = ({
+  isEditing,
+  customerId,
+  isCompany = false,
+}: CustomerProps) => {
   const { back } = useRouter();
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const query = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
-  const [enterpriseList, setEnterprise] = useState<RecursiveNormalize<IEnterprises[]>>([]);
+  const [enterpriseList, setEnterprise] = useState<
+    RecursiveNormalize<IEnterprises[]>
+  >([]);
+  const option = {
+    label: user?.enterprise?.title || '',
+    value: user?.enterprise?.id?.toString() || '',
+  };
 
   const enterpriseParams = {
     populate: '*',
@@ -80,18 +89,22 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
         ...clients?.[0],
         login: clients?.[0]?.users?.username || undefined,
         email: clients?.[0]?.users?.email || undefined,
-        ...(clients?.[0]?.enterprise?.id ? {
+        ...(clients?.[0]?.enterprise && {
           enterprise: {
-            label: clients?.[0]?.enterprise?.title || '',
-            value: clients?.[0]?.enterprise?.id?.toString() || '',
+            label: isCompany
+              ? clients?.[0]?.group?.enterprise?.title || ''
+              : clients?.[0]?.enterprise?.title,
+            value: isCompany
+              ? clients?.[0]?.group?.enterprise?.id?.toString() || ''
+              : clients?.[0]?.enterprise?.id?.toString(),
           },
-        } : { enterprise: undefined }),
-        ...(clients?.[0]?.group?.id ? {
+        }),
+        ...(clients?.[0]?.group && {
           group: {
             label: clients?.[0]?.group?.name || '',
             value: clients?.[0]?.group?.id?.toString() || '',
           },
-        } : { group: undefined }),
+        }),
         password: '12345678',
         confirmPassword: '12345678',
       });
@@ -119,7 +132,7 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
   const groupsParams = {
     'sort[createdAt]': 'DESC',
     populate: '*',
-    'filters[enterprise][id]': watch('enterprise.value'),
+    'filters[enterprise][id]': watch('enterprise.value') || option?.value,
   };
 
   const { data: groupsOptions } = useQuery({
@@ -132,23 +145,20 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
         value: item?.id.toString() || '',
       }));
     },
-    enabled: !!watch('enterprise'),
+    enabled: !!watch('enterprise') && !!isCompany,
   });
 
   const onSubmit: SubmitHandler<ICustomerForm> = async form => {
     try {
       setIsLoading(true);
       if (isCompany) {
-        await api.post<{ data: { id: number } }>(
-          '/registerViewer',
-          {
-            ...form,
-            username: form.login,
-            confirmPassword: undefined,
-            group: Number(form?.group?.value),
-            enterprise: undefined,
-          },
-        );
+        await api.post<{ data: { id: number } }>('/registerViewer', {
+          ...form,
+          username: form.login,
+          confirmPassword: undefined,
+          group: Number(form?.group?.value),
+          enterprise: undefined,
+        });
       } else {
         const { data } = await api.post<{ data: { id: number } }>(
           '/registerUser',
@@ -184,8 +194,10 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
       await api.put(`/clients/${customerId}`, {
         data: {
           ...form,
-          enterprise: Number(form?.enterprise?.value || user?.enterprise?.id),
-          group: Number(form?.group?.value),
+          enterprise: isCompany
+            ? undefined
+            : Number(form?.enterprise?.value || user?.enterprise?.id),
+          group: form?.group?.value ? Number(form?.group?.value) : undefined,
           password: undefined,
           confirmPassword: undefined,
           title: '',
@@ -241,8 +253,10 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
   };
 
   useEffect(() => {
-    if (watch('enterprise.value')) {
-      const enterpriseFind = enterpriseList.find(etp => etp.id.toString() === watch('enterprise.value'));
+    if (watch('enterprise.value') && !isEditing) {
+      const enterpriseFind = enterpriseList.find(
+        etp => etp.id.toString() === watch('enterprise.value'),
+      );
 
       setValue('state', enterpriseFind?.state);
       setValue('zipCode', enterpriseFind?.zipCode);
@@ -251,7 +265,16 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
       setValue('neighborhood', enterpriseFind?.neighborhood);
       setValue('number', enterpriseFind?.number);
     }
-  }, [watch('enterprise')]);
+
+    if (role === 1) {
+      setValue('state', user?.enterprise?.state);
+      setValue('zipCode', user?.enterprise?.zipCode);
+      setValue('city', user?.enterprise?.city);
+      setValue('address', user?.enterprise?.address);
+      setValue('neighborhood', user?.enterprise?.neighborhood);
+      setValue('number', user?.enterprise?.number);
+    }
+  }, [watch('enterprise'), role]);
 
   return (
     <RegisterForm onSubmit={handleSubmit(isEditing ? onUpdate : onSubmit)}>
@@ -338,8 +361,9 @@ const CustomerForm = ({ isEditing, customerId, isCompany }: CustomerProps) => {
               <Select
                 placeholder="Selecione empreendimento"
                 onChange={onChange}
-                value={value}
+                value={role === 1 ? option : value}
                 options={enterprises || []}
+                isDisabled={role === 1}
               />
             )}
           />

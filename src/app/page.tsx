@@ -64,7 +64,7 @@ const Login = () => {
       localStorage.setItem(localStorageKeys.role, data.role.toString());
 
       if (data.role === 3) router.push('/company');
-      if (data.role === 1) router.push('/users');
+      if (data.role === 1) router.push('/final');
       if (data.role === 4) router.push('/panel');
     } catch (error) {
       handleError(error);

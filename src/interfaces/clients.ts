@@ -82,4 +82,10 @@ export interface IImagesttributes {
 
 export interface IEnterpriseAttributes {
   title: string;
+  zipCode: string;
+  address: string;
+  number: string;
+  neighborhood: string;
+  city: string;
+  state: string;
 }
