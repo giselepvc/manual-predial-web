@@ -8,7 +8,7 @@ export const TableSection = styled.section`
   padding: 1rem 1.75rem 0.5rem 1.75rem;
 
   border-radius: 0.625rem;
-  background: ${({ theme }) => theme.colors.gray3d};
+  background: ${({ theme }) => theme.colors.black};
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 `;
 
@@ -43,7 +43,7 @@ export const Table = styled.table`
     font-weight: 600;
     height: 3.4375rem;
     text-align: center;
-    background: ${({ theme }) => theme.colors.gray41};
+    background: ${({ theme }) => theme.colors.grayStronger};
     text-align: left;
 
     &:first-child {

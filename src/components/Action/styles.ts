@@ -12,7 +12,7 @@ export const FilterSection = styled.div`
 
 export const FilterInput = styled.input`
   border: none;
-  background: ${({ theme }) => theme.colors.gray3d};
+  background: ${({ theme }) => theme.colors.black};
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 0.625rem;
 
@@ -58,7 +58,7 @@ export const FilterButton = styled.button`
 
 export const FilterRegister = styled.button`
   border: none;
-  background: ${({ theme }) => theme.colors.gray3d};
+  background: ${({ theme }) => theme.colors.black};
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 0.625rem;
 

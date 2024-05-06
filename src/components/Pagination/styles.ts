@@ -9,9 +9,9 @@ export const PaginationContainer = styled.div`
 
     display: flex;
     align-items: center;
-    background: ${({ theme }) => theme.colors.gray41};
+    background: ${({ theme }) => theme.colors.grayStronger};
 
-    border: 1px solid ${({ theme }) => theme.colors.gray41};
+    border: 1px solid ${({ theme }) => theme.colors.grayStronger};
     border-radius: 0.625rem;
   }
 
@@ -30,7 +30,7 @@ export const PaginationContainer = styled.div`
 
     cursor: pointer;
 
-    background: ${({ theme }) => theme.colors.gray3d};
+    background: ${({ theme }) => theme.colors.grayLight};
 
     transition: filter 0.2s;
 

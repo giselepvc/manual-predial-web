@@ -5,7 +5,8 @@ export const NavbarContainer = styled.div`
   height: 100%;
 
   border-radius: 0px 10px 10px 0px;
-  background: linear-gradient(178.26deg, #3d3d3d 58.58%, #7c4d30 150.95%);
+  /* background: linear-gradient(178.26deg, #1b1b1b 63.58%, #7c4d30 150.95%); */
+  background: #1b1b1b;
   box-shadow: 0px 4px 4px 0px #00000040;
 
   padding-top: min(6vh, 4.25rem);
@@ -69,6 +70,8 @@ export const NavLink = styled(Link)<NavLinkProps>`
     selected ? theme.colors.primary : 'transparent'};
 
   text-decoration: none;
+  color: ${({ theme, selected }) =>
+    selected ? theme.colors.white : theme.colors.gray8f};
 
   svg {
     font-size: 1.75rem;
@@ -82,6 +85,10 @@ export const NavLink = styled(Link)<NavLinkProps>`
   &:hover {
     background: ${({ theme }) => theme.colors.primary};
     color: ${({ theme }) => theme.colors.white};
+
+    svg {
+      color: ${({ theme }) => theme.colors.white};
+    }
   }
 
   ${({ selected }) =>
@@ -106,11 +113,8 @@ export const NavLink = styled(Link)<NavLinkProps>`
 export const NavLinkText = styled.p<NavLinkProps>`
   font-size: 1rem;
   font-weight: 600;
-  color: ${({ theme, selected }) =>
-    selected ? theme.colors.white : theme.colors.gray8f};
   overflow: hidden;
   white-space: nowrap;
-  transition: all 0.2s;
 `;
 
 interface NavProps {
@@ -189,7 +193,7 @@ export const LogoutSection = styled.div<BottomProps>`
   width: 100%;
 
   border-radius: 8px;
-  background: ${({ theme }) => theme.colors.gray41};
+  background: ${({ theme }) => theme.colors.grayStronger};
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 
   font-size: 1rem;

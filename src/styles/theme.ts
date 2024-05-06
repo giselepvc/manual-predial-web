@@ -1,7 +1,11 @@
 export const theme = {
   colors: {
     primary: '#86BD2C',
-    gray41: '#414141',
+
+    grayStronger: '#272727', // #414141 cinza escuro
+    black: '#1b1b1b', // #414141 cinza preto
+    grayLight: '#414141', // #414141 cinza claro
+
     gray4a: '#4A4A4A',
     gray3d: '#3D3D3D',
     gray3a: '#3A3A3A',

@@ -43,7 +43,7 @@ export const GlobalStyle = createGlobalStyle`
   }
   body {
     text-rendering: optimizeLegibility;
-    background: ${({ theme }) => theme.colors.gray41};
+    background: ${({ theme }) => theme.colors.grayStronger};
     color: ${({ theme }) => theme.colors.white};
   }
   button {
