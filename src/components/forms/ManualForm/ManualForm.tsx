@@ -145,7 +145,10 @@ const ManualForm = ({ editing }: ManualFormProps) => {
 
   useEffect(() => {
     if (watch('type.value') === undefined) return;
-    if (watch('type.value') === 'capitulo') {
+    if (
+      watch('type.value') === 'personalizado' ||
+      watch('type.value') === 'default'
+    ) {
       setChapter(undefined);
       setSteps(2);
     }
@@ -226,7 +229,12 @@ const ManualForm = ({ editing }: ManualFormProps) => {
         />
       )}
       {steps === 2 && (
-        <ChapterForm onClose={onClose} manual={manual} chapter={chapter} />
+        <ChapterForm
+          onClose={onClose}
+          manual={manual}
+          chapter={chapter}
+          type={watch('type.value') || ''}
+        />
       )}
       {steps === 3 && (
         <TitleForm control={control} onClose={onClose} manual={manual} />

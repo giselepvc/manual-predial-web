@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Control, Controller, UseFormWatch } from 'react-hook-form';
 import Image from 'next/image';
 import {
@@ -41,8 +40,12 @@ import {
 
 export const typeList = [
   {
-    label: 'Capítulo',
-    value: 'capitulo',
+    label: 'Capítulo padrão',
+    value: 'default',
+  },
+  {
+    label: 'Capítulo personalizado',
+    value: 'personalizado',
   },
 ];
 
@@ -212,7 +215,6 @@ const ManualTable = ({
                       />
                       <div>{capter.title}</div>
                     </InfoSection>
-
                     <div>
                       {!isCompany && (
                         <FaPen
@@ -222,10 +224,15 @@ const ManualTable = ({
                           }}
                         />
                       )}
-                      {!isCompany && <FaTrash onClick={() => setDeletingId(capter.id)} />}
-
+                      {!isCompany && (
+                        <FaTrash onClick={() => setDeletingId(capter.id)} />
+                      )}
                       <Image
-                        src={`/icons/${cap?.id === capter.id ? 'up' : 'down'}-arrow.svg`}
+                        src={
+                          cap?.id === capter.id
+                            ? '/icons/up-arrow.svg'
+                            : '/icons/down-arrow.svg'
+                        }
                         alt="icon"
                         width={20}
                         height={20}
@@ -240,24 +247,30 @@ const ManualTable = ({
                           <ThreadSection>
                             {index + 1 === 1 && <ThreadLine />}
                           </ThreadSection>
-
                           <TableMore
                             key={titles.id}
                             onClick={() =>
-                              setTitle(props => (props === titles ? undefined : titles))
+                              setTitle(props =>
+                                props === titles ? undefined : titles,
+                              )
                             }
                           >
                             <InfoSection>
                               <span>{index + 1}</span>
                               <div>{titles.title}</div>
                             </InfoSection>
-
                             <div>
                               {!isCompany && (
-                                <FaTrash onClick={() => setDeletingTitleId(titles.id)} />
+                                <FaTrash
+                                  onClick={() => setDeletingTitleId(titles.id)}
+                                />
                               )}
                               <Image
-                                src={`/icons/${title?.id === titles.id ? 'up' : 'down'}-arrow.svg`}
+                                src={
+                                  title?.id === titles.id
+                                    ? '/icons/up-arrow.svg'
+                                    : '/icons/down-arrow.svg'
+                                }
                                 alt="icon"
                                 width={20}
                                 height={20}
@@ -276,43 +289,37 @@ const ManualTable = ({
                               >
                                 <ThreadSection>
                                   <ThreadLine />
-                                  {!!(titles.containers.length !== (containerIndex + 1)) && (
-                                    <ThreadLineTwo />
-                                  )}
+                                  {!!(
+                                    titles.containers.length !==
+                                    containerIndex + 1
+                                  ) && <ThreadLineTwo />}
                                 </ThreadSection>
-
                                 <TableDetails>
                                   <InfoSection>
                                     <span>{container.order}</span>
                                     <div>
-                                      {container.type === 'abas'
-                                        ? 'Abas'
-                                        : container.type === 'keys'
-                                          ? 'Parágrafo - par de chaves'
-                                          : container.title}
+                                      {container.type === 'abas' && 'Abas'}
+                                      {container.type === 'keys' &&
+                                        'Parágrafo - par de chaves'}
+                                      {container.type !== 'abas' &&
+                                        container.type !== 'keys' &&
+                                        container.title}
                                     </div>
                                   </InfoSection>
-
-                                  <div
-                                    style={{
-                                      display: 'flex',
-                                      gap: '1rem',
-                                      alignItems: 'center',
-                                    }}
-                                  >
-                                    {container.type === 'abas' && !isCompany && (
-                                      <Button
-                                        type="button"
-                                        text="Adicionar o conteúdo"
-                                        style={{ minHeight: '25px' }}
-                                        onClick={() => {
-                                          setContent(container);
-                                          setSteps(5);
-                                          setBuildType('content');
-                                        }}
-                                      />
-                                    )}
-
+                                  <InfoSection>
+                                    {container.type === 'abas' &&
+                                      !isCompany && (
+                                        <Button
+                                          type="button"
+                                          text="Adicionar o conteúdo"
+                                          style={{ minHeight: '25px' }}
+                                          onClick={() => {
+                                            setContent(container);
+                                            setSteps(5);
+                                            setBuildType('content');
+                                          }}
+                                        />
+                                      )}
                                     {isCompany && (
                                       <FaEye
                                         size={20}
@@ -323,7 +330,6 @@ const ManualTable = ({
                                         }}
                                       />
                                     )}
-
                                     {!isCompany && (
                                       <FaPen
                                         onClick={() => {
@@ -333,20 +339,17 @@ const ManualTable = ({
                                         }}
                                       />
                                     )}
-
                                     {!isCompany && (
                                       <FaTrash
                                         onClick={() =>
-                                          !isUpdating &&
                                           setDeletingContainerId(container.id)
                                         }
                                       />
                                     )}
-                                  </div>
+                                  </InfoSection>
                                 </TableDetails>
                               </Thread>
                             ))}
-
                         <div style={{ marginBottom: '1rem' }} />
                       </>
                     ))}

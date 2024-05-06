@@ -30,11 +30,12 @@ import {
 
 interface ChapterPageProps {
   onClose: () => void;
+  type: string;
   chapter: RecursiveNormalize<CaptersDatum> | undefined;
   manual: RecursiveNormalize<IManualList> | undefined;
 }
 
-const ChapterForm = ({ onClose, manual, chapter }: ChapterPageProps) => {
+const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
   const query = useQueryClient();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const chaptesIds = manual?.capters?.map(capter => capter.id) || [];
@@ -100,7 +101,10 @@ const ChapterForm = ({ onClose, manual, chapter }: ChapterPageProps) => {
         ...form,
         company: undefined,
         enterprise: undefined,
-        groups: form?.groups?.map(item => Number(item.value)) || [],
+        groups:
+          type === 'default'
+            ? groups?.map(item => Number(item?.id))
+            : form?.groups?.map(item => Number(item.value)),
         visible: form.visible?.value === 'sim',
       };
 
@@ -122,7 +126,12 @@ const ChapterForm = ({ onClose, manual, chapter }: ChapterPageProps) => {
         });
       }
 
-      if (data.data?.id && form?.groups && form?.groups?.length > 0) {
+      if (
+        data.data?.id &&
+        form?.groups &&
+        form?.groups?.length > 0 &&
+        type !== 'default'
+      ) {
         form?.groups?.map(async item => {
           const group = groups?.find(g => g?.id === Number(item?.value));
           const groupChapterIds = group?.capters?.map(c => c?.id) || [];
@@ -132,13 +141,22 @@ const ChapterForm = ({ onClose, manual, chapter }: ChapterPageProps) => {
         });
       }
 
+      if (type === 'default') {
+        groups?.map(async item => {
+          const group = groups?.find(g => g?.id === Number(item?.id));
+          const groupChapterIds = group?.capters?.map(c => c?.id) || [];
+          await api.put(`/groups/${item.id}`, {
+            data: { capters: [...groupChapterIds, data.data.id] },
+          });
+        });
+      }
+
       query.invalidateQueries({ queryKey: ['manualForm'] });
       query.invalidateQueries({ queryKey: ['manualList'] });
       query.invalidateQueries({ queryKey: ['groupList'] });
 
-      if (isEditing) {
-        handleSuccess('Capítulo alterado com sucesso.');
-      } else handleSuccess('Capítulo cadastrado com sucesso.');
+      if (isEditing) handleSuccess('Capítulo alterado com sucesso.');
+      else handleSuccess('Capítulo cadastrado com sucesso.');
 
       onClose();
     } catch (err: any) {
@@ -147,8 +165,6 @@ const ChapterForm = ({ onClose, manual, chapter }: ChapterPageProps) => {
       setIsLoading(false);
     }
   };
-
-  console.log(errors);
 
   return (
     <RegisterForm>
@@ -215,28 +231,30 @@ const ChapterForm = ({ onClose, manual, chapter }: ChapterPageProps) => {
       </FormSection>
 
       <FormSection style={{ display: 'flex' }}>
-        <Field>
-          <Label>Grupo</Label>
-          <Controller
-            control={controlManual}
-            name="groups"
-            render={({ field: { onChange, value } }) => (
-              <Select
-                width="418px"
-                placeholder="Selecione um grupo"
-                onChange={onChange}
-                value={value}
-                isMulti
-                options={
-                  groups?.map(group => ({
-                    label: group?.name || '',
-                    value: `${group?.id || ''}`,
-                  })) || []
-                }
-              />
-            )}
-          />
-        </Field>
+        {type !== 'default' && (
+          <Field>
+            <Label>Grupo</Label>
+            <Controller
+              control={controlManual}
+              name="groups"
+              render={({ field: { onChange, value } }) => (
+                <Select
+                  width="418px"
+                  placeholder="Selecione um grupo"
+                  onChange={onChange}
+                  value={value}
+                  isMulti
+                  options={
+                    groups?.map(group => ({
+                      label: group?.name || '',
+                      value: `${group?.id || ''}`,
+                    })) || []
+                  }
+                />
+              )}
+            />
+          </Field>
+        )}
 
         <Field>
           <Label>Nome do capítulo</Label>
