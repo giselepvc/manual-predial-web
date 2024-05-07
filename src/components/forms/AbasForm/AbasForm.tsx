@@ -90,9 +90,7 @@ const AbasForm = ({ onClose, content }: ChapterPageProps) => {
 
       if (data.data?.id && form?.icon && form?.icon !== 0) {
         await api.put(`/icons/${form?.icon}`, {
-          data: {
-            container: [data.data.id],
-          },
+          data: { container: [data.data.id] },
         });
       }
 

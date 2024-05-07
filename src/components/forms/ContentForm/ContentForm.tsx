@@ -1,5 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
-
 'use client';
 
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
@@ -17,14 +15,20 @@ import { getContents } from '@/services/querys/content';
 import { FaPen, FaTrash } from 'react-icons/fa6';
 import ConfirmModal from '@/components/ConfirmeModal/ConfirmeModal';
 import { ContentSchema, IContentForm } from '@/validations/ContentSchema';
+import { getIcons } from '@/services/querys/icons';
+import Image from 'next/image';
+import { urlBuild } from '@/utils/urlBuild';
 import {
   ButtonSection,
+  Checkbox,
+  CheckboxLabel,
   Content,
   ErrorMessage,
   Field,
   FormSection,
   InfoSection,
   Label,
+  RadiosRow,
   RegisterForm,
   RegisterTitle,
   TableRow,
@@ -34,11 +38,11 @@ import {
 interface ChapterPageProps {
   onClose: () => void;
   content: RecursiveNormalize<ContentsDatum> | undefined;
+  setBuildType: Dispatch<SetStateAction<string>>;
+  setSteps: Dispatch<SetStateAction<number>>;
   setContent: Dispatch<
     SetStateAction<RecursiveNormalize<ContentsDatum> | undefined>
   >;
-  setBuildType: Dispatch<SetStateAction<string>>;
-  setSteps: Dispatch<SetStateAction<number>>;
 }
 
 const ContentForm = ({
@@ -49,7 +53,6 @@ const ContentForm = ({
   setSteps,
 }: ChapterPageProps) => {
   const query = useQueryClient();
-
   const [deletingId, setDeletingId] = useState<number>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -61,6 +64,21 @@ const ContentForm = ({
     formState: { errors },
   } = useForm<IContentForm>({
     resolver: yupResolver(ContentSchema),
+  });
+
+  const iconsParams = {
+    populate: '*',
+    'filters[active]': true,
+  };
+
+  const { data: icons } = useQuery({
+    queryKey: ['iconsData', iconsParams],
+    queryFn: async () => {
+      const result = await getIcons(iconsParams);
+      const iconsResult = normalizeStrapi(result || []);
+      iconsResult.sort((a, b) => a.id - b.id);
+      return iconsResult;
+    },
   });
 
   const contentsParams = {
@@ -78,19 +96,19 @@ const ContentForm = ({
     ],
   };
 
-  const { data: contentsData } = useQuery({
+  const { data: container } = useQuery({
     queryKey: ['contentsData', contentsParams],
-    queryFn: async () => getContents(contentsParams),
+    queryFn: async () => {
+      const data = await getContents(contentsParams);
+      const contents = normalizeStrapi(data || []);
+      return contents?.[0];
+    },
     enabled: !!content?.id,
   });
 
-  const contents = normalizeStrapi(contentsData || []);
-  const container = contents?.[0];
-
   const onSubmit: SubmitHandler<IContentForm> = async form => {
-    setIsLoading(true);
-
     try {
+      setIsLoading(true);
       const { data } = await api.post<{ data: { id: number } }>('/containers', {
         data: {
           title: form.title,
@@ -102,13 +120,9 @@ const ContentForm = ({
       });
 
       if (data.data?.id && container?.id) {
-        const contentIds =
-          container?.sub_containers?.map(cont => cont?.id) || [];
-
+        const contentIds = container?.sub_containers?.map(c => c?.id) || [];
         await api.put(`/containers/${container.id}`, {
-          data: {
-            sub_containers: [...contentIds, data.data.id],
-          },
+          data: { sub_containers: [...contentIds, data.data.id] },
         });
       }
 
@@ -130,14 +144,11 @@ const ContentForm = ({
   };
 
   const onDelete = async () => {
-    if (!deletingId) {
-      return;
-    }
+    if (!deletingId) return;
 
     try {
       setIsLoading(true);
       await api.delete(`/containers/${deletingId}`);
-
       handleSuccess('Conteúdo deletado com sucesso.');
       setDeletingId(undefined);
       query.invalidateQueries({ queryKey: ['contentsData'] });
@@ -151,7 +162,6 @@ const ContentForm = ({
   return (
     <RegisterForm>
       <RegisterTitle>Cadastro de conteúdo dentro da Aba</RegisterTitle>
-      <RegisterTitle>"{content?.title || ''}"</RegisterTitle>
 
       <FormSection>
         <Field>
@@ -159,7 +169,7 @@ const ContentForm = ({
           <Input
             placeholder="Insira uma ordem"
             type="number"
-            style={{ width: '230px' }}
+            style={{ width: '300px' }}
             {...register('order')}
           />
           {errors?.order?.message && (
@@ -177,7 +187,7 @@ const ContentForm = ({
                 placeholder="Selecione uma opção"
                 onChange={onChange}
                 value={value}
-                width="230px"
+                width="300px"
                 options={[
                   {
                     label: 'Sim',
@@ -206,7 +216,7 @@ const ContentForm = ({
                 placeholder="Selecione uma opção"
                 onChange={onChange}
                 value={value}
-                width="230px"
+                width="300px"
                 options={[
                   {
                     label: 'Arquivo PDF',
@@ -215,10 +225,6 @@ const ContentForm = ({
                   {
                     label: 'Imagem única com legenda abaixo parágrafo múltiplo',
                     value: 'image',
-                  },
-                  {
-                    label: 'Parágrafo - par de chaves',
-                    value: 'keys',
                   },
                   {
                     label: 'Parágrafo único ou múltiplo',
@@ -236,31 +242,56 @@ const ContentForm = ({
             <ErrorMessage>{errors.container.value.message}</ErrorMessage>
           )}
         </Field>
+      </FormSection>
 
+      <FormSection>
         <Field>
           <Label>Título</Label>
           <Input
             placeholder="Insira um título"
             type="text"
-            style={{ width: '230px' }}
+            style={{ width: '300px' }}
             {...register('title')}
           />
           {errors?.title?.message && (
             <ErrorMessage>{errors.title.message}</ErrorMessage>
           )}
         </Field>
-      </FormSection>
-
-      <FormSection>
         <Field>
           <Label>Legenda</Label>
           <Input
             placeholder="Insira uma legenda"
-            style={{ width: '965px' }}
+            style={{ width: '300px' }}
             {...register('description')}
           />
           {errors?.description?.message && (
             <ErrorMessage>{errors.description.message}</ErrorMessage>
+          )}
+        </Field>
+      </FormSection>
+
+      <FormSection>
+        <Field>
+          <Label>Selecione um ícone</Label>
+          <RadiosRow>
+            <CheckboxLabel>
+              <Checkbox type="radio" {...register('icon')} value={0} />
+              Nenhum
+            </CheckboxLabel>
+            {icons?.map(item => (
+              <CheckboxLabel>
+                <Checkbox type="radio" {...register('icon')} value={item.id} />
+                <Image
+                  src={urlBuild(item.image?.url)}
+                  alt="icons"
+                  width={14}
+                  height={14}
+                />
+              </CheckboxLabel>
+            ))}
+          </RadiosRow>
+          {errors?.icon?.message && (
+            <ErrorMessage>{errors.icon.message}</ErrorMessage>
           )}
         </Field>
       </FormSection>

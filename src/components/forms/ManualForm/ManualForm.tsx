@@ -223,9 +223,6 @@ const ManualForm = ({ editing }: ManualFormProps) => {
           content={content}
           setCap={setChapter}
           setTitle={setTitle}
-          setContent={setContent}
-          setSteps={setSteps}
-          setBuildType={setBuildType}
         />
       )}
       {steps === 2 && (

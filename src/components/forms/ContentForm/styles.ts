@@ -24,10 +24,9 @@ export const FormSection = styled.section`
   max-width: 860px;
 
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-column-gap: 1rem;
-  grid-row-gap: 1.5rem;
-  justify-content: space-between;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-column-gap: 1.2rem;
+  grid-row-gap: 1rem;
 `;
 
 export const Field = styled.div`
@@ -65,7 +64,7 @@ export const ButtonSection = styled.div`
   gap: 2rem;
 
   width: 100%;
-  margin: 3rem 0 2rem 0;
+  margin: 1rem 0;
 `;
 
 export const Content = styled.section`
@@ -75,7 +74,7 @@ export const Content = styled.section`
   padding: 1.875rem 1.75rem;
 
   border-radius: 0.625rem;
-  background: ${({ theme }) => theme.colors.gray3d};
+  background: ${({ theme }) => theme.colors.black};
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 
   display: flex;
@@ -139,4 +138,41 @@ export const InfoSection = styled.div`
   display: flex;
   align-items: center;
   gap: 1rem;
+`;
+
+export const RadiosRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 10px;
+  padding-left: 0.85rem;
+`;
+
+export const CheckboxLabel = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.grayd9};
+`;
+
+export const Checkbox = styled.input`
+  appearance: none;
+  -moz-appearance: none;
+
+  height: 15px;
+  width: 15px;
+  min-width: 15px;
+  min-height: 15px;
+  border-radius: 50%;
+  border: 1px solid ${({ theme }) => theme.colors.grayd9};
+  background: transparent;
+
+  cursor: pointer;
+
+  &:checked {
+    background: ${({ theme }) => theme.colors.primary};
+  }
 `;
