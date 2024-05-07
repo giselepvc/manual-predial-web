@@ -39,7 +39,7 @@ export const Content = styled.section`
   padding: 1.875rem 1.75rem;
 
   border-radius: 0.625rem;
-  background: ${({ theme }) => theme.colors.gray3d};
+  background: ${({ theme }) => theme.colors.black};
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 
   display: flex;
@@ -142,36 +142,21 @@ export const TableMore = styled.div<TableProps>`
 `;
 
 export const TableContentMore = styled.div`
-  overflow: hidden;
-
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: space-between;
-  gap: 2rem;
 
   width: 100%;
   min-height: 50px;
-  padding: 0 0 2rem 7.5rem;
-  margin-top: -1rem;
+
+  padding: 0 2rem 1rem 2.75rem;
+  margin-top: -2rem;
   margin-bottom: 1rem;
 
   background: ${({ theme }) => theme.colors.grayStronger};
 
+  overflow: hidden;
   cursor: pointer;
-
-  span {
-    font-size: 0.9rem;
-    color: ${({ theme }) => theme.colors.grayd9};
-    margin-right: 0.35rem;
-  }
-
-  div {
-    color: ${({ theme }) => theme.colors.grayaa};
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
 `;
 
 const detailsFadeIn = keyframes`
@@ -213,12 +198,13 @@ export const TableDetails = styled.div<TableProps>`
 
 export const InfoSection = styled.div`
   display: flex;
-  gap: 1rem;
+  align-items: center;
+  gap: 0.2rem;
 `;
 
 export const Description = styled.div`
   min-height: 140px;
-  width: 730px;
+  width: 100%;
 
   margin-top: 6px;
   padding: 1rem 1.5rem;
@@ -227,6 +213,10 @@ export const Description = styled.div`
 
   color: ${({ theme }) => theme.colors.grayaa};
   font-weight: 600;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
 `;
 
 export const RegisterTitle = styled.h3`
@@ -303,32 +293,32 @@ interface NavProps {
 }
 
 export const InfoText = styled.div<NavProps>`
-  min-height: 45px;
-  min-width: 150px;
+  min-height: 40px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  padding: 1rem 1.5rem;
+  padding: 1rem 1rem;
 
   border-top: ${({ theme, selected }) =>
-    selected ? `1px solid${theme.colors.grayaa}` : 'none'};
+    selected ? `1px solid${theme.colors.primary}` : 'none'};
   border-left: ${({ theme, selected }) =>
-    selected ? `1px solid${theme.colors.grayaa}` : 'none'};
+    selected ? `1px solid${theme.colors.primary}` : 'none'};
   border-right: ${({ theme, selected }) =>
-    selected ? `1px solid${theme.colors.grayaa}` : 'none'};
+    selected ? `1px solid${theme.colors.primary}` : 'none'};
+  border-radius: 10px 10px 0 0;
   background-color: ${({ theme }) => theme.colors.gray3d};
-  border-radius: 6px 6px 0 0;
 
   color: ${({ theme }) => theme.colors.grayaa};
+  font-size: 0.9rem;
   font-weight: 600;
+
+  user-select: none;
 `;
 
 export const Img = styled.img`
-  width: 140px;
-  height: 140px;
-
+  max-width: 100%;
   margin-top: 8px;
   border-radius: 6px;
 
@@ -338,4 +328,14 @@ export const Img = styled.img`
 export const Icon = styled.img`
   width: 14px;
   height: 14px;
+`;
+
+export const ColumnDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  span {
+    font-size: 0.8rem;
+  }
 `;

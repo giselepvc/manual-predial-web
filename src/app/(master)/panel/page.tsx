@@ -1,5 +1,3 @@
-/* eslint-disable prettier/prettier */
-
 'use client';
 
 import PageLayout from '@/components/PageLayout/PageLayout';
@@ -10,12 +8,14 @@ import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import { urlBuild } from '@/utils/urlBuild';
 import { useState } from 'react';
-import { CaptersDatum, ContentsDatum, TitlesDatum } from '@/interfaces/manual';
+import { CaptersDatum, TitlesDatum } from '@/interfaces/manual';
 import handleError from '@/utils/handleToast';
 import api from '@/services/api';
 import { ContainerData, IContent } from '@/interfaces/content';
 import { Paginated } from '@/interfaces/paginated';
+import { FaDownload } from 'react-icons/fa6';
 import {
+  ColumnDetails,
   Content,
   Description,
   Icon,
@@ -42,15 +42,13 @@ const PanelPage = () => {
   const [title, setTitle] = useState<
     RecursiveNormalize<TitlesDatum> | undefined
   >();
-  const [content, setContent] = useState<
-    RecursiveNormalize<ContentsDatum> | undefined
-  >();
   const [contentSelected, setContentSelected] = useState<
     RecursiveNormalize<IContent> | undefined
   >();
-  const [subContent, setSubContent] = useState<
+  const [sub, setSubContent] = useState<
     RecursiveNormalize<ContainerData> | undefined
   >();
+  const [loading, setLoading] = useState(false);
 
   const manualsParams = {
     'populate[0]': 'capters.titles.containers.image',
@@ -59,7 +57,7 @@ const PanelPage = () => {
     'populate[4]': 'capters.titles.containers.pdf',
     'populate[5]': 'capters.titles.containers.icon.image',
     'populate[6]': 'capters.group',
-    'filters[capters][group][id]': user?.group?.id,
+    'filters[capters][groups][id]': user?.group?.id,
   };
 
   const { data: manuals } = useQuery({
@@ -75,6 +73,7 @@ const PanelPage = () => {
 
   const getContent = async (id: number) => {
     try {
+      setLoading(true);
       const { data } = await api.get<Paginated<IContent>>('/containers', {
         params: {
           'pagination[page]': 1,
@@ -93,11 +92,12 @@ const PanelPage = () => {
       });
 
       const result = normalizeStrapi(data.data?.[0]);
-
       setContentSelected(result);
       setSubContent(result?.sub_containers?.[0]);
     } catch (error) {
       handleError(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -119,7 +119,6 @@ const PanelPage = () => {
                     }}
                   >
                     <InfoSection>
-                      <span>{capter.order}</span>
                       <Image
                         src={
                           capter.icon?.image?.url
@@ -150,11 +149,17 @@ const PanelPage = () => {
                   {chapter?.id === capter.id &&
                     capter.titles.map((titles, index) => (
                       <>
-                        <Thread>
+                        <Thread
+                          onClick={() => {
+                            if (titles.containers?.[0]?.type === 'abas') {
+                              setSubContent(undefined);
+                              getContent(titles.containers?.[0]?.id);
+                            }
+                          }}
+                        >
                           <ThreadSection>
                             {index + 1 === 1 && <ThreadLine />}
                           </ThreadSection>
-
                           <TableMore
                             key={titles.id}
                             onClick={() =>
@@ -164,10 +169,8 @@ const PanelPage = () => {
                             }
                           >
                             <InfoSection>
-                              <span>{index + 1}</span>
                               <div>{titles.title}</div>
                             </InfoSection>
-
                             <div>
                               <Image
                                 src={
@@ -191,158 +194,196 @@ const PanelPage = () => {
                                 <Thread
                                   key={container.id}
                                   style={{ paddingLeft: '3rem' }}
-                                  onClick={() => {
-                                    if (container.type === 'abas') {
-                                      setSubContent(undefined);
-                                      getContent(container.id);
-                                    }
-                                    setContent(props =>
-                                      props === container
-                                        ? undefined
-                                        : container,
-                                    );
-                                  }}
                                 >
                                   <TableDetails>
                                     <InfoSection>
-                                      <span>{container.order}</span>
                                       <div>
                                         {container.type === 'keys' &&
                                           'Parágrafo - par de chaves'}
-                                        {container.type !== 'keys' &&
-                                          container.title}
+
+                                        {container.type === 'paragraph' && (
+                                          <Description
+                                            style={{ margin: '1rem 0' }}
+                                          >
+                                            {container.description}
+                                          </Description>
+                                        )}
+
+                                        {container.type === 'pdf' && (
+                                          <InfoSection>
+                                            {container.pdf?.name && (
+                                              <InfoText
+                                                style={{
+                                                  borderRadius: '10px',
+                                                  gap: '1rem',
+                                                  cursor: 'pointer',
+                                                  padding: '0 2rem',
+                                                }}
+                                                onClick={() => {
+                                                  window.open(
+                                                    urlBuild(
+                                                      container?.pdf?.url,
+                                                    ),
+                                                    '_blank',
+                                                  );
+                                                }}
+                                              >
+                                                <FaDownload />
+                                                {container.pdf?.name}
+                                              </InfoText>
+                                            )}
+                                          </InfoSection>
+                                        )}
+
+                                        {container.type === 'image' && (
+                                          <ColumnDetails
+                                            style={{ padding: '2rem 0' }}
+                                          >
+                                            {container?.image?.[0]?.url && (
+                                              <Img
+                                                src={urlBuild(
+                                                  container.image?.[0].url,
+                                                )}
+                                                alt="imagem do container"
+                                              />
+                                            )}
+                                            <span>
+                                              Legenda:{' '}
+                                              {container?.description || ''}
+                                            </span>
+                                          </ColumnDetails>
+                                        )}
+
+                                        {container.type === 'paragraphIcon' && (
+                                          <InfoSection
+                                            style={{
+                                              margin: '1rem 0',
+                                              gap: '1rem',
+                                            }}
+                                          >
+                                            {container?.icon?.image?.url && (
+                                              <Icon
+                                                src={urlBuild(
+                                                  container.icon.image.url,
+                                                )}
+                                                alt="imagem do container"
+                                              />
+                                            )}
+                                            {container?.description}
+                                          </InfoSection>
+                                        )}
                                       </div>
-                                    </InfoSection>
 
-                                    <div
-                                      style={{
-                                        display: 'flex',
-                                        gap: '1rem',
-                                        alignItems: 'center',
-                                      }}
-                                    >
-                                      <Image
-                                        src={
-                                          container?.id === content?.id
-                                            ? '/icons/up-arrow.svg'
-                                            : '/icons/down-arrow.svg'
-                                        }
-                                        alt="icon"
-                                        width={20}
-                                        height={20}
-                                      />
-                                    </div>
-                                  </TableDetails>
-                                </Thread>
-
-                                {container?.id === content?.id && (
-                                  <Thread style={{ paddingLeft: '3rem' }}>
-                                    <TableContentMore key={container?.id}>
-                                      {container.pdf?.name && (
-                                        <InfoSection>
-                                          <InfoText>
-                                            {container.pdf?.name}
-                                          </InfoText>
-                                        </InfoSection>
-                                      )}
-
-                                      {container.type === 'abas' &&
+                                      {container.type.includes('abas') &&
+                                        !loading &&
                                         contentSelected?.sub_containers && (
                                           <InfoSection>
                                             {contentSelected?.sub_containers?.map(
-                                              item => (
+                                              subcontainer => (
                                                 <InfoText
                                                   selected={
-                                                    item?.id === subContent?.id
+                                                    subcontainer?.id === sub?.id
                                                   }
                                                   onClick={() => {
-                                                    setSubContent(props =>
-                                                      props === item
+                                                    setSubContent(c =>
+                                                      c === subcontainer
                                                         ? undefined
-                                                        : item,
+                                                        : subcontainer,
                                                     );
                                                   }}
                                                 >
-                                                  {item.title || ''}
+                                                  {subcontainer.title || ''}
                                                 </InfoText>
                                               ),
                                             )}
                                           </InfoSection>
                                         )}
-
-                                      {container.type === 'abas' &&
-                                        subContent?.id && (
-                                          <InfoSection>
-                                            {subContent?.pdf?.name && (
-                                              <InfoText>
-                                                {subContent.pdf?.name}
-                                              </InfoText>
-                                            )}
-                                            {subContent?.image?.[0]?.url && (
-                                              <Img
-                                                src={urlBuild(
-                                                  subContent.image?.[0].url,
-                                                )}
-                                                alt="imagem do container"
-                                              />
-                                            )}
-
-                                            {subContent?.type !== 'pdf' && (
-                                              <Description
-                                                style={{
-                                                  width:
-                                                    subContent?.image?.[0]
-                                                      ?.url ||
-                                                      subContent?.type === 'keys'
-                                                      ? '580px'
-                                                      : '730px',
-                                                }}
-                                              >
-                                                {subContent?.description}
-                                              </Description>
-                                            )}
-                                          </InfoSection>
+                                    </InfoSection>
+                                  </TableDetails>
+                                </Thread>
+                                {container.type === 'abas' &&
+                                  sub?.id &&
+                                  sub?.type === 'paragraph' &&
+                                  !loading && (
+                                    <Thread style={{ paddingLeft: '3rem' }}>
+                                      <TableContentMore key={sub?.id}>
+                                        {sub?.icon?.image?.url && (
+                                          <Icon
+                                            src={urlBuild(sub.icon.image.url)}
+                                            alt="imagem do container"
+                                          />
                                         )}
+                                        <Description
+                                          dangerouslySetInnerHTML={{
+                                            __html: sub.description,
+                                          }}
+                                        />
+                                      </TableContentMore>
+                                    </Thread>
+                                  )}
 
-                                      {container.type === 'image' &&
-                                        container?.image?.[0]?.url && (
-                                          <InfoSection>
+                                {container.type === 'abas' &&
+                                  sub?.id &&
+                                  sub?.type === 'image' &&
+                                  !loading && (
+                                    <Thread style={{ paddingLeft: '3rem' }}>
+                                      <TableContentMore key={container?.id}>
+                                        <ColumnDetails>
+                                          {sub?.image?.[0]?.url && (
                                             <Img
-                                              src={urlBuild(
-                                                container?.image?.[0]?.url,
-                                              )}
+                                              src={urlBuild(sub.image?.[0].url)}
                                               alt="imagem do container"
                                             />
+                                          )}
+                                          <span>
+                                            Legenda: {sub?.description || ''}
+                                          </span>
+                                        </ColumnDetails>
+                                      </TableContentMore>
+                                    </Thread>
+                                  )}
 
-                                            <Description>
-                                              Legenda: {container?.description}
-                                            </Description>
-                                          </InfoSection>
-                                        )}
-
-                                      {container?.type === 'paragraph' && (
+                                {container.type === 'abas' &&
+                                  sub?.id &&
+                                  sub?.type === 'pdf' &&
+                                  !loading && (
+                                    <Thread style={{ paddingLeft: '3.1rem' }}>
+                                      <TableContentMore key={container?.id}>
                                         <InfoSection>
-                                          {container?.icon?.image?.url && (
-                                            <Icon
-                                              src={urlBuild(
-                                                container?.icon?.image?.url,
-                                              )}
-                                              alt="imagem do container"
-                                            />
+                                          {sub.pdf?.name && (
+                                            <InfoText
+                                              style={{
+                                                borderRadius: '10px',
+                                                gap: '1rem',
+                                                cursor: 'pointer',
+                                                padding: '0 2rem',
+                                              }}
+                                              onClick={() => {
+                                                window.open(
+                                                  urlBuild(sub?.pdf?.url),
+                                                  '_blank',
+                                                );
+                                              }}
+                                            >
+                                              <FaDownload />
+                                              {sub.pdf?.name}
+                                            </InfoText>
                                           )}
-                                          <Description>
-                                            {container?.description}
-                                          </Description>
                                         </InfoSection>
-                                      )}
+                                      </TableContentMore>
+                                    </Thread>
+                                  )}
 
-                                      {container?.type === 'paragraphIcon' && (
+                                {container.type === 'abas' &&
+                                  sub?.id &&
+                                  sub?.type === 'paragraphIcon' &&
+                                  !loading && (
+                                    <Thread style={{ paddingLeft: '3rem' }}>
+                                      <TableContentMore key={container?.id}>
                                         <InfoSection>
-                                          {container?.icon?.image?.url && (
+                                          {sub?.icon?.image?.url && (
                                             <Icon
-                                              src={urlBuild(
-                                                container?.icon?.image?.url,
-                                              )}
+                                              src={urlBuild(sub.icon.image.url)}
                                               alt="imagem do container"
                                             />
                                           )}
@@ -350,27 +391,9 @@ const PanelPage = () => {
                                             {container?.description}
                                           </Description>
                                         </InfoSection>
-                                      )}
-
-                                      {container?.type === 'keys' && (
-                                        <InfoSection style={{ flexDirection: 'column' }}>
-                                          {container?.icon?.image?.url && (
-                                            <Icon
-                                              src={urlBuild(
-                                                container?.icon?.image?.url,
-                                              )}
-                                              alt="imagem do container"
-                                            />
-                                          )}
-                                          Chave: {container?.title}
-                                          <Description>
-                                            {container?.description}
-                                          </Description>
-                                        </InfoSection>
-                                      )}
-                                    </TableContentMore>
-                                  </Thread>
-                                )}
+                                      </TableContentMore>
+                                    </Thread>
+                                  )}
                               </>
                             ))}
 
