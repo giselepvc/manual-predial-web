@@ -20,10 +20,25 @@ export interface Attributes {
   state: string;
   complement: null;
   enterprises: Enterprises;
+  image: Image;
 }
 
 export interface Enterprises {
   data: EnterprisesDatum[];
+}
+
+export interface Image {
+  data: ImageDatum;
+}
+
+export interface ImageDatum {
+  id: number;
+  attributes: ImageAttributes;
+}
+
+export interface ImageAttributes {
+  url: string;
+  name: string;
 }
 
 export interface EnterprisesDatum {

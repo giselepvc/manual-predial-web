@@ -14,8 +14,10 @@ import telephoneMask from '@/utils/masks/phone';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getCompanies } from '@/services/querys/company';
 import { normalizeStrapi } from '@/utils/normalizeStrapi';
+import { urlBuild } from '@/utils/urlBuild';
 import UserIcon from '../../../../public/icons/peaple.svg';
-import HpuseIcon from '../../../../public/icons/house.svg';
+import HouseIcon from '../../../../public/icons/house.svg';
+import ImageIcon from '../../../../public/icons/foto.svg';
 import {
   ButtonSection,
   FormSection,
@@ -24,6 +26,12 @@ import {
   Field,
   Label,
   ErrorMessage,
+  PhotoSection,
+  PhotoChangeButton,
+  Photo,
+  InputSection,
+  FileButton,
+  ImageRow,
 } from './styles';
 
 interface CompanProps {
@@ -35,6 +43,7 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
   const { back } = useRouter();
   const query = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
+  const [image, setImage] = useState<File>();
 
   const {
     handleSubmit,
@@ -56,7 +65,7 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
     populate: '*',
   };
 
-  useQuery({
+  const { data: companyInfo } = useQuery({
     queryKey: ['usersData', companiesParams],
     queryFn: async () => {
       const companysData = await getCompanies(companiesParams);
@@ -80,13 +89,37 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
     enabled: !!companyId,
   });
 
+  const renderImage = () => {
+    return companyInfo?.image?.url
+      ? urlBuild(companyInfo?.image?.url)
+      : '/icons/image.svg';
+  };
+
+  const photoHandler = () => {
+    if (image) return URL.createObjectURL(image);
+    return '/icons/image.svg';
+  };
+
   const onSubmit: SubmitHandler<ICompanyForm> = async form => {
     try {
       setIsLoading(true);
-      await api.post('/companies', { data: { ...form } });
+      const { data } = await api.post<{ data: { id: number } }>('/companies', {
+        data: { ...form },
+      });
       query.invalidateQueries({ queryKey: ['CompaniesData'] });
       handleSuccess('Cadastro realizado com sucesso.');
       back();
+
+      if (data.data?.id && image) {
+        const formData = new FormData();
+
+        formData.append('ref', 'api::company.company');
+        formData.append('refId', data.data?.id?.toString() || '');
+        formData.append('field', 'image');
+        formData.append('files', image);
+
+        await api.post('/upload', formData);
+      }
     } catch (error) {
       handleError(error);
     } finally {
@@ -97,8 +130,22 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
   const onUpdate: SubmitHandler<ICompanyForm> = async form => {
     try {
       setIsLoading(true);
-      await api.put(`/companies/${companyId}`, { data: { ...form } });
+      const { data } = await api.put<{ data: { id: number } }>(
+        `/companies/${companyId}`,
+        { data: { ...form } },
+      );
       query.invalidateQueries({ queryKey: ['CompaniesData'] });
+
+      if (data.data?.id && image) {
+        const formData = new FormData();
+
+        formData.append('ref', 'api::company.company');
+        formData.append('refId', data.data?.id?.toString() || '');
+        formData.append('field', 'image');
+        formData.append('files', image);
+
+        await api.post('/upload', formData);
+      }
       handleSuccess('Alteração realizada com sucesso.');
       back();
     } catch (error) {
@@ -189,7 +236,7 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
       </FormSection>
 
       <RegisterTitle style={{ marginTop: '2rem' }}>
-        <HpuseIcon />
+        <HouseIcon />
         Endereço
       </RegisterTitle>
 
@@ -257,6 +304,38 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
           )}
         </Field>
       </FormSection>
+
+      <RegisterTitle style={{ marginTop: '2rem' }}>
+        <ImageIcon />
+        Imagem da construtora
+      </RegisterTitle>
+
+      <ImageRow>
+        <PhotoSection>
+          <PhotoChangeButton>
+            <Photo src={image ? photoHandler() : renderImage()} alt="profile" />
+          </PhotoChangeButton>
+        </PhotoSection>
+
+        <Field>
+          <Label>Selecione uma imagem</Label>
+          <InputSection>
+            <FileButton>Escolher arquivo</FileButton>
+            {image ? image.name : 'Selecionar arquivo'}
+            <input
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={e => {
+                if (e.target?.files?.[0]) {
+                  setImage(e.target.files[0]);
+                  e.target.value = '';
+                }
+              }}
+            />
+          </InputSection>
+        </Field>
+      </ImageRow>
 
       <ButtonSection>
         <Button outlined text="Cancelar" type="button" onClick={back} />

@@ -15,7 +15,6 @@ import {
   Field,
   Label,
   ErrorMessage,
-  UploadLogoLabel,
   InputSection,
   FileButton,
 } from './styles';
