@@ -217,6 +217,8 @@ export const Description = styled.div`
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
+  flex-direction: column;
+  gap: 1rem;
 `;
 
 export const RegisterTitle = styled.h3`

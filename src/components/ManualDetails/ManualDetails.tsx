@@ -379,11 +379,11 @@ const ManualDetails = ({
                                             alt="imagem do container"
                                           />
                                         )}
-                                        <Description
-                                          dangerouslySetInnerHTML={{
-                                            __html: sub.description,
-                                          }}
-                                        />
+                                        <Description>
+                                          <div>{sub?.title}</div>
+
+                                          {sub.description}
+                                        </Description>
                                       </TableContentMore>
                                     </Thread>
                                   )}
