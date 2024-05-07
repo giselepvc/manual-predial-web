@@ -110,7 +110,7 @@ export const TableRow = styled.div<TableProps>`
   margin-bottom: 1rem;
 
   background: ${({ theme, selected }) =>
-    selected ? theme.colors.gray3a : theme.colors.gray41};
+    selected ? theme.colors.gray3a : theme.colors.grayStronger};
   border-radius: 6px;
 
   cursor: pointer;

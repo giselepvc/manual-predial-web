@@ -13,7 +13,7 @@ export const ButtonComponent = styled.button<ButtonProps>`
   border: ${({ theme, outlined }) =>
     outlined ? `1px solid ${theme.colors.gray9a}` : 'none'};
   background-color: ${({ theme, outlined }) =>
-    outlined ? theme.colors.gray41 : theme.colors.primary};
+    outlined ? theme.colors.grayStronger : theme.colors.primary};
 
   color: ${({ theme, outlined }) =>
     outlined ? theme.colors.gray9a : theme.colors.white};

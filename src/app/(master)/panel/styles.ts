@@ -74,7 +74,7 @@ export const TableRow = styled.div<TableProps>`
   margin-bottom: 1rem;
 
   background: ${({ theme, selected }) =>
-    selected ? theme.colors.gray3a : theme.colors.gray41};
+    selected ? theme.colors.gray3a : theme.colors.grayStronger};
   border-radius: 6px;
 
   cursor: pointer;
@@ -121,7 +121,7 @@ export const TableMore = styled.div<TableProps>`
   margin-top: -1rem;
   margin-bottom: 1rem;
 
-  background: ${({ theme }) => theme.colors.gray41};
+  background: ${({ theme }) => theme.colors.grayStronger};
 
   cursor: pointer;
   animation: ${fadeIn} 0.2s ease-in-out;
@@ -155,7 +155,7 @@ export const TableContentMore = styled.div`
   margin-top: -1rem;
   margin-bottom: 1rem;
 
-  background: ${({ theme }) => theme.colors.gray41};
+  background: ${({ theme }) => theme.colors.grayStronger};
 
   cursor: pointer;
 
@@ -194,7 +194,7 @@ export const TableDetails = styled.div<TableProps>`
   margin-top: -0.5rem;
   margin-bottom: 1rem;
 
-  background: ${({ theme }) => theme.colors.gray41};
+  background: ${({ theme }) => theme.colors.grayStronger};
 
   cursor: pointer;
   animation: ${detailsFadeIn} 0.2s ease-in-out;

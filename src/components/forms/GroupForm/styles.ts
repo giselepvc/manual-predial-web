@@ -99,7 +99,7 @@ export const TableRow = styled.div`
   padding: 0 2.5rem;
   margin-bottom: 1rem;
 
-  background: ${({ theme }) => theme.colors.gray41};
+  background: ${({ theme }) => theme.colors.grayStronger};
   border-radius: 6px;
 
   cursor: pointer;
