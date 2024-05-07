@@ -18,6 +18,7 @@ import {
   ColumnDetails,
   Content,
   Description,
+  HeaderLogo,
   Icon,
   Img,
   InfoSection,
@@ -102,7 +103,14 @@ const PanelPage = () => {
   };
 
   return (
-    <PageLayout title="Manuais">
+    <PageLayout hasLogo>
+      <HeaderLogo>
+        <Image src="/img/logo.svg" alt="Logo" width={600} height={250} />
+
+        <div>MANUAL PREDIAL LTDA</div>
+        <div>Av. Calil Hadad, Mogi das Cruzes, 200 SP 08558-040</div>
+      </HeaderLogo>
+
       <Content style={{ minHeight: 'calc(100vh - 10rem)' }}>
         <TableSection>
           {manuals?.capters && manuals.capters.length > 0 ? (

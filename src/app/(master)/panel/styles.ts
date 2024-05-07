@@ -6,6 +6,17 @@ export const StepsPage = styled.form`
   gap: 1.4rem;
 `;
 
+export const HeaderLogo = styled.div`
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 2rem;
+`;
+
 export const Header = styled.section`
   width: 100%;
 
