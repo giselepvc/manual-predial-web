@@ -15,6 +15,14 @@ export const HeaderLogo = styled.div`
   justify-content: center;
 
   margin-bottom: 2rem;
+
+  background-color: white;
+
+  div {
+    color: black;
+    font-size: 1rem;
+    font-weight: 600;
+  }
 `;
 
 export const Header = styled.section`
@@ -48,9 +56,10 @@ export const Content = styled.section`
   height: 100%;
   min-height: calc(100vh - 20rem);
   padding: 1.875rem 1.75rem;
+  margin-bottom: 2rem;
 
   border-radius: 0.625rem;
-  background: ${({ theme }) => theme.colors.black};
+  background: ${({ theme }) => theme.colors.grayLight};
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 
   display: flex;

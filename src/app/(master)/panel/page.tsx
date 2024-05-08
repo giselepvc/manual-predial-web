@@ -105,7 +105,7 @@ const PanelPage = () => {
   return (
     <PageLayout hasLogo>
       <HeaderLogo>
-        <Image src="/img/logo.svg" alt="Logo" width={600} height={250} />
+        <Image src="/img/logo_dark.svg" alt="Logo" width={600} height={250} />
 
         <div>MANUAL PREDIAL LTDA</div>
         <div>Av. Calil Hadad, Mogi das Cruzes, 200 SP 08558-040</div>

@@ -24,13 +24,23 @@ const PageLayout = ({
 }: PageProps) => {
   const { logout } = useAuth();
 
+  const styles = {
+    padding: '1rem 2.5rem 0 2.5rem',
+    backgroundColor: 'white',
+  };
+
   return (
-    <PageComponent style={hasLogo ? { padding: '1rem 2.5rem 0 2.5rem' } : {}}>
+    <PageComponent style={hasLogo ? styles : {}}>
       {title && <PageTitle>{title}</PageTitle>}
 
       {hasLogo && (
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Image src="/img/logo.svg" alt="Logo" width={200} height={80} />
+          <Image
+            src={hasLogo ? '/img/logo_dark.svg' : '/img/logo.svg'}
+            alt="Logo"
+            width={200}
+            height={80}
+          />
 
           <div
             style={{
