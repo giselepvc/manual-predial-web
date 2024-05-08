@@ -101,6 +101,7 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
         ...form,
         company: undefined,
         enterprise: undefined,
+        icon: form?.icon === 0 ? undefined : form?.icon,
         groups:
           type === 'default'
             ? groups?.map(item => Number(item?.id))

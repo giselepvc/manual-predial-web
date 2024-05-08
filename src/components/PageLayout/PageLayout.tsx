@@ -48,10 +48,11 @@ const PageLayout = ({
               cursor: 'pointer',
               alignItems: 'center',
               gap: '0.5rem',
+              color: 'black',
             }}
             onClick={() => logout()}
           >
-            <ExitIcon /> Sair
+            <ExitIcon color="#000000" /> Sair
           </div>
         </div>
       )}
