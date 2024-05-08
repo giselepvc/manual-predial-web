@@ -7,7 +7,6 @@ import Pagination from '@/components/Pagination/Pagination';
 import TableComponent from '@/components/Table/Table';
 import { getClients } from '@/services/querys/clients';
 import { normalizeStrapi } from '@/utils/normalizeStrapi';
-import cpfMask from '@/utils/masks/cpfMask';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import ConfirmModal from '@/components/ConfirmeModal/ConfirmeModal';
@@ -16,7 +15,7 @@ import handleError, { handleSuccess } from '@/utils/handleToast';
 import { FaTrash } from 'react-icons/fa6';
 import { useAuth } from '@/hooks/useAuth';
 import EditIcon from '../../../../public/icons/edit.svg';
-import { ActionButton } from './styles';
+import { ActionButton, ActionSection } from './styles';
 
 const UsersPage = () => {
   const { push } = useRouter();
@@ -34,9 +33,14 @@ const UsersPage = () => {
     'filters[name][$containsi]': search || undefined,
     'filters[group][enterprise][id]': user?.enterprise?.id || undefined,
     'filters[enterprise][id][$null]': true,
-    'filters[users][email][$ne]': 'master@gmail.com',
+    'filters[users][id][$ne]': 30,
     'sort[createdAt]': 'DESC',
-    populate: ['users', 'users.image', 'group.enterprise', 'enterprise'],
+    populate: [
+      'users',
+      'users.image',
+      'group.enterprise.company',
+      'enterprise.company',
+    ],
   };
 
   const { data: clientsData } = useQuery({
@@ -52,7 +56,6 @@ const UsersPage = () => {
     try {
       setIsUpdating(true);
       await api.delete(`/clients/${deletingId}`);
-
       handleSuccess('Manual deletado com sucesso.');
       setDeletingId(undefined);
       query.invalidateQueries({ queryKey: ['usersData'] });
@@ -71,31 +74,33 @@ const UsersPage = () => {
         setSearch={setSearch}
       />
 
-      <TableComponent fields={['Nome', 'Login', 'Grupo', 'CPF', 'Ações']}>
+      <TableComponent
+        fields={[
+          'Nome',
+          'Login',
+          'Grupo',
+          'Empreendimento',
+          'Construtora',
+          'Ações',
+        ]}
+      >
         {clients.map(client => (
           <tr key={client.id}>
             <td>{client.name || '--'}</td>
-            <td>{client.users?.email || '--'}</td>
+            <td>{client.users?.username || '--'}</td>
             <td>{client.group?.name || '--'}</td>
-            <td>{client.cpf ? cpfMask(client.cpf) : '--'}</td>
+            <td>{client.group?.enterprise?.title || '--'}</td>
+            <td>{client.group?.enterprise?.company?.name || '--'}</td>
             <td>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  gap: '1.5rem',
-                }}
-              >
+              <ActionSection>
                 <ActionButton onClick={() => push(`/final/edit/${client.id}`)}>
                   <EditIcon />
                   Editar
                 </ActionButton>
-                <ActionButton
-                  onClick={() => (isUpdating ? null : setDeletingId(client.id))}
-                >
+                <ActionButton onClick={() => setDeletingId(client.id)}>
                   <FaTrash />
                 </ActionButton>
-              </div>
+              </ActionSection>
             </td>
           </tr>
         ))}

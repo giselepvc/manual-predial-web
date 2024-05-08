@@ -57,6 +57,11 @@ const CustomerForm = ({
     value: user?.enterprise?.id?.toString() || '',
   };
 
+  const optionCompany = {
+    label: user?.enterprise?.company?.name || '',
+    value: user?.enterprise?.company?.id?.toString() || '',
+  };
+
   const {
     handleSubmit,
     register,
@@ -111,7 +116,12 @@ const CustomerForm = ({
     'pagination[page]': 1,
     'pagination[pageSize]': 1,
     'filters[id]': customerId,
-    populate: ['users', 'group.enterprise', 'enterprise'],
+    populate: [
+      'users',
+      'users.image',
+      'group.enterprise.company',
+      'enterprise.company',
+    ],
   };
 
   useQuery({
@@ -127,10 +137,10 @@ const CustomerForm = ({
         ...(clients?.[0]?.enterprise && {
           enterprise: {
             label: isCompany
-              ? clients?.[0]?.group?.enterprise?.title || ''
+              ? clients?.[0]?.group?.enterprise?.title
               : clients?.[0]?.enterprise?.title,
             value: isCompany
-              ? clients?.[0]?.group?.enterprise?.id?.toString() || ''
+              ? clients?.[0]?.group?.enterprise?.id?.toString()
               : clients?.[0]?.enterprise?.id?.toString(),
           },
         }),
@@ -140,6 +150,14 @@ const CustomerForm = ({
             value: clients?.[0]?.group?.id?.toString() || '',
           },
         }),
+        company: {
+          label: isCompany
+            ? clients?.[0]?.group?.enterprise?.company?.name
+            : clients?.[0]?.enterprise?.company?.name,
+          value: isCompany
+            ? clients?.[0]?.group?.enterprise?.company?.id?.toString()
+            : clients?.[0]?.enterprise?.company?.id?.toString(),
+        },
         password: '12345678',
         confirmPassword: '12345678',
       });
@@ -179,6 +197,7 @@ const CustomerForm = ({
           group: Number(form?.group?.value),
           enterprise: undefined,
           company: undefined,
+          email: form?.email || null,
         });
       } else {
         const { data } = await api.post<{ data: { id: number } }>(
@@ -190,6 +209,7 @@ const CustomerForm = ({
             group: undefined,
             confirmPassword: undefined,
             company: undefined,
+            email: form?.email || null,
           },
         );
 
@@ -216,6 +236,7 @@ const CustomerForm = ({
       await api.put(`/clients/${customerId}`, {
         data: {
           ...form,
+          email: form?.email || null,
           enterprise: isCompany
             ? undefined
             : Number(form?.enterprise?.value || user?.enterprise?.id),
@@ -400,7 +421,7 @@ const CustomerForm = ({
               <Select
                 placeholder="Selecione construtora"
                 onChange={onChange}
-                value={role === 1 ? option : value}
+                value={role === 1 ? optionCompany : value}
                 options={companies || []}
                 isDisabled={role === 1}
               />

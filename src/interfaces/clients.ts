@@ -88,4 +88,32 @@ export interface IEnterpriseAttributes {
   neighborhood: string;
   city: string;
   state: string;
+  company: ICompany;
+}
+
+export interface ICompany {
+  data: ICompanyDatum;
+}
+
+export interface ICompanyDatum {
+  id: number;
+  attributes: ICompanyAttributes;
+}
+
+export interface ICompanyAttributes {
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  active: boolean;
+  cnpj: string;
+  email: string;
+  zipCode: string;
+  phone: string;
+  address: string;
+  number: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  complement: null;
 }
