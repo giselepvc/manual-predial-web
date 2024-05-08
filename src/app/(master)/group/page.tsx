@@ -30,7 +30,7 @@ const GroupPage = () => {
     'pagination[pageSize]': 7,
     'filters[name][$containsi]': search || undefined,
     'sort[createdAt]': 'DESC',
-    populate: '*',
+    populate: ['capters', 'enterprise.company'],
   };
 
   const { data: groupsData } = useQuery({
@@ -68,13 +68,19 @@ const GroupPage = () => {
       />
 
       <TableComponent
-        fields={['ID', 'Nome do grupo', 'Empreendimento', 'Capitulos', 'Ações']}
+        fields={[
+          'Nome do grupo',
+          'Empreendimento',
+          'Construtora',
+          'Capitulos',
+          'Ações',
+        ]}
       >
         {groups.map(manual => (
           <tr key={manual.id}>
-            <td>{manual.id}</td>
             <td>{manual.name}</td>
             <td>{manual.enterprise?.title || '--'}</td>
+            <td>{manual.enterprise?.company?.name || '--'}</td>
             <td>{manual.capters?.length || 0}</td>
             <td>
               <div
