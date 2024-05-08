@@ -106,9 +106,6 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
       const { data } = await api.post<{ data: { id: number } }>('/companies', {
         data: { ...form },
       });
-      query.invalidateQueries({ queryKey: ['CompaniesData'] });
-      handleSuccess('Cadastro realizado com sucesso.');
-      back();
 
       if (data.data?.id && image) {
         const formData = new FormData();
@@ -120,6 +117,10 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
 
         await api.post('/upload', formData);
       }
+
+      query.invalidateQueries({ queryKey: ['CompaniesData'] });
+      handleSuccess('Cadastro realizado com sucesso.');
+      back();
     } catch (error) {
       handleError(error);
     } finally {

@@ -23,6 +23,21 @@ export interface PurpleAttributes {
   client: Client;
   groups: Groups;
   company: Client;
+  image: Image;
+}
+
+export interface Image {
+  data: ImageDatum;
+}
+
+export interface ImageDatum {
+  id: number;
+  attributes: ImageAttributes;
+}
+
+export interface ImageAttributes {
+  url: string;
+  name: string;
 }
 
 export interface Client {

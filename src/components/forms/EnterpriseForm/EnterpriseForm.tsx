@@ -19,8 +19,10 @@ import {
   EnterpriseSchema,
   IEnterpriseForm,
 } from '@/validations/EnterpriseSchema';
+import { urlBuild } from '@/utils/urlBuild';
 import HpuseIcon from '../../../../public/icons/house.svg';
 import UserIcon from '../../../../public/icons/peaple.svg';
+import ImageIcon from '../../../../public/icons/foto.svg';
 import {
   ButtonSection,
   FormSection,
@@ -29,6 +31,12 @@ import {
   Field,
   Label,
   ErrorMessage,
+  PhotoSection,
+  PhotoChangeButton,
+  Photo,
+  ImageRow,
+  InputSection,
+  FileButton,
 } from './styles';
 
 interface CompanProps {
@@ -39,6 +47,21 @@ interface CompanProps {
 const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
   const { back } = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [image, setImage] = useState<File>();
+
+  const {
+    handleSubmit,
+    register,
+    trigger,
+    setValue,
+    setError,
+    getValues,
+    reset,
+    control,
+    formState: { errors },
+  } = useForm<IEnterpriseForm>({
+    resolver: yupResolver(EnterpriseSchema),
+  });
 
   const companiesParams = {
     populate: '*',
@@ -56,10 +79,10 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
     'pagination[page]': 1,
     'pagination[pageSize]': 1,
     'filters[id]': companyId,
-    populate: 'company',
+    populate: ['company', 'image'],
   };
 
-  useQuery({
+  const { data: enterpriseInfo } = useQuery({
     queryKey: ['enterpriseData', enterpriseParams],
     queryFn: async () => {
       const data = await getEnterprise(enterpriseParams);
@@ -74,20 +97,6 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
       return enterprises?.[0];
     },
     enabled: !!companyId,
-  });
-
-  const {
-    handleSubmit,
-    register,
-    trigger,
-    setValue,
-    setError,
-    getValues,
-    reset,
-    control,
-    formState: { errors },
-  } = useForm<IEnterpriseForm>({
-    resolver: yupResolver(EnterpriseSchema),
   });
 
   const onSubmit: SubmitHandler<IEnterpriseForm> = async form => {
@@ -108,6 +117,17 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
         });
       }
 
+      if (data.data?.id && image) {
+        const formData = new FormData();
+
+        formData.append('ref', 'api::enterprise.enterprise');
+        formData.append('refId', data.data?.id?.toString() || '');
+        formData.append('field', 'image');
+        formData.append('files', image);
+
+        await api.post('/upload', formData);
+      }
+
       handleSuccess('Cadastro realizado com sucesso.');
       back();
     } catch (error) {
@@ -120,9 +140,12 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
   const onUpdate: SubmitHandler<IEnterpriseForm> = async form => {
     try {
       setIsLoading(true);
-      api.put<{ data: { id: number } }>(`/enterprises/${companyId}`, {
-        data: { ...form },
-      });
+      const { data } = await api.put<{ data: { id: number } }>(
+        `/enterprises/${companyId}`,
+        {
+          data: { ...form },
+        },
+      );
 
       if (companyId && form?.company?.value) {
         const valueId = Number(form?.company?.value);
@@ -137,6 +160,17 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
             data: { enterprises: [...enterprisesIds, Number(companyId)] },
           });
         }
+      }
+
+      if (data.data?.id && image) {
+        const formData = new FormData();
+
+        formData.append('ref', 'api::enterprise.enterprise');
+        formData.append('refId', data.data?.id?.toString() || '');
+        formData.append('field', 'image');
+        formData.append('files', image);
+
+        await api.post('/upload', formData);
       }
 
       handleSuccess('Alteração realizado com sucesso.');
@@ -176,6 +210,17 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
         handleError(error);
       }
     }
+  };
+
+  const renderImage = () => {
+    return enterpriseInfo?.image?.url
+      ? urlBuild(enterpriseInfo?.image?.url)
+      : '/icons/image.svg';
+  };
+
+  const photoHandler = () => {
+    if (image) return URL.createObjectURL(image);
+    return '/icons/image.svg';
   };
 
   return (
@@ -313,6 +358,38 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
           )}
         </Field>
       </FormSection>
+
+      <RegisterTitle style={{ marginTop: '2rem' }}>
+        <ImageIcon />
+        Imagem do empreendimeto
+      </RegisterTitle>
+
+      <ImageRow>
+        <PhotoSection>
+          <PhotoChangeButton>
+            <Photo src={image ? photoHandler() : renderImage()} alt="profile" />
+          </PhotoChangeButton>
+        </PhotoSection>
+
+        <Field>
+          <Label>Selecione uma imagem</Label>
+          <InputSection>
+            <FileButton>Escolher arquivo</FileButton>
+            {image ? image.name : 'Selecionar arquivo'}
+            <input
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={e => {
+                if (e.target?.files?.[0]) {
+                  setImage(e.target.files[0]);
+                  e.target.value = '';
+                }
+              }}
+            />
+          </InputSection>
+        </Field>
+      </ImageRow>
 
       <ButtonSection>
         <Button outlined text="Cancelar" type="button" onClick={back} />
