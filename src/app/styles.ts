@@ -45,7 +45,7 @@ export const LogoContainer = styled.section`
 `;
 
 export const FormContainer = styled.form`
-  background: linear-gradient(164.75deg, #3d3d3d 45.14%, #7c4d30 288.05%);
+  background: linear-gradient(164.75deg, #272727 55.14%, #7c4d30 288.05%);
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.25);
 
   width: 40%;
