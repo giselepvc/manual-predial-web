@@ -9,13 +9,13 @@ export const CustomerSchema = yup.object({
   cnpj: yup.string(),
   neighborhood: yup.string(),
   number: yup.string(),
-  phone: yup.string(),
+  phone: yup.string().nullable(),
   cellPhone: yup.string(),
   state: yup.string(),
   zipCode: yup.string(),
   name: yup.string(),
   login: yup.string().required('Login é obrigatório'),
-  complement: yup.string(),
+  complement: yup.string().nullable(),
   email: yup.string(),
   password: yup
     .string()

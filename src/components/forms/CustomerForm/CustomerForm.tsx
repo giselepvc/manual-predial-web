@@ -276,6 +276,8 @@ const CustomerForm = ({
     }
   }, [watch('enterprise'), role]);
 
+  console.log(errors);
+
   return (
     <RegisterForm onSubmit={handleSubmit(isEditing ? onUpdate : onSubmit)}>
       <RegisterTitle>
@@ -479,6 +481,17 @@ const CustomerForm = ({
           <Input placeholder="Insirir estado" {...register('state')} />
           {errors?.state?.message && (
             <ErrorMessage>{errors.state.message}</ErrorMessage>
+          )}
+        </Field>
+
+        <Field>
+          <Label>Complemento / N° unidade</Label>
+          <Input
+            placeholder="Insirir complemento"
+            {...register('complement')}
+          />
+          {errors?.complement?.message && (
+            <ErrorMessage>{errors.complement.message}</ErrorMessage>
           )}
         </Field>
       </FormSection>
