@@ -26,6 +26,10 @@ export const CustomerSchema = yup.object({
     .oneOf([yup.ref('password')], 'As senhas devem coincidir')
     .required('Confirmação de senha é obrigatória'),
   title: yup.string(),
+  company: yup.object({
+    value: yup.string().required('Construtora é obrigatório'),
+    label: yup.string().required('Construtora é obrigatório'),
+  }),
   enterprise: yup.object({
     value: yup.string().required('Empreendimento obrigatório'),
     label: yup.string().required('Empreendimento obrigatório'),

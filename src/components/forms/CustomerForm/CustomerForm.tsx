@@ -15,11 +15,13 @@ import api from '@/services/api';
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getEnterprise } from '@/services/querys/enterprise';
-import { RecursiveNormalize, normalizeStrapi } from '@/utils/normalizeStrapi';
+import { RecursiveNormalize as R } from '@/utils/normalizeStrapi';
+import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import { getClients } from '@/services/querys/clients';
 import { useAuth } from '@/hooks/useAuth';
 import { getGroups } from '@/services/querys/groups';
 import { IEnterprises } from '@/interfaces/enterprise';
+import { getCompanies } from '@/services/querys/company';
 import UserIcon from '../../../../public/icons/peaple.svg';
 import HpuseIcon from '../../../../public/icons/house.svg';
 import {
@@ -46,17 +48,49 @@ const CustomerForm = ({
   const { back } = useRouter();
   const { user, role } = useAuth();
   const query = useQueryClient();
+
   const [isLoading, setIsLoading] = useState(false);
-  const [enterpriseList, setEnterprise] = useState<
-    RecursiveNormalize<IEnterprises[]>
-  >([]);
+  const [enterpriseList, setEnterprise] = useState<R<IEnterprises[]>>([]);
+
   const option = {
     label: user?.enterprise?.title || '',
     value: user?.enterprise?.id?.toString() || '',
   };
 
+  const {
+    handleSubmit,
+    register,
+    trigger,
+    setValue,
+    setError,
+    getValues,
+    watch,
+    reset,
+    control,
+    formState: { errors },
+  } = useForm<ICustomerForm>({
+    resolver: yupResolver(CustomerSchema),
+  });
+
+  const companiesParams = {
+    populate: '*',
+  };
+
+  const { data: companies } = useQuery({
+    queryKey: ['companiesOptions', companiesParams],
+    queryFn: async () => {
+      const data = await getCompanies(companiesParams);
+      const companiesList = normalizeStrapi(data || []);
+      return companiesList?.map(enter => ({
+        label: enter.name || '',
+        value: enter.id?.toString() || '',
+      }));
+    },
+  });
+
   const enterpriseParams = {
     populate: '*',
+    'filters[company][id]': watch('company.value'),
   };
 
   const { data: enterprises } = useQuery({
@@ -70,6 +104,7 @@ const CustomerForm = ({
         value: enter.id ? `${enter.id}` : '',
       }));
     },
+    enabled: !!watch('company'),
   });
 
   const clientsParams = {
@@ -114,21 +149,6 @@ const CustomerForm = ({
     enabled: !!customerId,
   });
 
-  const {
-    handleSubmit,
-    register,
-    trigger,
-    setValue,
-    setError,
-    getValues,
-    watch,
-    reset,
-    control,
-    formState: { errors },
-  } = useForm<ICustomerForm>({
-    resolver: yupResolver(CustomerSchema),
-  });
-
   const groupsParams = {
     'sort[createdAt]': 'DESC',
     populate: '*',
@@ -158,6 +178,7 @@ const CustomerForm = ({
           confirmPassword: undefined,
           group: Number(form?.group?.value),
           enterprise: undefined,
+          company: undefined,
         });
       } else {
         const { data } = await api.post<{ data: { id: number } }>(
@@ -168,6 +189,7 @@ const CustomerForm = ({
             enterprise: Number(form?.enterprise?.value),
             group: undefined,
             confirmPassword: undefined,
+            company: undefined,
           },
         );
 
@@ -200,6 +222,7 @@ const CustomerForm = ({
           group: form?.group?.value ? Number(form?.group?.value) : undefined,
           password: undefined,
           confirmPassword: undefined,
+          company: undefined,
           title: '',
         },
       });
@@ -347,10 +370,44 @@ const CustomerForm = ({
           <Input
             placeholder="Insirir telefone"
             maskFunction={telephoneMask}
+            {...register('phone')}
+          />
+          {errors?.phone?.message && (
+            <ErrorMessage>{errors.phone.message}</ErrorMessage>
+          )}
+        </Field>
+
+        <Field>
+          <Label>Celular</Label>
+          <Input
+            placeholder="Insirir celular"
+            maskFunction={telephoneMask}
             {...register('cellPhone')}
           />
           {errors?.cellPhone?.message && (
             <ErrorMessage>{errors.cellPhone.message}</ErrorMessage>
+          )}
+        </Field>
+      </FormSection>
+
+      <FormSection>
+        <Field>
+          <Label>Construtora</Label>
+          <Controller
+            control={control}
+            name="company"
+            render={({ field: { onChange, value } }) => (
+              <Select
+                placeholder="Selecione construtora"
+                onChange={onChange}
+                value={role === 1 ? option : value}
+                options={companies || []}
+                isDisabled={role === 1}
+              />
+            )}
+          />
+          {errors?.company?.value?.message && (
+            <ErrorMessage>{errors.company.value.message}</ErrorMessage>
           )}
         </Field>
 
