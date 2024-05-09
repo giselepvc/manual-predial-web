@@ -109,11 +109,8 @@ const Login = () => {
           <LoginTitle>Login</LoginTitle>
 
           <InputSection>
-            <LoginLabel>E-mail</LoginLabel>
-            <LoginInput
-              placeholder="Insira seu e-mail"
-              {...register('email')}
-            />
+            <LoginLabel>Login</LoginLabel>
+            <LoginInput placeholder="Insira seu login" {...register('email')} />
             {errors?.email?.message && (
               <ErrorMessage>{errors.email.message}</ErrorMessage>
             )}
