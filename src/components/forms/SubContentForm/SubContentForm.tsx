@@ -13,24 +13,17 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/services/api';
 import { getContents } from '@/services/querys/content';
 import ConfirmModal from '@/components/ConfirmeModal/ConfirmeModal';
-import { ContentSchema, IContentForm } from '@/validations/ContentSchema';
-import { getIcons } from '@/services/querys/icons';
-import Image from 'next/image';
-import { urlBuild } from '@/utils/urlBuild';
-import { IContent } from '@/interfaces/content';
+import { SubContentSchema, IContentForm } from '@/validations/SubContentSchema';
+import ContentList from './components/ContentList/ContentList';
 import {
   ButtonSection,
-  Checkbox,
-  CheckboxLabel,
   ErrorMessage,
   Field,
   FormSection,
   Label,
-  RadiosRow,
   RegisterForm,
   RegisterTitle,
 } from './styles';
-import ContentList from './components/ContentList/ContentList';
 
 interface ChapterPageProps {
   onClose: () => void;
@@ -40,21 +33,13 @@ interface ChapterPageProps {
   setContent: Dispatch<
     SetStateAction<RecursiveNormalize<ContentsDatum> | undefined>
   >;
-  setSubContent: Dispatch<
-    SetStateAction<RecursiveNormalize<ContentsDatum> | undefined>
-  >;
-  setAbaContent: Dispatch<
-    SetStateAction<RecursiveNormalize<IContent> | undefined>
-  >;
 }
 
-const ContentForm = ({
+const SubContentForm = ({
   onClose,
   content,
   setContent,
   setBuildType,
-  setSubContent,
-  setAbaContent,
   setSteps,
 }: ChapterPageProps) => {
   const query = useQueryClient();
@@ -68,22 +53,7 @@ const ContentForm = ({
     reset,
     formState: { errors },
   } = useForm<IContentForm>({
-    resolver: yupResolver(ContentSchema),
-  });
-
-  const iconsParams = {
-    populate: '*',
-    'filters[active]': true,
-  };
-
-  const { data: icons } = useQuery({
-    queryKey: ['iconsData', iconsParams],
-    queryFn: async () => {
-      const result = await getIcons(iconsParams);
-      const iconsResult = normalizeStrapi(result || []);
-      iconsResult.sort((a, b) => a.id - b.id);
-      return iconsResult;
-    },
+    resolver: yupResolver(SubContentSchema),
   });
 
   const contentsParams = {
@@ -116,11 +86,9 @@ const ContentForm = ({
       setIsLoading(true);
       const { data } = await api.post<{ data: { id: number } }>('/containers', {
         data: {
-          title: form.title,
-          subtitle: form.description,
           order: Number(form.order),
           visible: form.visible?.value === 'sim',
-          icon: form?.icon === 0 ? undefined : form?.icon,
+          type: form.container?.value,
         },
       });
 
@@ -132,11 +100,9 @@ const ContentForm = ({
       }
 
       reset({
+        container: {},
         order: '',
         visible: { label: 'Sim', value: 'sim' },
-        description: '',
-        title: '',
-        icon: 0,
       });
 
       handleSuccess('Conteúdo cadastrado com sucesso.');
@@ -166,7 +132,9 @@ const ContentForm = ({
 
   return (
     <RegisterForm>
-      <RegisterTitle>Listagem de titulos nas Abas</RegisterTitle>
+      <RegisterTitle>
+        Listagem de conteúdo em {`"${content?.title}"`}
+      </RegisterTitle>
 
       <FormSection>
         <Field>
@@ -206,53 +174,39 @@ const ContentForm = ({
         </Field>
 
         <Field>
-          <Label>Título</Label>
-          <Input
-            placeholder="Insira um título"
-            type="text"
-            style={{ width: '230px' }}
-            {...register('title')}
+          <Label>Tipo do container</Label>
+          <Controller
+            control={control}
+            name="container"
+            render={({ field: { onChange, value } }) => (
+              <Select
+                placeholder="Selecione uma opção"
+                onChange={onChange}
+                value={value}
+                width="300px"
+                options={[
+                  {
+                    label: 'Arquivo PDF',
+                    value: 'pdf',
+                  },
+                  {
+                    label: 'Imagem única com legenda abaixo parágrafo múltiplo',
+                    value: 'image',
+                  },
+                  {
+                    label: 'Parágrafo único ou múltiplo',
+                    value: 'paragraph',
+                  },
+                  {
+                    label: 'Parágrafo múltiplo itens não numerados',
+                    value: 'paragraphIcon',
+                  },
+                ]}
+              />
+            )}
           />
-          {errors?.title?.message && (
-            <ErrorMessage>{errors.title.message}</ErrorMessage>
-          )}
-        </Field>
-
-        <Field>
-          <Label>Legenda</Label>
-          <Input
-            placeholder="Insira uma legenda"
-            style={{ width: '230px' }}
-            {...register('description')}
-          />
-          {errors?.description?.message && (
-            <ErrorMessage>{errors.description.message}</ErrorMessage>
-          )}
-        </Field>
-      </FormSection>
-
-      <FormSection>
-        <Field>
-          <Label>Selecione um ícone</Label>
-          <RadiosRow>
-            <CheckboxLabel>
-              <Checkbox type="radio" {...register('icon')} value={0} />
-              Nenhum
-            </CheckboxLabel>
-            {icons?.map(item => (
-              <CheckboxLabel>
-                <Checkbox type="radio" {...register('icon')} value={item.id} />
-                <Image
-                  src={urlBuild(item.image?.url)}
-                  alt="icons"
-                  width={14}
-                  height={14}
-                />
-              </CheckboxLabel>
-            ))}
-          </RadiosRow>
-          {errors?.icon?.message && (
-            <ErrorMessage>{errors.icon.message}</ErrorMessage>
+          {errors?.container?.value?.message && (
+            <ErrorMessage>{errors.container.value.message}</ErrorMessage>
           )}
         </Field>
       </FormSection>
@@ -273,8 +227,6 @@ const ContentForm = ({
         setSteps={setSteps}
         setBuildType={setBuildType}
         setDeletingId={setDeletingId}
-        setSubContent={setSubContent}
-        setAbaContent={setAbaContent}
       />
 
       {deletingId && (
@@ -296,4 +248,4 @@ const ContentForm = ({
   );
 };
 
-export default ContentForm;
+export default SubContentForm;

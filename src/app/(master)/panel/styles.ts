@@ -59,7 +59,8 @@ export const Content = styled.section`
   margin-bottom: 2rem;
 
   border-radius: 0.625rem;
-  background: ${({ theme }) => theme.colors.grayLight};
+  border: ${({ theme }) => `1px solid ${theme.colors.grayLight}`};
+  background: ${({ theme }) => theme.colors.white};
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 
   display: flex;
@@ -90,27 +91,29 @@ export const TableRow = styled.div<TableProps>`
 
   width: 100%;
   min-height: 50px;
+
   padding: 0 2.5rem;
   margin-bottom: 1rem;
 
   background: ${({ theme, selected }) =>
-    selected ? theme.colors.gray3a : theme.colors.grayStronger};
+    selected ? theme.colors.primary : theme.colors.grayLight};
   border-radius: 6px;
 
   cursor: pointer;
 
   &:hover {
-    background: ${({ theme }) => theme.colors.gray3a};
+    opacity: 0.8;
   }
 
   span {
     font-size: 0.9rem;
-    color: ${({ theme }) => theme.colors.grayd9};
+    color: ${({ theme }) => theme.colors.white};
+
     margin-right: 1.2rem;
   }
 
   div {
-    color: ${({ theme }) => theme.colors.grayaa};
+    color: ${({ theme }) => theme.colors.white};
     font-weight: 600;
 
     display: flex;
@@ -137,28 +140,21 @@ export const TableMore = styled.div<TableProps>`
 
   width: 100%;
   min-height: 50px;
+
   padding: 0 2.5rem;
   margin-top: -1rem;
-  margin-bottom: 1rem;
+  margin-bottom: ${({ selected }) => (selected ? 0 : '1rem')};
 
-  background: ${({ theme }) => theme.colors.grayStronger};
+  background: ${({ theme }) => theme.colors.white};
+  border: ${({ theme, selected }) =>
+    selected
+      ? `1px solid ${theme.colors.primary}`
+      : `1px solid ${theme.colors.gray8f}`};
 
+  color: ${({ theme, selected }) =>
+    selected ? theme.colors.primary : theme.colors.grayStronger};
   cursor: pointer;
   animation: ${fadeIn} 0.2s ease-in-out;
-
-  span {
-    font-size: 0.9rem;
-    color: ${({ theme }) => theme.colors.grayd9};
-    margin-right: 0.35rem;
-  }
-
-  div {
-    color: ${({ theme }) => theme.colors.grayaa};
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
 `;
 
 export const TableContentMore = styled.div`
@@ -179,43 +175,6 @@ export const TableContentMore = styled.div`
   cursor: pointer;
 `;
 
-const detailsFadeIn = keyframes`
-  from {
-    min-height: 0px;
-  }
-  to {
-    min-height: 100px;;
-  }
-`;
-
-export const TableDetails = styled.div<TableProps>`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  width: 100%;
-  min-height: 100px;
-  padding: 0 2.5rem;
-  margin-top: -0.5rem;
-  margin-bottom: 1rem;
-
-  background: ${({ theme }) => theme.colors.grayStronger};
-
-  cursor: pointer;
-  animation: ${detailsFadeIn} 0.2s ease-in-out;
-
-  span {
-    font-size: 0.9rem;
-    color: ${({ theme }) => theme.colors.grayd9};
-    margin-right: 3.4rem;
-  }
-
-  div {
-    color: ${({ theme }) => theme.colors.grayaa};
-    font-weight: 600;
-  }
-`;
-
 export const InfoSection = styled.div`
   display: flex;
   align-items: center;
@@ -231,6 +190,7 @@ export const Description = styled.div`
   border-radius: 6px;
   background-color: ${({ theme }) => theme.colors.gray3d};
 
+  white-space: pre-line;
   color: ${({ theme }) => theme.colors.grayaa};
   font-weight: 600;
 

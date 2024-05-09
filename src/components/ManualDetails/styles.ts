@@ -211,6 +211,7 @@ export const Description = styled.div`
   border-radius: 6px;
   background-color: ${({ theme }) => theme.colors.gray3d};
 
+  white-space: pre-line;
   color: ${({ theme }) => theme.colors.grayaa};
   font-weight: 600;
 

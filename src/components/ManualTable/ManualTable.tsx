@@ -257,7 +257,7 @@ const ManualTable = ({
                           >
                             <InfoSection>
                               <span>{index + 1}</span>
-                              <div>{titles.title}</div>
+                              <div>{titles.title.toUpperCase()}</div>
                             </InfoSection>
                             <div>
                               {!isCompany && (
@@ -311,7 +311,7 @@ const ManualTable = ({
                                       !isCompany && (
                                         <Button
                                           type="button"
-                                          text="Adicionar o conteúdo"
+                                          text="Adicionar abas"
                                           style={{ minHeight: '25px' }}
                                           onClick={() => {
                                             setContent(container);

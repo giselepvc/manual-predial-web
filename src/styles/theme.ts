@@ -2,9 +2,9 @@ export const theme = {
   colors: {
     primary: '#86BD2C',
 
-    grayStronger: '#272727', // #414141 cinza escuro
-    black: '#1b1b1b', // #414141 cinza preto
-    grayLight: '#414141', // #414141 cinza claro
+    grayStronger: '#272727',
+    black: '#1b1b1b',
+    grayLight: '#414141',
 
     gray4a: '#4A4A4A',
     gray3d: '#3D3D3D',
@@ -16,6 +16,7 @@ export const theme = {
     grayd9: '#D9D9D9',
     grayaa: '#AAAAAA',
     white: '#ffffff',
+    default: '#FAFAFA',
     error: '#D60101',
   },
 } as const;

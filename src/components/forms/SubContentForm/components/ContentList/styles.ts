@@ -32,18 +32,19 @@ interface TableProps {
 }
 
 export const TableRow = styled.div<TableProps>`
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-column-gap: 0.8rem;
+  display: flex;
   align-items: center;
   justify-content: space-between;
-  min-width: 100%;
+
+  width: 100%;
   min-height: 50px;
   padding: 0 2.5rem;
   margin-bottom: 1rem;
+
   background: ${({ theme, selected }) =>
     selected ? theme.colors.gray3a : theme.colors.grayStronger};
   border-radius: 6px;
+
   cursor: pointer;
 
   &:hover {
@@ -59,6 +60,7 @@ export const TableRow = styled.div<TableProps>`
   div {
     color: ${({ theme }) => theme.colors.grayaa};
     font-weight: 600;
+
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -69,23 +71,4 @@ export const InfoSection = styled.div`
   display: flex;
   align-items: center;
   gap: 1rem;
-`;
-
-export const Header = styled.div`
-  min-width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-column-gap: 0.8rem;
-  align-items: center;
-  padding: 0 2.5rem;
-  margin-bottom: 1rem;
-  cursor: pointer;
-  color: ${({ theme }) => theme.colors.white};
-  font-weight: 700;
-  font-size: 1rem;
-
-  .last {
-    display: flex;
-    justify-content: flex-end;
-  }
 `;

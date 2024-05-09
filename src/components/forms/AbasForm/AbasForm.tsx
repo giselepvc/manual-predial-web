@@ -73,7 +73,7 @@ const AbasForm = ({ onClose, content }: ChapterPageProps) => {
           <Input
             placeholder="Insira uma ordem"
             type="number"
-            style={{ width: '250px' }}
+            style={{ width: '300px' }}
             {...register('order')}
           />
           {errors?.order?.message && (
@@ -91,7 +91,7 @@ const AbasForm = ({ onClose, content }: ChapterPageProps) => {
                 placeholder="Selecione uma opção"
                 onChange={onChange}
                 value={value}
-                width="250px"
+                width="300px"
                 options={[
                   { label: 'Sim', value: 'sim' },
                   { label: 'Não', value: 'nao' },
@@ -105,11 +105,12 @@ const AbasForm = ({ onClose, content }: ChapterPageProps) => {
         </Field>
 
         <Field>
-          <Label>Título</Label>
+          <Label>Tipo selecionado</Label>
           <Input
-            placeholder="Insira um título da aba"
-            style={{ width: '250px' }}
+            placeholder="Tipo selecionado"
+            style={{ width: '300px' }}
             {...register('title')}
+            disabled
           />
           {errors?.title?.message && (
             <ErrorMessage>{errors.title.message}</ErrorMessage>

@@ -21,6 +21,7 @@ import { RecursiveNormalize, normalizeStrapi } from '@/utils/normalizeStrapi';
 import { getEnterprise } from '@/services/querys/enterprise';
 import { useAuth } from '@/hooks/useAuth';
 import ManualDetails from '@/components/ManualDetails/ManualDetails';
+import { IContent } from '@/interfaces/content';
 import ContainerForm from '../ContainerForm/ContainerForm';
 import TitleForm from '../TitleForm/TitleForm';
 import ChapterForm from '../ChapterForm/ChapterForm';
@@ -31,6 +32,7 @@ import ImageForm from '../ImageForm/ImageForm';
 import FileForm from '../FileForm/FileForm';
 import ParagraphForm from '../ParagraphForm/ParagraphForm';
 import ContentForm from '../ContentForm/ContentForm';
+import SubContentForm from '../SubContentForm/SubContentForm';
 
 interface ManualFormProps {
   editing?: boolean;
@@ -54,6 +56,12 @@ const ManualForm = ({ editing }: ManualFormProps) => {
   >();
   const [content, setContent] = useState<
     RecursiveNormalize<ContentsDatum> | undefined
+  >();
+  const [subcontent, setSubcontent] = useState<
+    RecursiveNormalize<ContentsDatum> | undefined
+  >();
+  const [abacontent, setAbacontent] = useState<
+    RecursiveNormalize<IContent> | undefined
   >();
 
   const {
@@ -168,16 +176,41 @@ const ManualForm = ({ editing }: ManualFormProps) => {
     setValue('type', undefined as any);
   };
 
+  const onCloseSubContainer = () => {
+    setSteps(5);
+    setBuildType('subcontainer');
+    setContent(subcontent);
+  };
+
   const builder = {
-    abas: <AbasForm onClose={onClose} content={content} />,
-    pdf: <FileForm onClose={onClose} content={content} />,
-    image: <ImageForm onClose={onClose} content={content} />,
-    paragraph: <ParagraphForm onClose={onClose} content={content} />,
-    paragraphIcon: <ParagraphForm onClose={onClose} content={content} />,
-    keys: <ParagraphForm onClose={onClose} content={content} />,
+    abas: <AbasForm onClose={onCloseSubContainer} content={content} />,
+    pdf: <FileForm onClose={onCloseSubContainer} content={content} />,
+    image: <ImageForm onClose={onCloseSubContainer} content={content} />,
+    paragraph: (
+      <ParagraphForm onClose={onCloseSubContainer} content={content} />
+    ),
+    paragraphIcon: (
+      <ParagraphForm onClose={onCloseSubContainer} content={content} />
+    ),
+    keys: <ParagraphForm onClose={onCloseSubContainer} content={content} />,
     content: (
       <ContentForm
         onClose={onClose}
+        content={content}
+        setBuildType={setBuildType}
+        setContent={setContent}
+        setSteps={setSteps}
+        setSubContent={setSubcontent}
+        setAbaContent={setAbacontent}
+      />
+    ),
+    subcontainer: (
+      <SubContentForm
+        onClose={() => {
+          setSteps(5);
+          setBuildType('content');
+          setContent(abacontent);
+        }}
         content={content}
         setBuildType={setBuildType}
         setContent={setContent}

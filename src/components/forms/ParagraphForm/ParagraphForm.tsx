@@ -62,14 +62,18 @@ const ParagraphForm = ({ onClose, content }: FileProps) => {
           data: {
             description,
             title,
+            icon: icon === 0 ? undefined : icon,
           },
         },
       );
 
       if (data.data?.id && icon && icon !== 0) {
+        const iconFind = icons?.find(item => item.id === icon);
+        const containerList = iconFind?.containers?.map(item => item?.id) || [];
+
         await api.put(`/icons/${icon}`, {
           data: {
-            container: [data.data.id],
+            containers: [...containerList, data.data.id],
           },
         });
       }
@@ -107,7 +111,7 @@ const ParagraphForm = ({ onClose, content }: FileProps) => {
           <Label>Parágrafo único ou múltiplo</Label>
           <TextArea
             placeholder="Insira os parágrafos"
-            style={{ width: '845px', height: '14rem' }}
+            style={{ width: '845px', height: '22rem' }}
             value={description}
             onChange={e => setDesciption(e.target.value)}
           />
@@ -127,7 +131,8 @@ const ParagraphForm = ({ onClose, content }: FileProps) => {
                 <CheckboxLabel>
                   <Checkbox
                     type="radio"
-                    onSelect={() => setIcon(item.id)}
+                    onClick={() => setIcon(item.id)}
+                    checked={icon === item.id}
                     value={item.id}
                   />
                   <Image

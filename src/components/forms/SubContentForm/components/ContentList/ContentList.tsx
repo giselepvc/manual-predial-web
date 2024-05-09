@@ -5,8 +5,7 @@ import { RecursiveNormalize } from '@/utils/normalizeStrapi';
 import { FaPen, FaTrash } from 'react-icons/fa6';
 import { Dispatch, SetStateAction } from 'react';
 import { ContentsDatum } from '@/interfaces/manual';
-import Button from '@/components/Button/Button';
-import { Content, Header, InfoSection, TableRow, TableSection } from './styles';
+import { Content, InfoSection, TableRow, TableSection } from './styles';
 
 interface ContentProps {
   container: RecursiveNormalize<IContent> | undefined;
@@ -16,32 +15,25 @@ interface ContentProps {
   >;
   setBuildType: Dispatch<SetStateAction<string>>;
   setSteps: Dispatch<SetStateAction<number>>;
-  setSubContent: Dispatch<
-    SetStateAction<RecursiveNormalize<ContentsDatum> | undefined>
-  >;
-  setAbaContent: Dispatch<
-    SetStateAction<RecursiveNormalize<IContent> | undefined>
-  >;
 }
 
 const ContentList = ({
-  setSubContent,
-  setAbaContent,
   container,
   setDeletingId,
   setContent,
   setBuildType,
   setSteps,
 }: ContentProps) => {
+  const name = {
+    pdf: 'Arquivo PDF',
+    image: 'Imagem única com legenda abaixo parágrafo múltiplo',
+    paragraph: 'Parágrafo único ou múltiplo',
+    paragraphIcon: 'Parágrafo múltiplo itens não numerados',
+  } as any;
+
   return (
     <Content>
       <TableSection>
-        <Header>
-          <div>Título</div>
-          <div>Legenda</div>
-          <div className="last">Ações</div>
-        </Header>
-
         {container?.sub_containers
           ?.sort((a, b) => a.order - b.order)
           ?.map(content => (
@@ -56,30 +48,17 @@ const ContentList = ({
                     height={20}
                   />
                 )}
-                <div>{content.title}</div>
+                <div>{name[content.type || 'paragraph']}</div>
               </InfoSection>
 
-              <div>{content.subtitle}</div>
-
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                }}
-              >
-                <Button
-                  type="button"
-                  text="Adicionar conteúdo"
-                  style={{ minHeight: '25px' }}
+              <div>
+                <FaPen
                   onClick={() => {
                     setContent(content);
                     setSteps(5);
-                    setBuildType('subcontainer');
-                    setSubContent(content);
-                    setAbaContent(container);
+                    setBuildType(content.type);
                   }}
                 />
-                <FaPen />
                 <FaTrash onClick={() => setDeletingId(content.id)} />
               </div>
             </TableRow>

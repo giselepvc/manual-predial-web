@@ -10,9 +10,5 @@ export const ContentSchema = yup.object({
     value: yup.string().required('Status é obrigatório'),
     label: yup.string().required('Status é obrigatório'),
   }),
-  container: yup.object({
-    value: yup.string().required('Tipo do container é obrigatório'),
-    label: yup.string().required('Tipo do container é obrigatório'),
-  }),
   icon: yup.number().nullable(),
 });

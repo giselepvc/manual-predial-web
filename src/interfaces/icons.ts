@@ -11,6 +11,7 @@ export interface IconsAttributes {
   active: boolean;
   image: Image;
   capters: Capters;
+  containers: Containers;
 }
 
 export interface Capters {
@@ -23,6 +24,21 @@ export interface CaptersDatum {
 }
 
 export interface CaptersAttributes {
+  title: string;
+  order: number;
+  visible: boolean;
+}
+
+export interface Containers {
+  data: ContainersDatum[];
+}
+
+export interface ContainersDatum {
+  id: number;
+  attributes: ContainersAttributes;
+}
+
+export interface ContainersAttributes {
   title: string;
   order: number;
   visible: boolean;

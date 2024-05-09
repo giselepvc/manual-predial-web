@@ -88,12 +88,43 @@ export interface ContentsDatum {
 export interface ContentsAttributes {
   type: string;
   title: string;
+  subtitle: string;
   order: number;
   description: string;
   visible: boolean;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
+  image: Images;
+  pdf: PDF;
+  icon: IIcon;
+  sub_containers: SubContainers;
+  container: Container;
+}
+
+export interface Container {
+  data: ContainerData | null;
+}
+
+export interface SubContainers {
+  data: ContainerData[];
+}
+
+export interface ContainerData {
+  id: number;
+  attributes: ContainerAttributes;
+}
+
+export interface ContainerAttributes {
+  title: string;
+  description: string;
+  subtitle: string;
+  visible: boolean;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  type: string;
   image: Images;
   pdf: PDF;
   icon: IIcon;

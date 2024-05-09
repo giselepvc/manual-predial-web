@@ -14,6 +14,7 @@ import api from '@/services/api';
 import { ContainerData, IContent } from '@/interfaces/content';
 import { Paginated } from '@/interfaces/paginated';
 import { FaDownload } from 'react-icons/fa6';
+import TableContainer from './TableContainer/TableContainer';
 import {
   ColumnDetails,
   Content,
@@ -25,7 +26,6 @@ import {
   InfoText,
   NotListText,
   TableContentMore,
-  TableDetails,
   TableMore,
   TableRow,
   TableSection,
@@ -170,6 +170,7 @@ const PanelPage = () => {
                           </ThreadSection>
                           <TableMore
                             key={titles.id}
+                            selected={title?.id === titles.id}
                             onClick={() =>
                               setTitle(props =>
                                 props === titles ? undefined : titles,
@@ -177,138 +178,43 @@ const PanelPage = () => {
                             }
                           >
                             <InfoSection>
-                              <div>{titles.title}</div>
+                              <div>{titles.title.toUpperCase()}</div>
                             </InfoSection>
-                            <div>
-                              <Image
-                                src={
-                                  title?.id === titles.id
-                                    ? '/icons/up-arrow.svg'
-                                    : '/icons/down-arrow.svg'
-                                }
-                                alt="icon"
-                                width={20}
-                                height={20}
-                              />
-                            </div>
+                            <Image
+                              src={
+                                title?.id === titles.id
+                                  ? '/icons/up-arrow.svg'
+                                  : '/icons/down-arrow.svg'
+                              }
+                              alt="icon"
+                              width={20}
+                              height={20}
+                            />
                           </TableMore>
                         </Thread>
 
                         {title?.id === titles.id &&
                           titles.containers
                             .sort((a, b) => a.order - b.order)
-                            .map(container => (
+                            .map((container, idxContainer) => (
                               <>
                                 <Thread
                                   key={container.id}
                                   style={{ paddingLeft: '3rem' }}
                                 >
-                                  <TableDetails>
-                                    <InfoSection>
-                                      <div>
-                                        {container.type === 'keys' &&
-                                          'Parágrafo - par de chaves'}
-
-                                        {container.type === 'paragraph' && (
-                                          <Description
-                                            style={{ margin: '1rem 0' }}
-                                          >
-                                            {container.description}
-                                          </Description>
-                                        )}
-
-                                        {container.type === 'pdf' && (
-                                          <InfoSection>
-                                            {container.pdf?.name && (
-                                              <InfoText
-                                                style={{
-                                                  borderRadius: '10px',
-                                                  gap: '1rem',
-                                                  cursor: 'pointer',
-                                                  padding: '0 2rem',
-                                                }}
-                                                onClick={() => {
-                                                  window.open(
-                                                    urlBuild(
-                                                      container?.pdf?.url,
-                                                    ),
-                                                    '_blank',
-                                                  );
-                                                }}
-                                              >
-                                                <FaDownload />
-                                                {container.pdf?.name}
-                                              </InfoText>
-                                            )}
-                                          </InfoSection>
-                                        )}
-
-                                        {container.type === 'image' && (
-                                          <ColumnDetails
-                                            style={{ padding: '2rem 0' }}
-                                          >
-                                            {container?.image?.[0]?.url && (
-                                              <Img
-                                                src={urlBuild(
-                                                  container.image?.[0].url,
-                                                )}
-                                                alt="imagem do container"
-                                              />
-                                            )}
-                                            <span>
-                                              Legenda:{' '}
-                                              {container?.description || ''}
-                                            </span>
-                                          </ColumnDetails>
-                                        )}
-
-                                        {container.type === 'paragraphIcon' && (
-                                          <InfoSection
-                                            style={{
-                                              margin: '1rem 0',
-                                              gap: '1rem',
-                                            }}
-                                          >
-                                            {container?.icon?.image?.url && (
-                                              <Icon
-                                                src={urlBuild(
-                                                  container.icon.image.url,
-                                                )}
-                                                alt="imagem do container"
-                                              />
-                                            )}
-                                            {container?.description}
-                                          </InfoSection>
-                                        )}
-                                      </div>
-
-                                      {container.type.includes('abas') &&
-                                        !loading &&
-                                        contentSelected?.sub_containers && (
-                                          <InfoSection>
-                                            {contentSelected?.sub_containers?.map(
-                                              subcontainer => (
-                                                <InfoText
-                                                  selected={
-                                                    subcontainer?.id === sub?.id
-                                                  }
-                                                  onClick={() => {
-                                                    setSubContent(c =>
-                                                      c === subcontainer
-                                                        ? undefined
-                                                        : subcontainer,
-                                                    );
-                                                  }}
-                                                >
-                                                  {subcontainer.title || ''}
-                                                </InfoText>
-                                              ),
-                                            )}
-                                          </InfoSection>
-                                        )}
-                                    </InfoSection>
-                                  </TableDetails>
+                                  <TableContainer
+                                    contentSelected={contentSelected}
+                                    setSubContainer={setSubContent}
+                                    subContainer={sub}
+                                    loading={loading}
+                                    container={container}
+                                    hasLast={
+                                      titles?.containers?.length ===
+                                      idxContainer + 1
+                                    }
+                                  />
                                 </Thread>
+
                                 {container.type === 'abas' &&
                                   sub?.id &&
                                   sub?.type === 'paragraph' &&

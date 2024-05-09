@@ -6,12 +6,13 @@ export interface IContent {
 export interface PurpleAttributes {
   title: string;
   description: string;
+  subtitle: string;
   visible: boolean;
   order: number;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
-  type: null | string;
+  type: string;
   image: Images;
   pdf: PDF;
   icon: Icon;
@@ -41,25 +42,6 @@ export interface Container {
   data: ContainerData | null;
 }
 
-export interface ContainerData {
-  id: number;
-  attributes: FluffyAttributes;
-}
-
-export interface FluffyAttributes {
-  title: string;
-  description: string;
-  visible: boolean;
-  order: number;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
-  type: string;
-  image: Images;
-  pdf: PDF;
-  icon: Icon;
-}
-
 export interface ImageData {
   id: number;
   attributes: StickyAttributes;
@@ -85,6 +67,28 @@ export interface Thumbnail {
 
 export interface SubContainers {
   data: ContainerData[];
+}
+
+export interface ContainerData {
+  id: number;
+  attributes: FluffyAttributes;
+}
+
+export interface FluffyAttributes {
+  title: string;
+  description: string;
+  subtitle: string;
+  visible: boolean;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  type: string;
+  image: Images;
+  pdf: PDF;
+  icon: Icon;
+  sub_containers: SubContainers;
+  container: Container;
 }
 
 export interface IconImage {

@@ -234,7 +234,7 @@ const ManualDetails = ({
                             }
                           >
                             <InfoSection>
-                              <div>{titles.title}</div>
+                              <div>{titles.title.toUpperCase()}</div>
                             </InfoSection>
                             <div>
                               <Image
