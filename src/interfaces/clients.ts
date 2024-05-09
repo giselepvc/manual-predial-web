@@ -89,6 +89,7 @@ export interface IEnterpriseAttributes {
   city: string;
   state: string;
   company: ICompany;
+  image: IImage;
 }
 
 export interface ICompany {
@@ -116,4 +117,5 @@ export interface ICompanyAttributes {
   city: string;
   state: string;
   complement: null;
+  image: IImage;
 }

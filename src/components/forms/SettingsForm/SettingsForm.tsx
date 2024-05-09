@@ -21,9 +21,8 @@ import {
 } from './styles';
 
 const SettingsForm = () => {
-  const { user, setUserId } = useAuth();
+  const { user, setUserId, role } = useAuth();
   const query = useQueryClient();
-
   const [image, setImage] = useState<File>();
 
   const { register } = useForm({
@@ -34,20 +33,44 @@ const SettingsForm = () => {
   });
 
   const renderImage = () => {
+    if (role === 1) {
+      return user?.enterprise?.company?.image?.url
+        ? urlBuild(user?.enterprise?.company?.image?.url)
+        : '/icons/image.svg';
+    }
+
     return user?.users?.image?.url
       ? urlBuild(user?.users?.image?.url)
       : '/icons/image.svg';
   };
 
   const photoHandler = () => {
-    if (image) {
-      return URL.createObjectURL(image);
-    }
-
+    if (image) return URL.createObjectURL(image);
     return '/icons/image.svg';
   };
 
   const onSubmit = async (file: File) => {
+    if (role === 1) {
+      if (file && user?.enterprise?.company?.id) {
+        try {
+          const formData = new FormData();
+
+          formData.append('ref', 'api::company.company');
+          formData.append('refId', `${user?.enterprise?.company?.id}`);
+          formData.append('field', 'image');
+          formData.append('files', file);
+
+          await api.post('/upload', formData);
+
+          query.invalidateQueries({ queryKey: ['userData'] });
+          setUserId(user?.users?.id);
+          handleSuccess('Imagem de perfil alterada.');
+        } catch (error) {
+          handleError(error);
+        }
+      }
+    }
+
     if (file && user?.users?.id) {
       try {
         const formData = new FormData();
@@ -55,7 +78,6 @@ const SettingsForm = () => {
         formData.append('ref', 'plugin::users-permissions.user');
         formData.append('refId', `${user?.users?.id}`);
         formData.append('field', 'image');
-
         formData.append('files', file);
 
         await api.post('/upload', formData);

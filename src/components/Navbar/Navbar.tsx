@@ -29,6 +29,12 @@ const Navbar = () => {
   const [expanded, setExpanded] = useState(true);
   const pathname = usePathname();
   const renderImage = () => {
+    if (role === 1) {
+      return user?.enterprise?.company?.image?.url
+        ? urlBuild(user?.enterprise?.company?.image?.url)
+        : '/icons/image.svg';
+    }
+
     return user?.users?.image?.url
       ? urlBuild(user?.users?.image?.url)
       : '/icons/image.svg';
