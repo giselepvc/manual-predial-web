@@ -198,7 +198,7 @@ const SubContentForm = ({
                     value: 'paragraph',
                   },
                   {
-                    label: 'Parágrafo múltiplo itens não numerados',
+                    label: 'Parágrafos - tópicos com ícones',
                     value: 'paragraphIcon',
                   },
                 ]}

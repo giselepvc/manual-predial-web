@@ -28,7 +28,7 @@ const ContentList = ({
     pdf: 'Arquivo PDF',
     image: 'Imagem única com legenda abaixo parágrafo múltiplo',
     paragraph: 'Parágrafo único ou múltiplo',
-    paragraphIcon: 'Parágrafo múltiplo itens não numerados',
+    paragraphIcon: 'Parágrafos - tópicos com ícones',
   } as any;
 
   return (
