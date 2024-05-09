@@ -14,5 +14,5 @@ export const ContentSchema = yup.object({
     value: yup.string().required('Tipo do container é obrigatório'),
     label: yup.string().required('Tipo do container é obrigatório'),
   }),
-  icon: yup.number().required('Selecione uma opção'),
+  icon: yup.number().nullable(),
 });

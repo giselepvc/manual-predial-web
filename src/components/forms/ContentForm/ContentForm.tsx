@@ -12,7 +12,6 @@ import { Dispatch, SetStateAction, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/services/api';
 import { getContents } from '@/services/querys/content';
-import { FaPen, FaTrash } from 'react-icons/fa6';
 import ConfirmModal from '@/components/ConfirmeModal/ConfirmeModal';
 import { ContentSchema, IContentForm } from '@/validations/ContentSchema';
 import { getIcons } from '@/services/querys/icons';
@@ -22,18 +21,15 @@ import {
   ButtonSection,
   Checkbox,
   CheckboxLabel,
-  Content,
   ErrorMessage,
   Field,
   FormSection,
-  InfoSection,
   Label,
   RadiosRow,
   RegisterForm,
   RegisterTitle,
-  TableRow,
-  TableSection,
 } from './styles';
+import ContentList from './components/ContentList/ContentList';
 
 interface ChapterPageProps {
   onClose: () => void;
@@ -116,6 +112,7 @@ const ContentForm = ({
           order: Number(form.order),
           visible: form.visible?.value === 'sim',
           type: form.container?.value,
+          icon: form?.icon === 0 ? undefined : form?.icon,
         },
       });
 
@@ -306,31 +303,13 @@ const ContentForm = ({
         />
       </ButtonSection>
 
-      <Content>
-        <TableSection>
-          {container?.sub_containers?.map(content => (
-            <TableRow>
-              <InfoSection>
-                <span>{content.order}</span>
-                <div>{content.title}</div>
-              </InfoSection>
-
-              <div>
-                <FaPen
-                  onClick={() => {
-                    setContent(content);
-                    setSteps(5);
-                    setBuildType(content.type);
-                  }}
-                />
-                <FaTrash
-                  onClick={() => !isLoading && setDeletingId(content.id)}
-                />
-              </div>
-            </TableRow>
-          ))}
-        </TableSection>
-      </Content>
+      <ContentList
+        container={container}
+        setContent={setContent}
+        setSteps={setSteps}
+        setBuildType={setBuildType}
+        setDeletingId={setDeletingId}
+      />
 
       {deletingId && (
         <ConfirmModal
@@ -343,8 +322,7 @@ const ContentForm = ({
           isLoading={isLoading}
         >
           <ConfirmModal.Message>
-            Tem certeza que deseja <strong>excluir</strong> o conteúdo nessa
-            aba?
+            Tem certeza que deseja <strong>excluir</strong> esse conteúdo?
           </ConfirmModal.Message>
         </ConfirmModal>
       )}
