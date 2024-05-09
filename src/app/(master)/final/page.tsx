@@ -56,7 +56,7 @@ const UsersPage = () => {
     try {
       setIsUpdating(true);
       await api.delete(`/clients/${deletingId}`);
-      handleSuccess('Manual deletado com sucesso.');
+      handleSuccess('Usuário deletado com sucesso.');
       setDeletingId(undefined);
       query.invalidateQueries({ queryKey: ['usersData'] });
     } catch (err: any) {
