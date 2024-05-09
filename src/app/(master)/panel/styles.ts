@@ -321,3 +321,12 @@ export const ColumnDetails = styled.div`
     font-size: 0.8rem;
   }
 `;
+
+export const Image = styled.img`
+  width: 600px;
+`;
+
+export const IconArrow = styled.img`
+  width: 20px;
+  height: 20px;
+`;

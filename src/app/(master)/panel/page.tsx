@@ -5,7 +5,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { getManuals } from '@/services/querys/manual';
 import { RecursiveNormalize, normalizeStrapi } from '@/utils/normalizeStrapi';
 import { useQuery } from '@tanstack/react-query';
-import Image from 'next/image';
 import { urlBuild } from '@/utils/urlBuild';
 import { useState } from 'react';
 import { CaptersDatum, TitlesDatum } from '@/interfaces/manual';
@@ -32,6 +31,8 @@ import {
   Thread,
   ThreadLine,
   ThreadSection,
+  IconArrow,
+  Image,
 } from './styles';
 
 const PanelPage = () => {
@@ -53,11 +54,12 @@ const PanelPage = () => {
 
   const manualsParams = {
     'populate[0]': 'capters.titles.containers.image',
-    'populate[1]': 'enterprise',
+    'populate[1]': 'enterprise.company.image',
     'populate[3]': 'capters.icon.image',
     'populate[4]': 'capters.titles.containers.pdf',
     'populate[5]': 'capters.titles.containers.icon.image',
     'populate[6]': 'capters.group',
+    'populate[7]': 'enterprise.image',
     'filters[capters][groups][id]': user?.group?.id,
   };
 
@@ -102,13 +104,32 @@ const PanelPage = () => {
     }
   };
 
+  const addressList = [
+    manuals?.enterprise?.address || null,
+    manuals?.enterprise?.city || null,
+    manuals?.enterprise?.number || null,
+    manuals?.enterprise?.state || null,
+    manuals?.enterprise?.zipCode || null,
+  ];
+
+  const renderImage = () => {
+    if (manuals?.enterprise?.company?.image?.url) {
+      return urlBuild(manuals.enterprise.company.image.url);
+    }
+
+    if (manuals?.enterprise?.image?.url) {
+      return urlBuild(manuals.enterprise.image.url);
+    }
+
+    return '/img/logo_dark.svg';
+  };
+
   return (
     <PageLayout hasLogo>
       <HeaderLogo>
-        <Image src="/img/logo_dark.svg" alt="Logo" width={600} height={250} />
-
-        <div>MANUAL PREDIAL LTDA</div>
-        <div>Av. Calil Hadad, Mogi das Cruzes, 200 SP 08558-040</div>
+        <Image src={renderImage()} alt="Logo" />
+        <div>{manuals?.enterprise?.company?.name || 'MANUAL PREDIAL'}</div>
+        <div>{addressList?.join(', ')}</div>
       </HeaderLogo>
 
       <Content style={{ minHeight: 'calc(100vh - 10rem)' }}>
@@ -127,7 +148,7 @@ const PanelPage = () => {
                     }}
                   >
                     <InfoSection>
-                      <Image
+                      <IconArrow
                         src={
                           capter.icon?.image?.url
                             ? urlBuild(capter.icon?.image?.url)
@@ -141,7 +162,7 @@ const PanelPage = () => {
                     </InfoSection>
 
                     <div>
-                      <Image
+                      <IconArrow
                         src={
                           chapter?.id === capter.id
                             ? '/icons/up-arrow.svg'
@@ -180,15 +201,13 @@ const PanelPage = () => {
                             <InfoSection>
                               <div>{titles.title.toUpperCase()}</div>
                             </InfoSection>
-                            <Image
+                            <IconArrow
                               src={
                                 title?.id === titles.id
                                   ? '/icons/up-arrow.svg'
                                   : '/icons/down-arrow.svg'
                               }
                               alt="icon"
-                              width={20}
-                              height={20}
                             />
                           </TableMore>
                         </Thread>

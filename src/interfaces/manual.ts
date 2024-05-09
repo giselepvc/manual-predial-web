@@ -166,8 +166,16 @@ export interface EnterpriseDatum {
 
 export interface EnterpriseAttributes {
   title: string;
+  zipCode: string;
+  address: string;
+  number: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  complement: string;
   active: boolean;
   company: Company;
+  image: Image;
 }
 
 export interface Company {
@@ -181,6 +189,7 @@ export interface CompanyDatum {
 
 export interface CompanyAttributes {
   name: string;
+  image: Image;
 }
 
 export interface ResponseManual {
