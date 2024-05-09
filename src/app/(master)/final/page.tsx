@@ -33,7 +33,7 @@ const UsersPage = () => {
     'filters[name][$containsi]': search || undefined,
     'filters[group][enterprise][id]': user?.enterprise?.id || undefined,
     'filters[enterprise][id][$null]': true,
-    'filters[users][id][$ne]': 30,
+    'filters[users][id][$ne]': 60,
     'sort[createdAt]': 'DESC',
     populate: [
       'users',
