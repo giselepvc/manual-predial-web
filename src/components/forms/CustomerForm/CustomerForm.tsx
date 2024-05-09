@@ -236,6 +236,7 @@ const CustomerForm = ({
       await api.put(`/clients/${customerId}`, {
         data: {
           ...form,
+          username: form.login,
           email: form?.email || null,
           enterprise: isCompany
             ? undefined
@@ -319,8 +320,6 @@ const CustomerForm = ({
       setValue('number', user?.enterprise?.number);
     }
   }, [watch('enterprise'), role]);
-
-  console.log(errors);
 
   return (
     <RegisterForm onSubmit={handleSubmit(isEditing ? onUpdate : onSubmit)}>

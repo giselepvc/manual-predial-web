@@ -50,7 +50,7 @@ const UsersPage = () => {
 
     try {
       setIsUpdating(true);
-      await api.delete(`/clients/${deletingId}`);
+      await api.delete(`/deleteUserById?userid=${deletingId}`);
 
       handleSuccess('Manual deletado com sucesso.');
       setDeletingId(undefined);
