@@ -318,6 +318,9 @@ const CustomerForm = ({
       setValue('address', user?.enterprise?.address);
       setValue('neighborhood', user?.enterprise?.neighborhood);
       setValue('number', user?.enterprise?.number);
+
+      setValue('company', optionCompany);
+      setValue('enterprise', option);
     }
   }, [watch('enterprise'), role]);
 

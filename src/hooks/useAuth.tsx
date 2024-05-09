@@ -52,7 +52,7 @@ const AuthProvider = ({ children }: ChildrenProps) => {
 
   const userParams = {
     'filters[users][id]': userId,
-    populate: ['users.image', 'enterprise', 'group'],
+    populate: ['users.image', 'enterprise.company', 'group.enterprise.company'],
   };
 
   const { data: user } = useQuery({
