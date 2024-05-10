@@ -42,7 +42,7 @@ const ImageForm = ({ onClose, content }: FileProps) => {
 
         await api.post('/upload', formData);
       } catch (error) {
-        handleError(error);
+        handleError('Imagem não suportada');
       }
     }
   };
