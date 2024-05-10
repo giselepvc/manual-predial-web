@@ -27,17 +27,14 @@ interface FileProps {
 const ImageForm = ({ onClose, content }: FileProps) => {
   const query = useQueryClient();
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [image, setImage] = useState<File>();
-  const [description, setDesciption] = useState<string>(
-    content?.description || '',
-  );
+  const [description, setDesciption] = useState(content?.description || '');
 
   const onSubmitPhoto = async () => {
     if (image) {
       try {
         const formData = new FormData();
-
         formData.append('ref', 'api::containers.containers');
         formData.append('refId', content?.id?.toString() || '');
         formData.append('field', 'image');
@@ -55,19 +52,13 @@ const ImageForm = ({ onClose, content }: FileProps) => {
   };
 
   const onSubmit = async () => {
-    setIsLoading(true);
-
     try {
+      setIsLoading(true);
       await api.put(`/containers/${content?.id}`, {
-        data: {
-          description,
-        },
+        data: { description },
       });
 
-      if (image) {
-        onSubmitPhoto();
-      }
-
+      onSubmitPhoto();
       handleSuccess('Container alterado com sucesso.');
       query.invalidateQueries({ queryKey: ['manualForm'] });
       onClose();
@@ -79,19 +70,12 @@ const ImageForm = ({ onClose, content }: FileProps) => {
   };
 
   const renderImage = () => {
-    return content?.image?.[0]?.url
-      ? urlBuild(content?.image?.[0]?.url)
-      : '/icons/image.svg';
+    const renderImage = content?.image?.[0]?.url;
+    return renderImage ? urlBuild(renderImage) : '/icons/image.svg';
   };
 
   const photoHandler = () => {
-    if (image) {
-      return URL.createObjectURL(image);
-    }
-
-    return content?.image?.[0]?.url
-      ? urlBuild(content?.image?.[0]?.url)
-      : '/icons/image.svg';
+    return image ? URL.createObjectURL(image) : renderImage();
   };
 
   return (
@@ -103,7 +87,7 @@ const ImageForm = ({ onClose, content }: FileProps) => {
       <FormSection>
         <Field>
           <Label>Imagem</Label>
-          <Img src={image ? photoHandler() : renderImage()} alt="Image" />
+          <Img src={photoHandler()} alt="Image" />
         </Field>
       </FormSection>
 
@@ -118,10 +102,9 @@ const ImageForm = ({ onClose, content }: FileProps) => {
               accept="image/*"
               hidden
               onChange={e => {
-                if (e.target?.files?.[0]) {
-                  setImage(e.target.files[0]);
-                  e.target.value = '';
-                }
+                const file = e.target?.files?.[0];
+                if (file) setImage(file);
+                e.target.value = '';
               }}
             />
           </InputSection>

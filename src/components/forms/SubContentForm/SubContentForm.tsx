@@ -6,7 +6,8 @@ import handleError, { handleSuccess } from '@/utils/handleToast';
 import Select from '@/components/Select/Select';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
-import { RecursiveNormalize, normalizeStrapi } from '@/utils/normalizeStrapi';
+import { normalizeStrapi } from '@/utils/normalizeStrapi';
+import { RecursiveNormalize as Recursive } from '@/utils/normalizeStrapi';
 import { ContentsDatum } from '@/interfaces/manual';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -27,12 +28,10 @@ import {
 
 interface ChapterPageProps {
   onClose: () => void;
-  content: RecursiveNormalize<ContentsDatum> | undefined;
+  content: Recursive<ContentsDatum> | undefined;
   setBuildType: Dispatch<SetStateAction<string>>;
   setSteps: Dispatch<SetStateAction<number>>;
-  setContent: Dispatch<
-    SetStateAction<RecursiveNormalize<ContentsDatum> | undefined>
-  >;
+  setContent: Dispatch<SetStateAction<Recursive<ContentsDatum> | undefined>>;
 }
 
 const SubContentForm = ({
@@ -43,14 +42,15 @@ const SubContentForm = ({
   setSteps,
 }: ChapterPageProps) => {
   const query = useQueryClient();
+
   const [deletingId, setDeletingId] = useState<number>();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     control,
     register,
     handleSubmit,
-    reset,
+    setValue,
     formState: { errors },
   } = useForm<IContentForm>({
     resolver: yupResolver(SubContentSchema),
@@ -95,16 +95,12 @@ const SubContentForm = ({
       if (data.data?.id && container?.id) {
         const contentIds = container?.sub_containers?.map(c => c?.id) || [];
         await api.put(`/containers/${container.id}`, {
-          data: { sub_containers: [...contentIds, data.data.id] },
+          data: { sub_containers: [...contentIds, data.data.id], type: 'abas' },
         });
       }
 
-      reset({
-        container: {},
-        order: '',
-        visible: { label: 'Sim', value: 'sim' },
-      });
-
+      setValue('order', '');
+      setValue('visible', { label: 'Sim', value: 'sim' });
       handleSuccess('Conteúdo cadastrado com sucesso.');
       query.invalidateQueries({ queryKey: ['contentsData'] });
     } catch (err: any) {
@@ -185,18 +181,12 @@ const SubContentForm = ({
                 value={value}
                 width="300px"
                 options={[
-                  {
-                    label: 'Arquivo PDF',
-                    value: 'pdf',
-                  },
+                  { label: 'Arquivo PDF', value: 'pdf' },
                   {
                     label: 'Imagem única com legenda abaixo parágrafo múltiplo',
                     value: 'image',
                   },
-                  {
-                    label: 'Parágrafo único ou múltiplo',
-                    value: 'paragraph',
-                  },
+                  { label: 'Parágrafo único ou múltiplo', value: 'paragraph' },
                   {
                     label: 'Parágrafos - tópicos com ícones',
                     value: 'paragraphIcon',

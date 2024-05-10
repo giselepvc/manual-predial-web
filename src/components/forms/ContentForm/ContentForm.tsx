@@ -121,6 +121,7 @@ const ContentForm = ({
           order: Number(form.order),
           visible: form.visible?.value === 'sim',
           icon: form?.icon === 0 ? undefined : form?.icon,
+          type: 'abas',
         },
       });
 
