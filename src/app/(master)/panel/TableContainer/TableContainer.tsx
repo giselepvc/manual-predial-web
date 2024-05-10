@@ -41,6 +41,16 @@ const TableContainer = ({
             <Description hasLast={hasLast}>{container.description}</Description>
           )}
 
+          {container?.type === 'keys' && (
+            <Description
+              hasLast={hasLast}
+              style={{ flexDirection: 'row', gap: '0.2rem' }}
+            >
+              {container.subtitle && <strong>{container.subtitle}:</strong>}
+              {container.description}
+            </Description>
+          )}
+
           {container?.type === 'paragraphIcon' && (
             <InfoSection>
               {container?.icon?.image?.url && (
@@ -94,7 +104,7 @@ const TableContainer = ({
               </InfoSection>
             )}
 
-          {/* {container.type === 'keys' && 'Parágrafo - par de chaves'}
+          {/*
 
           {container.type === 'pdf' && (
             <InfoSection>

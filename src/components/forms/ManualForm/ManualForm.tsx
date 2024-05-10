@@ -177,9 +177,15 @@ const ManualForm = ({ editing }: ManualFormProps) => {
   };
 
   const onCloseSubContainer = () => {
-    setSteps(5);
-    setBuildType('subcontainer');
-    setContent(subcontent);
+    if (subcontent?.id) {
+      setSteps(5);
+      setBuildType('subcontainer');
+      setContent(subcontent);
+    }
+
+    setSteps(1);
+    setBuildType('');
+    setValue('type', undefined as any);
   };
 
   const builder = {

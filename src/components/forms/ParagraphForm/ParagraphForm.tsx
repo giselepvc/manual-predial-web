@@ -22,6 +22,10 @@ import {
   TextArea,
 } from './styles';
 
+interface Response {
+  data: { id: number };
+}
+
 interface FileProps {
   onClose: () => void;
   content: RecursiveNormalize<ContentsDatum> | undefined;
@@ -30,51 +34,37 @@ interface FileProps {
 const ParagraphForm = ({ onClose, content }: FileProps) => {
   const query = useQueryClient();
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [icon, setIcon] = useState<number>(content?.icon?.id || 0);
-  const [description, setDesciption] = useState<string>(
-    content?.description || '',
-  );
-  const [title, setTitle] = useState<string>(content?.title || '');
-
-  const iconsParams = {
-    populate: '*',
-    'filters[active]': true,
-  };
+  const [isLoading, setIsLoading] = useState(false);
+  const [icon, setIcon] = useState(content?.icon?.id || 0);
+  const [description, setDesciption] = useState(content?.description || '');
+  const [subtitle, setTitle] = useState(content?.subtitle || '');
+  const iconsParams = { populate: '*', 'filters[active]': true };
 
   const { data: icons } = useQuery({
     queryKey: ['iconsData', iconsParams],
     queryFn: async () => {
       const result = await getIcons(iconsParams);
       const iconsResult = normalizeStrapi(result || []);
-      iconsResult.sort((a, b) => a.id - b.id);
-      return iconsResult;
+      return iconsResult.sort((a, b) => a.id - b.id);
     },
   });
 
   const onSubmit = async () => {
-    setIsLoading(true);
-
     try {
-      const { data } = await api.put<{ data: { id: number } }>(
-        `/containers/${content?.id}`,
-        {
-          data: {
-            description,
-            title,
-            icon: icon === 0 ? undefined : icon,
-          },
+      setIsLoading(true);
+      const { data } = await api.put<Response>(`/containers/${content?.id}`, {
+        data: {
+          description,
+          subtitle,
+          ...(icon !== 0 && { icon }),
         },
-      );
+      });
 
       if (data.data?.id && icon && icon !== 0) {
         const iconFind = icons?.find(item => item.id === icon);
-        const containerList = iconFind?.containers?.map(item => item?.id) || [];
-
+        const containerList = iconFind?.containers?.map(c => c?.id) || [];
         await api.put(`/icons/${icon}`, {
-          data: {
-            containers: [...containerList, data.data.id],
-          },
+          data: { containers: [...containerList, data.data.id] },
         });
       }
 
@@ -99,7 +89,7 @@ const ParagraphForm = ({ onClose, content }: FileProps) => {
             <Input
               placeholder="Insira uma chave"
               style={{ width: '845px' }}
-              value={title}
+              value={subtitle}
               onChange={e => setTitle(e.target.value)}
             />
           </Field>
@@ -124,7 +114,7 @@ const ParagraphForm = ({ onClose, content }: FileProps) => {
             <Label>Selecione um ícone</Label>
             <RadiosRow>
               <CheckboxLabel>
-                <Checkbox type="radio" onSelect={() => setIcon(0)} value={0} />
+                <Checkbox type="radio" onClick={() => setIcon(0)} value={0} />
                 Nenhum
               </CheckboxLabel>
               {icons?.map(item => (

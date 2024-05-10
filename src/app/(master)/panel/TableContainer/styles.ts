@@ -54,9 +54,9 @@ export const Description = styled.div<TableProps>`
   font-weight: 600;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
   align-items: flex-start;
   justify-content: flex-start;
+  gap: 1rem;
 `;
 
 export const Icon = styled.img`
