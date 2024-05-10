@@ -202,7 +202,11 @@ export const InfoSection = styled.div`
   gap: 0.2rem;
 `;
 
-export const Description = styled.div`
+interface Props {
+  italic?: boolean;
+}
+
+export const Description = styled.div<Props>`
   min-height: 140px;
   width: 100%;
 
@@ -214,6 +218,7 @@ export const Description = styled.div`
   white-space: pre-line;
   color: ${({ theme }) => theme.colors.grayaa};
   font-weight: 600;
+  font-style: ${({ italic }) => (italic ? 'italic' : 'normal')};
 
   display: flex;
   align-items: flex-start;

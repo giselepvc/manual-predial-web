@@ -36,6 +36,7 @@ const ParagraphForm = ({ onClose, content }: FileProps) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [icon, setIcon] = useState(content?.icon?.id || 0);
+  const [italic, setItalic] = useState(content?.italic || false);
   const [description, setDesciption] = useState(content?.description || '');
   const [subtitle, setTitle] = useState(content?.subtitle || '');
   const iconsParams = { populate: '*', 'filters[active]': true };
@@ -56,6 +57,7 @@ const ParagraphForm = ({ onClose, content }: FileProps) => {
         data: {
           description,
           subtitle,
+          italic,
           ...(icon !== 0 && { icon }),
         },
       });
@@ -105,6 +107,30 @@ const ParagraphForm = ({ onClose, content }: FileProps) => {
             value={description}
             onChange={e => setDesciption(e.target.value)}
           />
+        </Field>
+      </FormSection>
+
+      <FormSection>
+        <Field>
+          <Label>O texto será em Itálico?</Label>
+          <RadiosRow>
+            <CheckboxLabel>
+              <Checkbox
+                type="radio"
+                onClick={() => setItalic(false)}
+                checked={!italic}
+              />
+              Não
+            </CheckboxLabel>
+            <CheckboxLabel>
+              <Checkbox
+                type="radio"
+                onClick={() => setItalic(true)}
+                checked={italic}
+              />
+              Sim
+            </CheckboxLabel>
+          </RadiosRow>
         </Field>
       </FormSection>
 

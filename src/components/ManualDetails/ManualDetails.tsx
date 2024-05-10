@@ -379,7 +379,9 @@ const ManualDetails = ({
                                             alt="imagem do container"
                                           />
                                         )}
-                                        <Description>
+                                        <Description
+                                          italic={container?.italic || false}
+                                        >
                                           <div>{sub?.title}</div>
 
                                           {sub.description}
@@ -453,7 +455,9 @@ const ManualDetails = ({
                                               alt="imagem do container"
                                             />
                                           )}
-                                          <Description>
+                                          <Description
+                                            italic={container?.italic || false}
+                                          >
                                             {container?.description}
                                           </Description>
                                         </InfoSection>

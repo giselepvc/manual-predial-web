@@ -42,11 +42,13 @@ const AbasContainer = ({
       {subContainer?.map(content => (
         <>
           {content?.type === 'paragraph' && (
-            <Description>{content.description}</Description>
+            <Description italic={container?.italic || false}>
+              {content.description}
+            </Description>
           )}
 
           {content?.type === 'keys' && (
-            <Description>
+            <Description italic={container?.italic || false}>
               {content?.subtitle && <strong>{content.subtitle}:</strong>}
               {content.description}
             </Description>
@@ -60,7 +62,9 @@ const AbasContainer = ({
                   alt="imagem do container"
                 />
               )}
-              <Description>{content?.description}</Description>
+              <Description italic={container?.italic || false}>
+                {content?.description}
+              </Description>
             </InfoSection>
           )}
 

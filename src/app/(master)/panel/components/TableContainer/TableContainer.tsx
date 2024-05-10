@@ -40,12 +40,15 @@ const TableContainer = ({
     <TableDetails hasLast={hasLast}>
       <InfoSection>
         {container?.type === 'paragraph' && (
-          <Description hasLast={hasLast}>{container.description}</Description>
+          <Description hasLast={hasLast} italic={container?.italic || false}>
+            {container.description}
+          </Description>
         )}
 
         {container?.type === 'keys' && (
           <Description
             hasLast={hasLast}
+            italic={container?.italic || false}
             style={{ flexDirection: 'row', gap: '0.2rem' }}
           >
             {container.subtitle && <strong>{container.subtitle}:</strong>}
@@ -61,7 +64,9 @@ const TableContainer = ({
                 alt="imagem do container"
               />
             )}
-            <Description hasLast={hasLast}>{container.description}</Description>
+            <Description hasLast={hasLast} italic={container?.italic || false}>
+              {container.description}
+            </Description>
           </InfoSection>
         )}
 

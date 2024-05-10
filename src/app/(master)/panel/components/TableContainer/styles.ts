@@ -8,6 +8,7 @@ const detailsFadeIn = keyframes`
 interface TableProps {
   selected?: boolean;
   hasLast?: boolean;
+  italic?: boolean;
 }
 
 export const TableDetails = styled.div<TableProps>`
@@ -47,6 +48,7 @@ export const Description = styled.div<TableProps>`
   white-space: pre-line;
   color: ${({ theme }) => theme.colors.grayStronger};
   font-weight: 600;
+  font-style: ${({ italic }) => (italic ? 'italic' : 'normal')};
   display: flex;
   flex-direction: column;
   align-items: flex-start;
