@@ -39,89 +39,85 @@ const TableContainer = ({
   return (
     <TableDetails hasLast={hasLast}>
       <InfoSection>
-        <div>
-          {container?.type === 'paragraph' && (
+        {container?.type === 'paragraph' && (
+          <Description hasLast={hasLast}>{container.description}</Description>
+        )}
+
+        {container?.type === 'keys' && (
+          <Description
+            hasLast={hasLast}
+            style={{ flexDirection: 'row', gap: '0.2rem' }}
+          >
+            {container.subtitle && <strong>{container.subtitle}:</strong>}
+            {container.description}
+          </Description>
+        )}
+
+        {container?.type === 'paragraphIcon' && (
+          <InfoSection>
+            {container?.icon?.image?.url && (
+              <Icon
+                src={urlBuild(container.icon.image.url)}
+                alt="imagem do container"
+              />
+            )}
             <Description hasLast={hasLast}>{container.description}</Description>
-          )}
+          </InfoSection>
+        )}
 
-          {container?.type === 'keys' && (
-            <Description
-              hasLast={hasLast}
-              style={{ flexDirection: 'row', gap: '0.2rem' }}
-            >
-              {container.subtitle && <strong>{container.subtitle}:</strong>}
-              {container.description}
-            </Description>
-          )}
+        {container?.type === 'image' && (
+          <ColumnDetails>
+            {container?.image?.[0]?.url && (
+              <Img
+                src={urlBuild(container.image?.[0].url)}
+                alt="imagem do container"
+              />
+            )}
+            <span>
+              <strong>Legenda</strong>: {container?.description || ''}
+            </span>
+          </ColumnDetails>
+        )}
 
-          {container?.type === 'paragraphIcon' && (
-            <InfoSection>
-              {container?.icon?.image?.url && (
-                <Icon
-                  src={urlBuild(container.icon.image.url)}
-                  alt="imagem do container"
-                />
-              )}
-              <Description hasLast={hasLast}>
-                {container.description}
-              </Description>
-            </InfoSection>
-          )}
+        {container?.type === 'pdf' && (
+          <InfoSection>
+            {container.pdf?.name && (
+              <ButtonDownload
+                onClick={() => {
+                  window.open(urlBuild(container?.pdf?.url), '_blank');
+                }}
+              >
+                <FaDownload color={theme.colors.grayStronger} />
+                {container.pdf?.name}
+              </ButtonDownload>
+            )}
+          </InfoSection>
+        )}
 
-          {container?.type === 'image' && (
-            <ColumnDetails>
-              {container?.image?.[0]?.url && (
-                <Img
-                  src={urlBuild(container.image?.[0].url)}
-                  alt="imagem do container"
-                />
-              )}
-              <span>
-                <strong>Legenda</strong>: {container?.description || ''}
-              </span>
-            </ColumnDetails>
-          )}
-
-          {container?.type === 'pdf' && (
-            <InfoSection>
-              {container.pdf?.name && (
-                <ButtonDownload
+        {container?.type === 'abas' &&
+          !loading &&
+          contentSelected?.sub_containers && (
+            <InfoSection style={{ borderBottom: '1px solid #AAAAAA' }}>
+              {contentSelected?.sub_containers?.map(subcontainer => (
+                <InfoText
+                  selected={subcontainer?.id === subContainer?.id}
                   onClick={() => {
-                    window.open(urlBuild(container?.pdf?.url), '_blank');
+                    setSubContainer(c =>
+                      c === subcontainer ? undefined : subcontainer,
+                    );
                   }}
                 >
-                  <FaDownload color={theme.colors.grayStronger} />
-                  {container.pdf?.name}
-                </ButtonDownload>
-              )}
+                  {subcontainer?.icon?.image?.url && (
+                    <IconNavbar
+                      src={urlBuild(subcontainer.icon.image.url)}
+                      alt="imagem do container"
+                    />
+                  )}
+                  {subcontainer.title || ''}
+                </InfoText>
+              ))}
             </InfoSection>
           )}
-
-          {container?.type.includes('abas') &&
-            !loading &&
-            contentSelected?.sub_containers && (
-              <InfoSection style={{ borderBottom: '1px solid #AAAAAA' }}>
-                {contentSelected?.sub_containers?.map(subcontainer => (
-                  <InfoText
-                    selected={subcontainer?.id === subContainer?.id}
-                    onClick={() => {
-                      setSubContainer(c =>
-                        c === subcontainer ? undefined : subcontainer,
-                      );
-                    }}
-                  >
-                    {subcontainer?.icon?.image?.url && (
-                      <IconNavbar
-                        src={urlBuild(subcontainer.icon.image.url)}
-                        alt="imagem do container"
-                      />
-                    )}
-                    {subcontainer.title || ''}
-                  </InfoText>
-                ))}
-              </InfoSection>
-            )}
-        </div>
       </InfoSection>
     </TableDetails>
   );

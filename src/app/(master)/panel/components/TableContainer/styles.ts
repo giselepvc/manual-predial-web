@@ -1,12 +1,8 @@
 import styled, { keyframes } from 'styled-components';
 
 const detailsFadeIn = keyframes`
-  from {
-    min-height: 0px;
-  }
-  to {
-    min-height: 100px;;
-  }
+  from { opacity: 0 }
+  to { opacity: 1 }
 `;
 
 interface TableProps {
@@ -19,8 +15,7 @@ export const TableDetails = styled.div<TableProps>`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  min-height: 100px;
-  padding: 0 2.5rem 0.5rem 2.5rem;
+  padding: 0 2.5rem 1.4rem 2.5rem;
   margin-top: -0.5rem;
   margin-bottom: ${({ hasLast }) => (hasLast ? '1rem' : 0)};
   background: ${({ theme }) => theme.colors.white};
@@ -29,12 +24,12 @@ export const TableDetails = styled.div<TableProps>`
     hasLast && `1px solid ${theme.colors.primary}`};
   border-right: ${({ theme }) => `1px solid ${theme.colors.primary}`};
   cursor: pointer;
-  animation: ${detailsFadeIn} 0.2s ease-in-out;
 `;
 
 export const InfoSection = styled.div`
   display: flex;
   gap: 0.2rem;
+  animation: ${detailsFadeIn} 0.4s ease-in-out;
 `;
 
 export const InfoColumnSection = styled.div`
