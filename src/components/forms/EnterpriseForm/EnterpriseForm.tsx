@@ -357,6 +357,16 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
             <ErrorMessage>{errors.state.message}</ErrorMessage>
           )}
         </Field>
+        <Field>
+          <Label>Complemento</Label>
+          <Input
+            placeholder="Insirir complemento"
+            {...register('complement')}
+          />
+          {errors?.complement?.message && (
+            <ErrorMessage>{errors.complement.message}</ErrorMessage>
+          )}
+        </Field>
       </FormSection>
 
       <RegisterTitle style={{ marginTop: '2rem' }}>
