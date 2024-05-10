@@ -15,7 +15,7 @@ const isStrapiError = (
     message: string;
   };
 }> => {
-  if (err.response.data.error) {
+  if (err?.response?.data?.error) {
     return true;
   }
   return false;

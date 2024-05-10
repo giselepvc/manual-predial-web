@@ -41,10 +41,6 @@ const ImageForm = ({ onClose, content }: FileProps) => {
         formData.append('files', image);
 
         await api.post('/upload', formData);
-
-        if (content?.image?.[0]?.id) {
-          await api.delete(`/upload/files/${content?.image?.[0]?.id}`);
-        }
       } catch (error) {
         handleError(error);
       }
