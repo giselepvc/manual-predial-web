@@ -62,7 +62,7 @@ const UsersPage = () => {
   };
 
   return (
-    <PageLayout title="Listagem de usuários">
+    <PageLayout title="Listagem de usuários empreendimento">
       <Action
         title="Cadastrar novo usuário"
         href="/users/create"

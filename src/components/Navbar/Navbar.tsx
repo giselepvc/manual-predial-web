@@ -86,7 +86,7 @@ const Navbar = () => {
           <NavLink href="/users" selected={pathname.startsWith('/users')}>
             <UserIcon />
             <NavLinkText selected={pathname.startsWith('/users')}>
-              Cadastro de usuário construtora
+              Cadastro de usuário empreendimento
             </NavLinkText>
           </NavLink>
         )}
