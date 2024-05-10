@@ -34,6 +34,10 @@ import {
   ImageRow,
 } from './styles';
 
+interface Response {
+  data: { id: number };
+}
+
 interface CompanProps {
   isEditing?: boolean;
   companyId?: string;
@@ -103,18 +107,16 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
   const onSubmit: SubmitHandler<ICompanyForm> = async form => {
     try {
       setIsLoading(true);
-      const { data } = await api.post<{ data: { id: number } }>('/companies', {
+      const { data } = await api.post<Response>('/companies', {
         data: { ...form },
       });
 
       if (data.data?.id && image) {
         const formData = new FormData();
-
         formData.append('ref', 'api::company.company');
         formData.append('refId', data.data?.id?.toString() || '');
         formData.append('field', 'image');
         formData.append('files', image);
-
         await api.post('/upload', formData);
       }
 
@@ -131,22 +133,20 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
   const onUpdate: SubmitHandler<ICompanyForm> = async form => {
     try {
       setIsLoading(true);
-      const { data } = await api.put<{ data: { id: number } }>(
-        `/companies/${companyId}`,
-        { data: { ...form } },
-      );
-      query.invalidateQueries({ queryKey: ['CompaniesData'] });
+      const { data } = await api.put<Response>(`/companies/${companyId}`, {
+        data: { ...form },
+      });
 
       if (data.data?.id && image) {
         const formData = new FormData();
-
         formData.append('ref', 'api::company.company');
         formData.append('refId', data.data?.id?.toString() || '');
         formData.append('field', 'image');
         formData.append('files', image);
-
         await api.post('/upload', formData);
       }
+
+      query.invalidateQueries({ queryKey: ['CompaniesData'] });
       handleSuccess('Alteração realizada com sucesso.');
       back();
     } catch (error) {

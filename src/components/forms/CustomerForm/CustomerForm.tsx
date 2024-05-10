@@ -96,6 +96,7 @@ const CustomerForm = ({
   const enterpriseParams = {
     populate: '*',
     'filters[company][id]': watch('company.value'),
+    'filters[client][id][$null]': true,
   };
 
   const { data: enterprises } = useQuery({
@@ -251,9 +252,7 @@ const CustomerForm = ({
 
       if (form?.enterprise?.value && customerId && !isCompany) {
         await api.put(`/enterprises/${form.enterprise.value}`, {
-          data: {
-            client: [customerId],
-          },
+          data: { client: [customerId] },
         });
       }
 
@@ -318,7 +317,6 @@ const CustomerForm = ({
       setValue('address', user?.enterprise?.address);
       setValue('neighborhood', user?.enterprise?.neighborhood);
       setValue('number', user?.enterprise?.number);
-
       setValue('company', optionCompany);
       setValue('enterprise', option);
     }
