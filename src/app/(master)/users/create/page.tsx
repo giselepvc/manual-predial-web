@@ -5,7 +5,7 @@ import CustomerForm from '@/components/forms/CustomerForm/CustomerForm';
 
 const UserRegisterPage = () => {
   return (
-    <PageLayout title="Cadastro de usuário final">
+    <PageLayout title="Cadastro de usuário construtora">
       <CustomerForm />
     </PageLayout>
   );
