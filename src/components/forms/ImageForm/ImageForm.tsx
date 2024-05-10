@@ -66,7 +66,7 @@ const ImageForm = ({ onClose, content }: FileProps) => {
   };
 
   const renderImage = () => {
-    const renderImage = content?.image?.[0]?.url;
+    const renderImage = content?.image?.url;
     return renderImage ? urlBuild(renderImage) : '/icons/image.svg';
   };
 

@@ -66,9 +66,9 @@ const AbasContainer = ({
 
           {content?.type === 'image' && (
             <ColumnDetails>
-              {content?.image?.[0]?.url && (
+              {content?.image?.url && (
                 <Img
-                  src={urlBuild(content.image?.[0].url)}
+                  src={urlBuild(content.image.url)}
                   alt="imagem do container"
                 />
               )}

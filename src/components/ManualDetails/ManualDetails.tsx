@@ -304,10 +304,10 @@ const ManualDetails = ({
                                           <ColumnDetails
                                             style={{ padding: '2rem 0' }}
                                           >
-                                            {container?.image?.[0]?.url && (
+                                            {container?.image?.url && (
                                               <Img
                                                 src={urlBuild(
-                                                  container.image?.[0].url,
+                                                  container.image.url,
                                                 )}
                                                 alt="imagem do container"
                                               />
@@ -395,9 +395,9 @@ const ManualDetails = ({
                                     <Thread style={{ paddingLeft: '3rem' }}>
                                       <TableContentMore key={container?.id}>
                                         <ColumnDetails>
-                                          {sub?.image?.[0]?.url && (
+                                          {sub?.image?.url && (
                                             <Img
-                                              src={urlBuild(sub.image?.[0].url)}
+                                              src={urlBuild(sub.image.url)}
                                               alt="imagem do container"
                                             />
                                           )}

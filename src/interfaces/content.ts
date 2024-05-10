@@ -13,7 +13,7 @@ export interface PurpleAttributes {
   updatedAt: string;
   publishedAt: string;
   type: string;
-  image: Images;
+  image: Image;
   pdf: PDF;
   icon: Icon;
   sub_containers: SubContainers;
@@ -84,7 +84,7 @@ export interface FluffyAttributes {
   updatedAt: string;
   publishedAt: string;
   type: string;
-  image: Images;
+  image: Image;
   pdf: PDF;
   icon: Icon;
   sub_containers: SubContainers;
@@ -95,8 +95,8 @@ export interface IconImage {
   data: ImagesDatum | null;
 }
 
-export interface Images {
-  data: ImagesDatum[] | null;
+export interface Image {
+  data: ImagesDatum | null;
 }
 
 export interface PDF {

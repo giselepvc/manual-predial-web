@@ -95,7 +95,7 @@ export interface ContentsAttributes {
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
-  image: Images;
+  image: Image;
   pdf: PDF;
   icon: IIcon;
   sub_containers: SubContainers;
@@ -125,7 +125,7 @@ export interface ContainerAttributes {
   updatedAt: string;
   publishedAt: string;
   type: string;
-  image: Images;
+  image: Image;
   pdf: PDF;
   icon: IIcon;
 }

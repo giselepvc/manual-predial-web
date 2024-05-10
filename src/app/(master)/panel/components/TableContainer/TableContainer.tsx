@@ -67,9 +67,9 @@ const TableContainer = ({
 
         {container?.type === 'image' && (
           <ColumnDetails>
-            {container?.image?.[0]?.url && (
+            {container?.image?.url && (
               <Img
-                src={urlBuild(container.image?.[0].url)}
+                src={urlBuild(container.image.url)}
                 alt="imagem do container"
               />
             )}
