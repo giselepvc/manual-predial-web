@@ -17,7 +17,7 @@ import TableContainer from './components/TableContainer/TableContainer';
 import AbasContainer from './components/AbasContainer/AbasContainer';
 import ChapterContainer from './components/ChapterContainer/ChapterContainer';
 import TitleContainer from './components/TitleContainer/TitleContainer';
-import { Content, HeaderLogo, TableSection, Thread, Image } from './styles';
+import { Content, Header, Table, Thread, Image, Separator } from './styles';
 
 const PanelPage = () => {
   const { user } = useAuth();
@@ -36,6 +36,9 @@ const PanelPage = () => {
     'populate[5]': 'capters.titles.containers.icon.image',
     'populate[6]': 'capters.group',
     'populate[7]': 'enterprise.image',
+    'populate[8]': 'sub_containers.sub_containers.pdf',
+    'populate[9]': 'sub_containers.sub_containers.icon.image',
+    'populate[10]': 'sub_containers.sub_containers.image',
     'filters[capters][groups][id]': user?.group?.id,
   };
 
@@ -48,8 +51,6 @@ const PanelPage = () => {
     },
     enabled: !!user?.group?.id,
   });
-
-  const chapters = manuals?.capters || [];
 
   const getContent = async (id: number) => {
     try {
@@ -64,6 +65,9 @@ const PanelPage = () => {
           'populate[5]': 'icon.image',
           'populate[6]': 'pdf',
           'populate[7]': 'image',
+          'populate[8]': 'sub_containers.sub_containers.pdf',
+          'populate[9]': 'sub_containers.sub_containers.icon.image',
+          'populate[10]': 'sub_containers.sub_containers.image',
         },
       });
 
@@ -76,6 +80,8 @@ const PanelPage = () => {
       setLoading(false);
     }
   };
+
+  const chapters = manuals?.capters || [];
 
   const addressList = [
     manuals?.enterprise?.address || null,
@@ -96,14 +102,14 @@ const PanelPage = () => {
 
   return (
     <PageLayout hasLogo>
-      <HeaderLogo>
+      <Header>
         <Image src={renderImage()} alt="Logo" />
         <div>{manuals?.enterprise?.company?.name || 'MANUAL PREDIAL'}</div>
         <div>{addressList?.filter(i => i).join(', ')}</div>
-      </HeaderLogo>
+      </Header>
 
       <Content>
-        <TableSection>
+        <Table>
           {chapters
             .sort((a, b) => a.order - b.order)
             .map(chap => (
@@ -131,34 +137,32 @@ const PanelPage = () => {
                         ttl.containers
                           .sort((a, b) => a.order - b.order)
                           .map((container, i) => (
-                            <>
-                              <Thread key={container.id}>
-                                <TableContainer
-                                  contentSelected={selected}
-                                  setSubContainer={setSubContent}
-                                  subContainer={sub}
-                                  loading={loading}
-                                  container={container}
-                                  hasLast={ttl?.containers?.length === i + 1}
-                                />
-                              </Thread>
+                            <Thread key={container.id}>
+                              <TableContainer
+                                contentSelected={selected}
+                                setSubContainer={setSubContent}
+                                subContainer={sub}
+                                loading={loading}
+                                container={container}
+                                hasLast={ttl?.containers?.length === i + 1}
+                              />
 
                               {sub?.id && container?.type === 'abas' && (
                                 <AbasContainer
+                                  title={sub?.subtitle || ''}
                                   container={container}
-                                  subContainer={sub}
+                                  subContainer={sub.sub_containers || []}
                                   loading={loading}
                                 />
                               )}
-                            </>
+                            </Thread>
                           ))}
-
-                      <div style={{ marginBottom: '1rem' }} />
+                      <Separator />
                     </>
                   ))}
               </>
             ))}
-        </TableSection>
+        </Table>
       </Content>
     </PageLayout>
   );

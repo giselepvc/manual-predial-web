@@ -11,15 +11,19 @@ import {
   Icon,
   Img,
   InfoSection,
+  Container,
+  Title,
 } from './styles';
 
 interface AbasContainerProps {
   container: RecursiveNormalize<ContentsDatum> | undefined;
   loading?: boolean;
-  subContainer: RecursiveNormalize<ContainerData> | undefined;
+  subContainer: RecursiveNormalize<ContainerData[]> | [];
+  title: string;
 }
 
 const AbasContainer = ({
+  title,
   container,
   subContainer,
   loading,
@@ -32,59 +36,65 @@ const AbasContainer = ({
   if (loading) return;
 
   return (
-    <>
-      {subContainer?.type === 'paragraph' && (
-        <Description>{subContainer.description}</Description>
-      )}
+    <Container>
+      <Title>{title}</Title>
 
-      {subContainer?.type === 'keys' && (
-        <Description>
-          {subContainer?.subtitle && <strong>{subContainer.subtitle}:</strong>}
-          {subContainer.description}
-        </Description>
-      )}
-
-      {subContainer?.type === 'paragraphIcon' && (
-        <InfoSection>
-          {subContainer?.icon?.image?.url && (
-            <Icon
-              src={urlBuild(subContainer.icon.image.url)}
-              alt="imagem do container"
-            />
+      {subContainer?.map(content => (
+        <>
+          {content?.type === 'paragraph' && (
+            <Description>{content.description}</Description>
           )}
-          <Description>{subContainer?.description}</Description>
-        </InfoSection>
-      )}
 
-      {subContainer?.type === 'image' && (
-        <ColumnDetails>
-          {subContainer?.image?.[0]?.url && (
-            <Img
-              src={urlBuild(subContainer.image?.[0].url)}
-              alt="imagem do container"
-            />
+          {content?.type === 'keys' && (
+            <Description>
+              {content?.subtitle && <strong>{content.subtitle}:</strong>}
+              {content.description}
+            </Description>
           )}
-          <span>
-            <strong>Legenda</strong>: {subContainer?.description || ''}
-          </span>
-        </ColumnDetails>
-      )}
 
-      {subContainer?.type === 'pdf' && (
-        <InfoSection>
-          {subContainer.pdf?.name && (
-            <ButtonDownload
-              onClick={() => {
-                window.open(urlBuild(subContainer?.pdf?.url), '_blank');
-              }}
-            >
-              <FaDownload color={theme.colors.grayStronger} />
-              {subContainer.pdf?.name}
-            </ButtonDownload>
+          {content?.type === 'paragraphIcon' && (
+            <InfoSection>
+              {content?.icon?.image?.url && (
+                <Icon
+                  src={urlBuild(content.icon.image.url)}
+                  alt="imagem do container"
+                />
+              )}
+              <Description>{content?.description}</Description>
+            </InfoSection>
           )}
-        </InfoSection>
-      )}
-    </>
+
+          {content?.type === 'image' && (
+            <ColumnDetails>
+              {content?.image?.[0]?.url && (
+                <Img
+                  src={urlBuild(content.image?.[0].url)}
+                  alt="imagem do container"
+                />
+              )}
+              <span>
+                <strong>Legenda</strong>: {content?.description || ''}
+              </span>
+            </ColumnDetails>
+          )}
+
+          {content?.type === 'pdf' && (
+            <InfoSection>
+              {content.pdf?.name && (
+                <ButtonDownload
+                  onClick={() => {
+                    window.open(urlBuild(content?.pdf?.url), '_blank');
+                  }}
+                >
+                  <FaDownload color={theme.colors.grayStronger} />
+                  {content.pdf?.name}
+                </ButtonDownload>
+              )}
+            </InfoSection>
+          )}
+        </>
+      ))}
+    </Container>
   );
 };
 

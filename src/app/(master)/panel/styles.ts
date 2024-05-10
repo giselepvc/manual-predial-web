@@ -1,12 +1,10 @@
 import styled from 'styled-components';
 
-export const StepsPage = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 1.4rem;
+export const Separator = styled.form`
+  margin-bottom: 1rem;
 `;
 
-export const HeaderLogo = styled.div`
+export const Header = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -20,28 +18,6 @@ export const HeaderLogo = styled.div`
     font-size: 1rem;
     font-weight: 600;
   }
-`;
-
-export const Header = styled.section`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 3rem;
-`;
-
-export const Field = styled.div`
-  position: relative;
-  width: 100%;
-  max-width: 27.75rem;
-  display: flex;
-  flex-direction: column;
-`;
-
-export const Label = styled.label`
-  padding-left: 0.75rem;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.grayd9};
 `;
 
 export const Content = styled.section`
@@ -59,7 +35,7 @@ export const Content = styled.section`
   align-items: center;
 `;
 
-export const TableSection = styled.section`
+export const Table = styled.section`
   width: 100%;
   height: 100%;
   background: transparent;
@@ -69,37 +45,9 @@ export const TableSection = styled.section`
   align-items: end;
 `;
 
-export const RegisterTitle = styled.h3`
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  color: ${({ theme }) => theme.colors.grayaa};
-
-  span {
-    color: ${({ theme }) => theme.colors.graydf};
-    font-size: 0.9rem;
-  }
-`;
-
-export const FormSection = styled.section`
-  width: 100%;
-  max-width: 1166px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-column-gap: 2rem;
-  grid-row-gap: 1.5rem;
-  justify-content: space-between;
-`;
-
-export const ThreadLineTwo = styled.div`
-  min-height: 100px;
-  padding-top: auto;
-  width: 24px;
-  border-left: ${({ theme }) => `2px solid ${theme.colors.grayaa}`};
-`;
-
 export const Thread = styled.div`
   display: flex;
+  flex-direction: column;
   width: 100%;
   padding-left: 3rem;
 `;

@@ -5,6 +5,26 @@ interface TableProps {
   hasLast?: boolean;
 }
 
+export const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: ${({ theme }) => theme.colors.white};
+  margin-top: -2rem;
+  margin-bottom: 1rem;
+  padding: 1rem 3rem;
+  border-bottom: ${({ theme }) => `1px solid ${theme.colors.primary}`};
+  border-left: ${({ theme }) => `1px solid ${theme.colors.primary}`};
+  border-right: ${({ theme }) => `1px solid ${theme.colors.primary}`};
+`;
+
+export const Title = styled.div`
+  color: ${({ theme }) => theme.colors.grayStronger};
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+`;
+
 export const InfoSection = styled.div`
   display: flex;
   gap: 0.2rem;
