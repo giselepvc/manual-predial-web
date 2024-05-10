@@ -37,9 +37,34 @@ interface ChapterPageProps {
 
 const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
   const query = useQueryClient();
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const chaptesIds = manual?.capters?.map(capter => capter.id) || [];
   const isEditing = !!chapter?.id;
+
+  const {
+    control: controlManual,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IChapterForm>({
+    resolver: yupResolver(ChapterSchema),
+    defaultValues: {
+      ...(isEditing && {
+        title: chapter?.title,
+        order: chapter?.order,
+        icon: chapter?.icon?.id || 0,
+        visible: {
+          label: chapter?.visible ? 'Sim' : 'Não',
+          value: chapter?.visible ? 'sim' : 'nao',
+        },
+        groups:
+          chapter?.groups?.map(group => ({
+            label: group?.name,
+            value: group?.id?.toString(),
+          })) || [],
+      }),
+    },
+  });
 
   const groupsParams = {
     populate: '*',
@@ -67,33 +92,6 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
     },
   });
 
-  const {
-    control: controlManual,
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<IChapterForm>({
-    resolver: yupResolver(ChapterSchema),
-    defaultValues: {
-      title: chapter?.title,
-      order: chapter?.order,
-      ...(isEditing && {
-        visible: {
-          label: chapter?.visible ? 'Sim' : 'Não',
-          value: chapter?.visible ? 'sim' : 'nao',
-        },
-      }),
-      icon: chapter?.icon?.id || 0,
-      ...{
-        groups:
-          chapter?.groups?.map(group => ({
-            label: group?.name,
-            value: group?.id?.toString(),
-          })) || [],
-      },
-    },
-  });
-
   const onSubmit: SubmitHandler<IChapterForm> = async form => {
     try {
       setIsLoading(true);
@@ -114,6 +112,7 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
         : await api.post<any>('/capters', { data: formData });
 
       if (data.data?.id && manual?.id) {
+        const chaptesIds = manual?.capters?.map(capter => capter.id) || [];
         await api.put(`/manuals/${manual.id}`, {
           data: { capters: [...chaptesIds, data.data.id] },
         });
@@ -155,10 +154,8 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
       query.invalidateQueries({ queryKey: ['manualForm'] });
       query.invalidateQueries({ queryKey: ['manualList'] });
       query.invalidateQueries({ queryKey: ['groupList'] });
-
       if (isEditing) handleSuccess('Capítulo alterado com sucesso.');
       else handleSuccess('Capítulo cadastrado com sucesso.');
-
       onClose();
     } catch (err: any) {
       handleError(err);

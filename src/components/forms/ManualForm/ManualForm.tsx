@@ -273,7 +273,12 @@ const ManualForm = ({ editing }: ManualFormProps) => {
         />
       )}
       {steps === 3 && (
-        <TitleForm control={control} onClose={onClose} manual={manual} />
+        <TitleForm
+          control={control}
+          onClose={onClose}
+          manual={manual}
+          title={title}
+        />
       )}
       {steps === 4 && (
         <ContainerForm control={control} onClose={onClose} manual={manual} />

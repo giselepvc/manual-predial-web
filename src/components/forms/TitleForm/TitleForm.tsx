@@ -8,7 +8,7 @@ import Button from '@/components/Button/Button';
 import { IManualForm } from '@/validations/ManualSchema';
 import { typeList } from '@/components/ManualTable/ManualTable';
 import { RecursiveNormalize } from '@/utils/normalizeStrapi';
-import { IManualList } from '@/interfaces/manual';
+import { IManualList, TitlesDatum } from '@/interfaces/manual';
 import { useState } from 'react';
 import api from '@/services/api';
 import { useQueryClient } from '@tanstack/react-query';
@@ -26,12 +26,14 @@ interface ChapterPageProps {
   onClose: () => void;
   control: Control<IManualForm, any>;
   manual: RecursiveNormalize<IManualList> | undefined;
+  title: RecursiveNormalize<TitlesDatum> | undefined;
 }
 
-const TitleForm = ({ onClose, control, manual }: ChapterPageProps) => {
+const TitleForm = ({ onClose, control, manual, title }: ChapterPageProps) => {
   const query = useQueryClient();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const isEditing = !!title?.id;
 
   const {
     control: controlTitle,
@@ -40,38 +42,43 @@ const TitleForm = ({ onClose, control, manual }: ChapterPageProps) => {
     formState: { errors },
   } = useForm<ITitleForm>({
     resolver: yupResolver(TitleSchema),
+    defaultValues: {
+      ...(isEditing && {
+        title: title?.title,
+        visible: {
+          label: title?.visible ? 'Sim' : 'Não',
+          value: title?.visible ? 'sim' : 'nao',
+        },
+      }),
+    },
   });
 
   const onSubmit: SubmitHandler<ITitleForm> = async form => {
-    setIsLoading(true);
-
     try {
-      const { data } = await api.post<{ data: { id: number } }>('/titles', {
-        data: {
-          ...form,
-          description: '',
-          chapter: undefined,
-          visible: form.visible?.value === 'sim',
-        },
-      });
+      setIsLoading(true);
+      const formData = {
+        ...form,
+        description: '',
+        chapter: undefined,
+        visible: form.visible?.value === 'sim',
+      };
+
+      const { data } = title?.id
+        ? await api.put<any>(`/titles/${title?.id}`, { data: formData })
+        : await api.post<any>('/titles', { data: formData });
 
       if (data.data?.id && form?.chapter?.value) {
-        const chapter = manual?.capters?.find(
-          capter => capter?.id === Number(form.chapter.value),
-        );
-        const chapterTitlesIds = chapter?.titles?.map(ttls => ttls?.id) || [];
-
+        const chapterId = Number(form.chapter.value);
+        const chptr = manual?.capters?.find(c => c?.id === chapterId);
+        const chapterIds = chptr?.titles?.map(ttls => ttls?.id) || [];
         await api.put(`/capters/${form?.chapter?.value}`, {
-          data: {
-            titles: [...chapterTitlesIds, data.data.id],
-          },
+          data: { titles: [...chapterIds, data.data.id] },
         });
       }
 
-      handleSuccess('Título cadastrado com sucesso.');
-
+      if (isEditing) handleSuccess('Título editado com sucesso.');
+      else handleSuccess('Título cadastrado com sucesso.');
       query.invalidateQueries({ queryKey: ['manualForm'] });
-
       onClose();
     } catch (err: any) {
       handleError(err);
@@ -82,7 +89,9 @@ const TitleForm = ({ onClose, control, manual }: ChapterPageProps) => {
 
   return (
     <RegisterForm>
-      <RegisterTitle>Cadastro de título</RegisterTitle>
+      <RegisterTitle>
+        {isEditing ? 'Editar título' : 'Cadastro de título'}
+      </RegisterTitle>
 
       <FormSection>
         <Field>
@@ -120,6 +129,7 @@ const TitleForm = ({ onClose, control, manual }: ChapterPageProps) => {
                     value: `${chapter?.id || ''}`,
                   })) || []
                 }
+                isDisabled={isEditing}
               />
             )}
           />
@@ -136,6 +146,9 @@ const TitleForm = ({ onClose, control, manual }: ChapterPageProps) => {
             style={{ width: '230px' }}
             {...register('order')}
           />
+          {errors?.order?.message && (
+            <ErrorMessage>{errors.order.message}</ErrorMessage>
+          )}
         </Field>
 
         <Field>
@@ -150,14 +163,8 @@ const TitleForm = ({ onClose, control, manual }: ChapterPageProps) => {
                 value={value}
                 width="230px"
                 options={[
-                  {
-                    label: 'Sim',
-                    value: 'sim',
-                  },
-                  {
-                    label: 'Não',
-                    value: 'nao',
-                  },
+                  { label: 'Sim', value: 'sim' },
+                  { label: 'Não', value: 'nao' },
                 ]}
               />
             )}
@@ -186,7 +193,7 @@ const TitleForm = ({ onClose, control, manual }: ChapterPageProps) => {
       <ButtonSection>
         <Button outlined text="Voltar" type="button" onClick={onClose} />
         <Button
-          text="Cadastrar"
+          text={isEditing ? 'Editar' : 'Cadastrar'}
           type="button"
           onClick={handleSubmit(onSubmit)}
           disabled={isLoading}

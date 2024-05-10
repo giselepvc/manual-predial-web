@@ -8,8 +8,8 @@ import {
 } from '@/interfaces/manual';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { IManualForm } from '@/validations/ManualSchema';
-import { RecursiveNormalize } from '@/utils/normalizeStrapi';
-import { FaTrash, FaPen, FaEye } from 'react-icons/fa6';
+import { RecursiveNormalize as Recursive } from '@/utils/normalizeStrapi';
+import { FaTrash, FaPen } from 'react-icons/fa6';
 import handleError, { handleSuccess } from '@/utils/handleToast';
 import { useQueryClient } from '@tanstack/react-query';
 import api from '@/services/api';
@@ -39,31 +39,19 @@ import {
 } from './styles';
 
 export const typeList = [
-  {
-    label: 'Capítulo padrão',
-    value: 'default',
-  },
-  {
-    label: 'Capítulo personalizado',
-    value: 'personalizado',
-  },
+  { label: 'Capítulo padrão', value: 'default' },
+  { label: 'Capítulo personalizado', value: 'personalizado' },
 ];
 
 interface ManualTableProps {
   control: Control<IManualForm, any>;
   watch: UseFormWatch<IManualForm>;
-  cap: RecursiveNormalize<CaptersDatum> | undefined;
-  title: RecursiveNormalize<TitlesDatum> | undefined;
-  manual: RecursiveNormalize<IManualList> | undefined;
-  setCap: Dispatch<
-    SetStateAction<RecursiveNormalize<CaptersDatum> | undefined>
-  >;
-  setTitle: Dispatch<
-    SetStateAction<RecursiveNormalize<TitlesDatum> | undefined>
-  >;
-  setContent: Dispatch<
-    SetStateAction<RecursiveNormalize<ContentsDatum> | undefined>
-  >;
+  cap: Recursive<CaptersDatum> | undefined;
+  title: Recursive<TitlesDatum> | undefined;
+  manual: Recursive<IManualList> | undefined;
+  setCap: Dispatch<SetStateAction<Recursive<CaptersDatum> | undefined>>;
+  setTitle: Dispatch<SetStateAction<Recursive<TitlesDatum> | undefined>>;
+  setContent: Dispatch<SetStateAction<Recursive<ContentsDatum> | undefined>>;
   setBuildType: Dispatch<SetStateAction<string>>;
   setSteps: Dispatch<SetStateAction<number>>;
 }
@@ -93,23 +81,15 @@ const ManualTable = ({
     if (manual?.capters && manual?.capters.length > 0) {
       const list = [
         ...typeList,
-        {
-          label: 'Título',
-          value: 'titulo',
-        },
-        {
-          label: 'Container',
-          value: 'container',
-        },
+        { label: 'Título', value: 'titulo' },
+        { label: 'Container', value: 'container' },
       ];
-
       setListOptions(list);
     }
   }, [manual]);
 
   const onDelete = async () => {
     if (!deletingId) return;
-
     try {
       setIsUpdating(true);
       await api.delete(`/capters/${deletingId}`);
@@ -126,7 +106,6 @@ const ManualTable = ({
 
   const onDeleteTitle = async () => {
     if (!deletingTitleId) return;
-
     try {
       setIsUpdating(true);
       await api.delete(`/titles/${deletingTitleId}`);
@@ -142,7 +121,6 @@ const ManualTable = ({
 
   const onDeleteContainer = async () => {
     if (!deletingContainerId) return;
-
     try {
       setIsUpdating(true);
       await api.delete(`/containers/${deletingContainerId}`);
@@ -216,17 +194,13 @@ const ManualTable = ({
                       <div>{capter.title}</div>
                     </InfoSection>
                     <div>
-                      {!isCompany && (
-                        <FaPen
-                          onClick={() => {
-                            setCap(undefined);
-                            setSteps(2);
-                          }}
-                        />
-                      )}
-                      {!isCompany && (
-                        <FaTrash onClick={() => setDeletingId(capter.id)} />
-                      )}
+                      <FaPen
+                        onClick={() => {
+                          setCap(undefined);
+                          setSteps(2);
+                        }}
+                      />
+                      <FaTrash onClick={() => setDeletingId(capter.id)} />
                       <Image
                         src={
                           cap?.id === capter.id
@@ -260,11 +234,15 @@ const ManualTable = ({
                               <div>{titles.title.toUpperCase()}</div>
                             </InfoSection>
                             <div>
-                              {!isCompany && (
-                                <FaTrash
-                                  onClick={() => setDeletingTitleId(titles.id)}
-                                />
-                              )}
+                              <FaPen
+                                onClick={() => {
+                                  setTitle(undefined);
+                                  setSteps(3);
+                                }}
+                              />
+                              <FaTrash
+                                onClick={() => setDeletingTitleId(titles.id)}
+                              />
                               <Image
                                 src={
                                   title?.id === titles.id
@@ -307,45 +285,30 @@ const ManualTable = ({
                                     </div>
                                   </InfoSection>
                                   <InfoSection>
-                                    {container.type === 'abas' &&
-                                      !isCompany && (
-                                        <Button
-                                          type="button"
-                                          text="Adicionar abas"
-                                          style={{ minHeight: '25px' }}
-                                          onClick={() => {
-                                            setContent(container);
-                                            setSteps(5);
-                                            setBuildType('content');
-                                          }}
-                                        />
-                                      )}
-                                    {isCompany && (
-                                      <FaEye
-                                        size={20}
+                                    {container.type === 'abas' && (
+                                      <Button
+                                        type="button"
+                                        text="Adicionar abas"
+                                        style={{ minHeight: '25px' }}
                                         onClick={() => {
                                           setContent(container);
                                           setSteps(5);
-                                          setBuildType(container.type);
+                                          setBuildType('content');
                                         }}
                                       />
                                     )}
-                                    {!isCompany && (
-                                      <FaPen
-                                        onClick={() => {
-                                          setContent(container);
-                                          setSteps(5);
-                                          setBuildType(container.type);
-                                        }}
-                                      />
-                                    )}
-                                    {!isCompany && (
-                                      <FaTrash
-                                        onClick={() =>
-                                          setDeletingContainerId(container.id)
-                                        }
-                                      />
-                                    )}
+                                    <FaPen
+                                      onClick={() => {
+                                        setContent(container);
+                                        setSteps(5);
+                                        setBuildType(container.type);
+                                      }}
+                                    />
+                                    <FaTrash
+                                      onClick={() =>
+                                        setDeletingContainerId(container.id)
+                                      }
+                                    />
                                   </InfoSection>
                                 </TableDetails>
                               </Thread>
