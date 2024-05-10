@@ -120,3 +120,25 @@ export const IconNavbar = styled.img`
   width: 16px;
   height: 16px;
 `;
+
+export const ButtonDownload = styled.div`
+  min-height: 40px;
+  min-width: 150px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.75rem 2rem;
+  border: ${({ theme }) => `1px solid ${theme.colors.gray8f}`};
+  border-radius: 6px;
+  background-color: ${({ theme }) => theme.colors.white};
+  color: ${({ theme }) => theme.colors.grayStronger};
+  font-size: 1rem;
+  font-weight: 600;
+  user-select: none;
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+`;

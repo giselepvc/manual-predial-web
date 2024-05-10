@@ -3,7 +3,10 @@ import { RecursiveNormalize } from '@/utils/normalizeStrapi';
 import { ContentsDatum } from '@/interfaces/manual';
 import { ContainerData, IContent } from '@/interfaces/content';
 import { Dispatch, SetStateAction } from 'react';
+import { FaDownload } from 'react-icons/fa6';
+import { theme } from '@/styles/theme';
 import {
+  ButtonDownload,
   ColumnDetails,
   Description,
   Icon,
@@ -79,6 +82,21 @@ const TableContainer = ({
             </ColumnDetails>
           )}
 
+          {container?.type === 'pdf' && (
+            <InfoSection>
+              {container.pdf?.name && (
+                <ButtonDownload
+                  onClick={() => {
+                    window.open(urlBuild(container?.pdf?.url), '_blank');
+                  }}
+                >
+                  <FaDownload color={theme.colors.grayStronger} />
+                  {container.pdf?.name}
+                </ButtonDownload>
+              )}
+            </InfoSection>
+          )}
+
           {container?.type.includes('abas') &&
             !loading &&
             contentSelected?.sub_containers && (
@@ -103,31 +121,6 @@ const TableContainer = ({
                 ))}
               </InfoSection>
             )}
-
-          {/*
-
-          {container.type === 'pdf' && (
-            <InfoSection>
-              {container.pdf?.name && (
-                <InfoText
-                  style={{
-                    borderRadius: '10px',
-                    gap: '1rem',
-                    cursor: 'pointer',
-                    padding: '0 2rem',
-                  }}
-                  onClick={() => {
-                    window.open(urlBuild(container?.pdf?.url), '_blank');
-                  }}
-                >
-                  <FaDownload />
-                  {container.pdf?.name}
-                </InfoText>
-              )}
-            </InfoSection>
-          )}
-
-         */}
         </div>
       </InfoSection>
     </TableDetails>

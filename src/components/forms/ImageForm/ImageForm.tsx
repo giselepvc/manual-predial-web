@@ -38,7 +38,7 @@ const ImageForm = ({ onClose, content }: FileProps) => {
       try {
         const formData = new FormData();
 
-        formData.append('ref', 'api::container.container');
+        formData.append('ref', 'api::containers.containers');
         formData.append('refId', content?.id?.toString() || '');
         formData.append('field', 'image');
         formData.append('files', image);
