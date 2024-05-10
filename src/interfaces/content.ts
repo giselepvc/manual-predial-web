@@ -12,6 +12,7 @@ export interface PurpleAttributes {
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
+  italic: boolean;
   type: string;
   image: Image;
   pdf: PDF;
@@ -83,6 +84,7 @@ export interface FluffyAttributes {
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
+  italic: boolean;
   type: string;
   image: Image;
   pdf: PDF;

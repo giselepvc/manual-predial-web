@@ -18,6 +18,7 @@ import { getIcons } from '@/services/querys/icons';
 import Image from 'next/image';
 import { urlBuild } from '@/utils/urlBuild';
 import { IContent } from '@/interfaces/content';
+import ContentList from './components/ContentList/ContentList';
 import {
   ButtonSection,
   Checkbox,
@@ -30,7 +31,6 @@ import {
   RegisterForm,
   RegisterTitle,
 } from './styles';
-import ContentList from './components/ContentList/ContentList';
 
 interface ChapterPageProps {
   onClose: () => void;
