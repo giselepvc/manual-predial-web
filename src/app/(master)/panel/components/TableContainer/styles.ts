@@ -36,7 +36,7 @@ export const InfoSection = styled.div`
 export const InfoColumnSection = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 1rem;
 `;
 
 export const Description = styled.div<TableProps>`

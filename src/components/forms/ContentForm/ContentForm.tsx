@@ -6,7 +6,8 @@ import handleError, { handleSuccess } from '@/utils/handleToast';
 import Select from '@/components/Select/Select';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
-import { RecursiveNormalize, normalizeStrapi } from '@/utils/normalizeStrapi';
+import { RecursiveNormalize as Recursive } from '@/utils/normalizeStrapi';
+import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import { ContentsDatum } from '@/interfaces/manual';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -34,18 +35,12 @@ import {
 
 interface ChapterPageProps {
   onClose: () => void;
-  content: RecursiveNormalize<ContentsDatum> | undefined;
+  content: Recursive<ContentsDatum> | undefined;
   setBuildType: Dispatch<SetStateAction<string>>;
   setSteps: Dispatch<SetStateAction<number>>;
-  setContent: Dispatch<
-    SetStateAction<RecursiveNormalize<ContentsDatum> | undefined>
-  >;
-  setSubContent: Dispatch<
-    SetStateAction<RecursiveNormalize<ContentsDatum> | undefined>
-  >;
-  setAbaContent: Dispatch<
-    SetStateAction<RecursiveNormalize<IContent> | undefined>
-  >;
+  setContent: Dispatch<SetStateAction<Recursive<ContentsDatum> | undefined>>;
+  setSubContent: Dispatch<SetStateAction<Recursive<ContentsDatum> | undefined>>;
+  setAbaContent: Dispatch<SetStateAction<Recursive<IContent> | undefined>>;
 }
 
 const ContentForm = ({
@@ -151,7 +146,6 @@ const ContentForm = ({
 
   const onDelete = async () => {
     if (!deletingId) return;
-
     try {
       setIsLoading(true);
       await api.delete(`/containers/${deletingId}`);

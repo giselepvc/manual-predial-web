@@ -12,6 +12,7 @@ import {
   Icon,
   IconNavbar,
   Img,
+  InfoColumnSection,
   InfoSection,
   InfoText,
   TableDetails,
@@ -36,13 +37,32 @@ const TableContainer = ({
   subContainer,
   setSubContainer,
 }: ContainerProps) => {
+  const renderDescription = (text: string, italic: boolean, image?: string) => {
+    const paragraphs = text.split('\n');
+    const length = paragraphs?.length || 0;
+
+    return paragraphs.map((paragrafo, i) => (
+      <InfoSection>
+        {image && (paragrafo || paragrafo !== '') && (
+          <Icon src={urlBuild(image)} alt="imagem do container" />
+        )}
+        <Description hasLast={hasLast && length === i + 1} italic={italic}>
+          {paragrafo}
+        </Description>
+      </InfoSection>
+    ));
+  };
+
   return (
     <TableDetails hasLast={hasLast}>
       <InfoSection>
-        {container?.type === 'paragraph' && (
-          <Description hasLast={hasLast} italic={container?.italic || false}>
-            {container.description}
-          </Description>
+        {container?.type === 'paragraph' && container?.description && (
+          <InfoColumnSection>
+            {renderDescription(
+              container.description,
+              container?.italic || false,
+            )}
+          </InfoColumnSection>
         )}
 
         {container?.type === 'keys' && (
@@ -58,15 +78,13 @@ const TableContainer = ({
 
         {container?.type === 'paragraphIcon' && (
           <InfoSection>
-            {container?.icon?.image?.url && (
-              <Icon
-                src={urlBuild(container.icon.image.url)}
-                alt="imagem do container"
-              />
-            )}
-            <Description hasLast={hasLast} italic={container?.italic || false}>
-              {container.description}
-            </Description>
+            <InfoColumnSection>
+              {renderDescription(
+                container.description,
+                container?.italic || false,
+                container?.icon?.image?.url,
+              )}
+            </InfoColumnSection>
           </InfoSection>
         )}
 

@@ -1,27 +1,28 @@
 import Image from 'next/image';
 import { urlBuild } from '@/utils/urlBuild';
 import { IContent } from '@/interfaces/content';
-import { RecursiveNormalize } from '@/utils/normalizeStrapi';
+import { RecursiveNormalize as Recursive } from '@/utils/normalizeStrapi';
 import { FaPen, FaTrash } from 'react-icons/fa6';
 import { Dispatch, SetStateAction } from 'react';
 import { ContentsDatum } from '@/interfaces/manual';
 import Button from '@/components/Button/Button';
-import { Content, Header, InfoSection, TableRow, TableSection } from './styles';
+import {
+  Action,
+  Content,
+  Header,
+  InfoSection,
+  TableRow,
+  TableSection,
+} from './styles';
 
 interface ContentProps {
-  container: RecursiveNormalize<IContent> | undefined;
+  container: Recursive<IContent> | undefined;
   setDeletingId: Dispatch<SetStateAction<number | undefined>>;
-  setContent: Dispatch<
-    SetStateAction<RecursiveNormalize<ContentsDatum> | undefined>
-  >;
+  setContent: Dispatch<SetStateAction<Recursive<ContentsDatum> | undefined>>;
   setBuildType: Dispatch<SetStateAction<string>>;
   setSteps: Dispatch<SetStateAction<number>>;
-  setSubContent: Dispatch<
-    SetStateAction<RecursiveNormalize<ContentsDatum> | undefined>
-  >;
-  setAbaContent: Dispatch<
-    SetStateAction<RecursiveNormalize<IContent> | undefined>
-  >;
+  setSubContent: Dispatch<SetStateAction<Recursive<ContentsDatum> | undefined>>;
+  setAbaContent: Dispatch<SetStateAction<Recursive<IContent> | undefined>>;
 }
 
 const ContentList = ({
@@ -61,27 +62,22 @@ const ContentList = ({
 
               <div>{content.subtitle}</div>
 
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                }}
-              >
+              <Action>
                 <Button
                   type="button"
                   text="Adicionar conteúdo"
                   style={{ minHeight: '25px' }}
                   onClick={() => {
                     setContent(content);
-                    setSteps(5);
-                    setBuildType('subcontainer');
                     setSubContent(content);
                     setAbaContent(container);
+                    setSteps(5);
+                    setBuildType('subcontainer');
                   }}
                 />
                 <FaPen />
                 <FaTrash onClick={() => setDeletingId(content.id)} />
-              </div>
+              </Action>
             </TableRow>
           ))}
       </TableSection>

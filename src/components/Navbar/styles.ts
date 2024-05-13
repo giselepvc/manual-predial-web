@@ -3,15 +3,11 @@ import styled, { css } from 'styled-components';
 
 export const NavbarContainer = styled.div`
   height: 100%;
-
   border-radius: 0px 10px 10px 0px;
-  /* background: linear-gradient(178.26deg, #1b1b1b 63.58%, #7c4d30 150.95%); */
   background: #1b1b1b;
   box-shadow: 0px 4px 4px 0px #00000040;
-
   padding-top: min(6vh, 4.25rem);
   padding-bottom: 2.375rem;
-
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -20,10 +16,8 @@ export const NavbarContainer = styled.div`
 export const LogoButton = styled.button`
   border: none;
   background: transparent;
-
   display: flex;
   align-items: center;
-
   padding-left: 1rem;
   padding-right: 1rem;
 `;
@@ -43,11 +37,9 @@ export const LogoTextImg = styled.img<LogoTextImgProps>`
   visibility: ${({ open }) => (open ? 'visible' : 'hidden')};
   padding-left: ${({ open }) => (open ? '0.5rem' : '0')};
   overflow: hidden;
-
   height: 26px;
   object-fit: cover;
   object-position: center;
-
   transition: all 0.2s;
 `;
 
@@ -57,18 +49,14 @@ interface NavLinkProps {
 
 export const NavLink = styled(Link)<NavLinkProps>`
   position: relative;
-
   padding: 0 1rem;
   height: 3.5rem;
   width: 100%;
-
   display: flex;
   align-items: center;
-
   border-radius: 0.5rem;
   background: ${({ selected, theme }) =>
     selected ? theme.colors.primary : 'transparent'};
-
   text-decoration: none;
   color: ${({ theme, selected }) =>
     selected ? theme.colors.white : theme.colors.gray8f};
