@@ -52,6 +52,7 @@ const ContentList = ({
               </InfoSection>
 
               <div>
+                {!content?.visible && 'ocultado'}
                 <FaPen
                   onClick={() => {
                     setContent(content);

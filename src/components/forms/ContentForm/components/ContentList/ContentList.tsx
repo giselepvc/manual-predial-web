@@ -63,6 +63,7 @@ const ContentList = ({
               <div>{content.subtitle}</div>
 
               <Action>
+                {!content?.visible && 'ocultado'}
                 <Button
                   type="button"
                   text="Adicionar conteúdo"

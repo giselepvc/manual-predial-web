@@ -194,6 +194,7 @@ const ManualTable = ({
                       <div>{capter.title}</div>
                     </InfoSection>
                     <div>
+                      {!capter?.visible && 'ocultado'}
                       <FaPen
                         onClick={() => {
                           setCap(undefined);
@@ -234,6 +235,7 @@ const ManualTable = ({
                               <div>{titles.title.toUpperCase()}</div>
                             </InfoSection>
                             <div>
+                              {!titles?.visible && 'ocultado'}
                               <FaPen
                                 onClick={() => {
                                   setTitle(undefined);
@@ -285,6 +287,7 @@ const ManualTable = ({
                                     </div>
                                   </InfoSection>
                                   <InfoSection>
+                                    {!container?.visible && 'ocultado'}
                                     {container.type === 'abas' && (
                                       <Button
                                         type="button"

@@ -111,6 +111,7 @@ const PanelPage = () => {
       <Content>
         <Table>
           {chapters
+            .filter(item => item.visible)
             .sort((a, b) => a.order - b.order)
             .map(chap => (
               <>
@@ -122,43 +123,46 @@ const PanelPage = () => {
                 />
 
                 {chapter?.id === chap.id &&
-                  chap.titles.map((ttl, index) => (
-                    <>
-                      <TitleContainer
-                        index={index}
-                        getContent={getContent}
-                        selected={title}
-                        setSelected={setTitle}
-                        setSubContent={setSubContent}
-                        title={ttl}
-                      />
+                  chap.titles
+                    .filter(item => item.visible)
+                    .map((ttl, index) => (
+                      <>
+                        <TitleContainer
+                          index={index}
+                          getContent={getContent}
+                          selected={title}
+                          setSelected={setTitle}
+                          setSubContent={setSubContent}
+                          title={ttl}
+                        />
 
-                      {title?.id === ttl.id &&
-                        ttl.containers
-                          .sort((a, b) => a.order - b.order)
-                          .map((container, i) => (
-                            <Thread key={container.id}>
-                              <TableContainer
-                                contentSelected={selected}
-                                setSubContainer={setSubContent}
-                                subContainer={sub}
-                                loading={loading}
-                                container={container}
-                                hasLast={ttl?.containers?.length === i + 1}
-                              />
-
-                              {sub?.id && container?.type === 'abas' && (
-                                <AbasContainer
-                                  title={sub?.subtitle || ''}
-                                  subContainer={sub.sub_containers || []}
+                        {title?.id === ttl.id &&
+                          ttl.containers
+                            .filter(item => item.visible)
+                            .sort((a, b) => a.order - b.order)
+                            .map((container, i) => (
+                              <Thread key={container.id}>
+                                <TableContainer
+                                  contentSelected={selected}
+                                  setSubContainer={setSubContent}
+                                  subContainer={sub}
                                   loading={loading}
+                                  container={container}
+                                  hasLast={ttl?.containers?.length === i + 1}
                                 />
-                              )}
-                            </Thread>
-                          ))}
-                      <Separator />
-                    </>
-                  ))}
+
+                                {sub?.id && container?.type === 'abas' && (
+                                  <AbasContainer
+                                    title={sub?.subtitle || ''}
+                                    subContainer={sub.sub_containers || []}
+                                    loading={loading}
+                                  />
+                                )}
+                              </Thread>
+                            ))}
+                        <Separator />
+                      </>
+                    ))}
               </>
             ))}
         </Table>
