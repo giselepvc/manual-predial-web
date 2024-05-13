@@ -34,12 +34,12 @@ const PanelPage = () => {
     'populate[3]': 'capters.icon.image',
     'populate[4]': 'capters.titles.containers.pdf',
     'populate[5]': 'capters.titles.containers.icon.image',
-    'populate[6]': 'capters.group',
+    'populate[6]': 'capters.groups',
     'populate[7]': 'enterprise.image',
     'populate[8]': 'sub_containers.sub_containers.pdf',
     'populate[9]': 'sub_containers.sub_containers.icon.image',
     'populate[10]': 'sub_containers.sub_containers.image',
-    'filters[capters][groups][id]': user?.group?.id,
+    'filters[capters][groups]': user?.group?.id,
   };
 
   const { data: manuals } = useQuery({
@@ -81,12 +81,15 @@ const PanelPage = () => {
     }
   };
 
-  const chapters = manuals?.capters || [];
+  const chapters =
+    manuals?.capters.filter(capter =>
+      capter.groups.find(group => group.id === user?.group?.id),
+    ) || [];
 
   const addressList = [
     manuals?.enterprise?.address || null,
-    manuals?.enterprise?.city || null,
     manuals?.enterprise?.number || null,
+    manuals?.enterprise?.city || null,
     manuals?.enterprise?.state || null,
     manuals?.enterprise?.zipCode || null,
   ];
@@ -104,7 +107,7 @@ const PanelPage = () => {
     <PageLayout hasLogo logo={image1 ? urlBuild(image1) : '/img/logo_dark.svg'}>
       <Header>
         <Image src={renderImage()} alt="Logo" />
-        <div>{manuals?.enterprise?.company?.name || 'MANUAL PREDIAL'}</div>
+        <div>{manuals?.enterprise?.title || 'Manual Predial'}</div>
         <div>{addressList?.filter(i => i).join(', ')}</div>
       </Header>
 
