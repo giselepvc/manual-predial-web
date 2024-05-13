@@ -70,6 +70,7 @@ export interface TitlesAttributes {
   title: string;
   description: string;
   visible: boolean;
+  order: number;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;

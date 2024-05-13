@@ -125,6 +125,7 @@ const PanelPage = () => {
                 {chapter?.id === chap.id &&
                   chap.titles
                     .filter(item => item.visible)
+                    .sort((a, b) => a.order - b.order)
                     .map((ttl, index) => (
                       <>
                         <TitleContainer

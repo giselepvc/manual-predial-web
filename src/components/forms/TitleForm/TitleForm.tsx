@@ -45,6 +45,7 @@ const TitleForm = ({ onClose, control, manual, title }: ChapterPageProps) => {
     defaultValues: {
       ...(isEditing && {
         title: title?.title,
+        order: title?.order?.toString(),
         visible: {
           label: title?.visible ? 'Sim' : 'Não',
           value: title?.visible ? 'sim' : 'nao',
@@ -59,6 +60,7 @@ const TitleForm = ({ onClose, control, manual, title }: ChapterPageProps) => {
       const formData = {
         ...form,
         description: '',
+        order: Number(form.order),
         chapter: undefined,
         visible: form.visible?.value === 'sim',
       };

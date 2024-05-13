@@ -216,109 +216,111 @@ const ManualTable = ({
                   </TableRow>
 
                   {cap?.id === capter.id &&
-                    capter.titles.map((titles, index) => (
-                      <>
-                        <Thread>
-                          <ThreadSection>
-                            {index + 1 === 1 && <ThreadLine />}
-                          </ThreadSection>
-                          <TableMore
-                            key={titles.id}
-                            onClick={() =>
-                              setTitle(props =>
-                                props === titles ? undefined : titles,
-                              )
-                            }
-                          >
-                            <InfoSection>
-                              <span>{index + 1}</span>
-                              <div>{titles.title.toUpperCase()}</div>
-                            </InfoSection>
-                            <div>
-                              {!titles?.visible && 'ocultado'}
-                              <FaPen
-                                onClick={() => {
-                                  setTitle(undefined);
-                                  setSteps(3);
-                                }}
-                              />
-                              <FaTrash
-                                onClick={() => setDeletingTitleId(titles.id)}
-                              />
-                              <Image
-                                src={
-                                  title?.id === titles.id
-                                    ? '/icons/up-arrow.svg'
-                                    : '/icons/down-arrow.svg'
-                                }
-                                alt="icon"
-                                width={20}
-                                height={20}
-                              />
-                            </div>
-                          </TableMore>
-                        </Thread>
+                    capter.titles
+                      .sort((a, b) => a.order - b.order)
+                      .map((titles, index) => (
+                        <>
+                          <Thread>
+                            <ThreadSection>
+                              {index + 1 === 1 && <ThreadLine />}
+                            </ThreadSection>
+                            <TableMore
+                              key={titles.id}
+                              onClick={() =>
+                                setTitle(props =>
+                                  props === titles ? undefined : titles,
+                                )
+                              }
+                            >
+                              <InfoSection>
+                                <span>{index + 1}</span>
+                                <div>{titles.title.toUpperCase()}</div>
+                              </InfoSection>
+                              <div>
+                                {!titles?.visible && 'ocultado'}
+                                <FaPen
+                                  onClick={() => {
+                                    setTitle(undefined);
+                                    setSteps(3);
+                                  }}
+                                />
+                                <FaTrash
+                                  onClick={() => setDeletingTitleId(titles.id)}
+                                />
+                                <Image
+                                  src={
+                                    title?.id === titles.id
+                                      ? '/icons/up-arrow.svg'
+                                      : '/icons/down-arrow.svg'
+                                  }
+                                  alt="icon"
+                                  width={20}
+                                  height={20}
+                                />
+                              </div>
+                            </TableMore>
+                          </Thread>
 
-                        {title?.id === titles.id &&
-                          titles.containers
-                            .sort((a, b) => a.order - b.order)
-                            .map((container, containerIndex) => (
-                              <Thread
-                                key={container.id}
-                                style={{ paddingLeft: '3rem' }}
-                              >
-                                <ThreadSection>
-                                  <ThreadLine />
-                                  {!!(
-                                    titles.containers.length !==
-                                    containerIndex + 1
-                                  ) && <ThreadLineTwo />}
-                                </ThreadSection>
-                                <TableDetails>
-                                  <InfoSection>
-                                    <span>{container.order}</span>
-                                    <div>
-                                      {container.type === 'abas' && 'Abas'}
-                                      {container.type === 'keys' &&
-                                        'Parágrafo - par de chaves'}
-                                      {container.type !== 'abas' &&
-                                        container.type !== 'keys' &&
-                                        container.title}
-                                    </div>
-                                  </InfoSection>
-                                  <InfoSection>
-                                    {!container?.visible && 'ocultado'}
-                                    {container.type === 'abas' && (
-                                      <Button
-                                        type="button"
-                                        text="Adicionar abas"
-                                        style={{ minHeight: '25px' }}
+                          {title?.id === titles.id &&
+                            titles.containers
+                              .sort((a, b) => a.order - b.order)
+                              .map((container, containerIndex) => (
+                                <Thread
+                                  key={container.id}
+                                  style={{ paddingLeft: '3rem' }}
+                                >
+                                  <ThreadSection>
+                                    <ThreadLine />
+                                    {!!(
+                                      titles.containers.length !==
+                                      containerIndex + 1
+                                    ) && <ThreadLineTwo />}
+                                  </ThreadSection>
+                                  <TableDetails>
+                                    <InfoSection>
+                                      <span>{container.order}</span>
+                                      <div>
+                                        {container.type === 'abas' && 'Abas'}
+                                        {container.type === 'keys' &&
+                                          'Parágrafo - par de chaves'}
+                                        {container.type !== 'abas' &&
+                                          container.type !== 'keys' &&
+                                          container.title}
+                                      </div>
+                                    </InfoSection>
+                                    <InfoSection>
+                                      {!container?.visible && 'ocultado'}
+                                      {container.type === 'abas' && (
+                                        <Button
+                                          type="button"
+                                          text="Adicionar abas"
+                                          style={{ minHeight: '25px' }}
+                                          onClick={() => {
+                                            setContent(container);
+                                            setSteps(5);
+                                            setBuildType('content');
+                                          }}
+                                        />
+                                      )}
+                                      <FaPen
                                         onClick={() => {
                                           setContent(container);
                                           setSteps(5);
-                                          setBuildType('content');
+                                          setBuildType(container.type);
                                         }}
                                       />
-                                    )}
-                                    <FaPen
-                                      onClick={() => {
-                                        setContent(container);
-                                        setSteps(5);
-                                        setBuildType(container.type);
-                                      }}
-                                    />
-                                    <FaTrash
-                                      onClick={() =>
-                                        setDeletingContainerId(container.id)
-                                      }
-                                    />
-                                  </InfoSection>
-                                </TableDetails>
-                              </Thread>
-                            ))}
-                        <div style={{ marginBottom: '1rem' }} />
-                      </>
-                    ))}
+                                      <FaTrash
+                                        onClick={() =>
+                                          setDeletingContainerId(container.id)
+                                        }
+                                      />
+                                    </InfoSection>
+                                  </TableDetails>
+                                </Thread>
+                              ))}
+                          <div style={{ marginBottom: '1rem' }} />
+                        </>
+                      ))}
                 </>
               ))
           ) : (
