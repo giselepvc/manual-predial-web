@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const PageComponent = styled.main`
+export const Component = styled.main`
   display: flex;
   flex-direction: column;
 
@@ -8,7 +8,7 @@ export const PageComponent = styled.main`
   padding: 3rem 2.5rem 0 2.5rem;
 `;
 
-export const PageTitle = styled.h1`
+export const Title = styled.h1`
   font-size: 1.625rem;
   color: ${({ theme }) => theme.colors.white};
   font-weight: 700;
@@ -29,4 +29,22 @@ export const BackButton = styled.div`
   svg {
     color: ${({ theme }) => theme.colors.grayaa};
   }
+`;
+
+export const Image = styled.img`
+  height: 100px;
+  object-fit: cover;
+`;
+
+export const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+export const Button = styled.div`
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  gap: 0.5rem;
+  color: black;
 `;

@@ -1,11 +1,7 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
 import BackIcon from '../../../public/icons/arrow.svg';
 import ExitIcon from '../../../public/icons/exit.svg';
-
-import { PageTitle, PageComponent, BackButton } from './styles';
+import { Title, Component, BackButton, Image, Button, Header } from './styles';
 
 interface PageProps {
   title?: string;
@@ -13,9 +9,11 @@ interface PageProps {
   hasLogo?: boolean;
   backFunction?: () => void;
   children: React.ReactNode;
+  logo?: string;
 }
 
 const PageLayout = ({
+  logo,
   title,
   hasLogo,
   backButton,
@@ -30,31 +28,16 @@ const PageLayout = ({
   };
 
   return (
-    <PageComponent style={hasLogo ? styles : {}}>
-      {title && <PageTitle>{title}</PageTitle>}
+    <Component style={hasLogo ? styles : {}}>
+      {title && <Title>{title}</Title>}
 
       {hasLogo && (
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Image
-            src={hasLogo ? '/img/logo_dark.svg' : '/img/logo.svg'}
-            alt="Logo"
-            width={200}
-            height={80}
-          />
-
-          <div
-            style={{
-              display: 'flex',
-              cursor: 'pointer',
-              alignItems: 'center',
-              gap: '0.5rem',
-              color: 'black',
-            }}
-            onClick={() => logout()}
-          >
+        <Header>
+          <Image src={hasLogo ? logo : '/img/logo.svg'} alt="Logo" />
+          <Button onClick={() => logout()}>
             <ExitIcon color="#000000" /> Sair
-          </div>
-        </div>
+          </Button>
+        </Header>
       )}
 
       {backButton && (
@@ -65,7 +48,7 @@ const PageLayout = ({
       )}
 
       {children}
-    </PageComponent>
+    </Component>
   );
 };
 

@@ -91,17 +91,17 @@ const PanelPage = () => {
     manuals?.enterprise?.zipCode || null,
   ];
 
-  const renderImage = () => {
-    const image1 = manuals?.enterprise?.company?.image?.url;
-    const image2 = manuals?.enterprise?.image?.url;
+  const image1 = manuals?.enterprise?.company?.image?.url;
+  const image2 = manuals?.enterprise?.image?.url;
 
-    if (image1) return urlBuild(image1);
+  const renderImage = () => {
     if (image2) return urlBuild(image2);
+    if (image1) return urlBuild(image1);
     return '/img/logo_dark.svg';
   };
 
   return (
-    <PageLayout hasLogo>
+    <PageLayout hasLogo logo={image1 ? urlBuild(image1) : '/img/logo_dark.svg'}>
       <Header>
         <Image src={renderImage()} alt="Logo" />
         <div>{manuals?.enterprise?.company?.name || 'MANUAL PREDIAL'}</div>
