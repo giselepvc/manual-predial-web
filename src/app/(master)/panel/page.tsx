@@ -150,7 +150,6 @@ const PanelPage = () => {
                               {sub?.id && container?.type === 'abas' && (
                                 <AbasContainer
                                   title={sub?.subtitle || ''}
-                                  container={container}
                                   subContainer={sub.sub_containers || []}
                                   loading={loading}
                                 />

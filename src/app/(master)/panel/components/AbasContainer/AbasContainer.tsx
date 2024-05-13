@@ -1,5 +1,4 @@
 import { ContainerData } from '@/interfaces/content';
-import { ContentsDatum } from '@/interfaces/manual';
 import { RecursiveNormalize } from '@/utils/normalizeStrapi';
 import { urlBuild } from '@/utils/urlBuild';
 import { FaDownload } from 'react-icons/fa6';
@@ -16,7 +15,6 @@ import {
 } from './styles';
 
 interface AbasContainerProps {
-  container: RecursiveNormalize<ContentsDatum> | undefined;
   loading?: boolean;
   subContainer: RecursiveNormalize<ContainerData[]> | [];
   title: string;
@@ -24,15 +22,9 @@ interface AbasContainerProps {
 
 const AbasContainer = ({
   title,
-  container,
   subContainer,
   loading,
 }: AbasContainerProps) => {
-  console.log({
-    container,
-    sub: subContainer,
-  });
-
   if (loading) return;
 
   return (
@@ -42,13 +34,13 @@ const AbasContainer = ({
       {subContainer?.map(content => (
         <>
           {content?.type === 'paragraph' && (
-            <Description italic={container?.italic || false}>
+            <Description italic={content?.italic || false}>
               {content.description}
             </Description>
           )}
 
           {content?.type === 'keys' && (
-            <Description italic={container?.italic || false}>
+            <Description italic={content?.italic || false}>
               {content?.subtitle && <strong>{content.subtitle}:</strong>}
               {content.description}
             </Description>
@@ -62,7 +54,7 @@ const AbasContainer = ({
                   alt="imagem do container"
                 />
               )}
-              <Description italic={container?.italic || false}>
+              <Description italic={content?.italic || false}>
                 {content?.description}
               </Description>
             </InfoSection>

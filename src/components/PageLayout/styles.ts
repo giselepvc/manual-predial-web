@@ -33,7 +33,8 @@ export const BackButton = styled.div`
 
 export const Image = styled.img`
   height: 100px;
-  object-fit: cover;
+  max-width: 200px;
+  object-fit: contain;
 `;
 
 export const Header = styled.div`
