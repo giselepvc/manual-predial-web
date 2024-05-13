@@ -5,6 +5,8 @@ import { RecursiveNormalize } from '@/utils/normalizeStrapi';
 import api from '@/services/api';
 import handleError, { handleSuccess } from '@/utils/handleToast';
 import { useQueryClient } from '@tanstack/react-query';
+import Input from '@/components/Input/Input';
+import Select from '@/components/Select/Select';
 import {
   ButtonSection,
   Field,
@@ -26,10 +28,13 @@ const FileForm = ({ onClose, content }: FileProps) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [image, setImage] = useState<File>();
+  const [order, setOrder] = useState(content?.order || '');
+  const [active, setActive] = useState({
+    label: content?.visible ? 'Sim' : 'Não' || 'Sim',
+    value: content?.visible ? 'sim' : 'nao' || 'sim',
+  });
 
   const onSubmitPhoto = async () => {
-    setIsLoading(true);
-
     if (image) {
       try {
         const formData = new FormData();
@@ -44,22 +49,63 @@ const FileForm = ({ onClose, content }: FileProps) => {
         if (content?.pdf?.id) {
           await api.delete(`/upload/files/${content?.pdf?.id}`);
         }
-
-        handleSuccess('Conteúdo alterado com sucesso');
-        query.invalidateQueries({ queryKey: ['manualForm'] });
-        query.invalidateQueries({ queryKey: ['contentsData'] });
-        onClose();
       } catch (error) {
         handleError(error);
-      } finally {
-        setIsLoading(false);
       }
+    }
+  };
+
+  const onSubmit = async () => {
+    try {
+      setIsLoading(true);
+      await api.put(`/containers/${content?.id}`, {
+        data: {
+          order,
+          visible: active.value === 'sim' ? true : false || true,
+        },
+      });
+
+      onSubmitPhoto();
+      handleSuccess('Container alterado com sucesso.');
+      query.invalidateQueries({ queryKey: ['manualForm'] });
+      onClose();
+    } catch (err: any) {
+      handleError(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <RegisterForm>
       <RegisterTitle>Cadastrar arquivo PDF</RegisterTitle>
+
+      <FormSection>
+        <Field>
+          <Label>Ordem</Label>
+          <Input
+            placeholder="Insira uma ordem"
+            type="number"
+            style={{ width: '300px' }}
+            value={order}
+            onChange={e => setOrder(e.target.value)}
+          />
+        </Field>
+
+        <Field>
+          <Label>Visível?</Label>
+          <Select
+            width="300px"
+            placeholder="Selecione uma opção"
+            onChange={e => e && setActive(e)}
+            value={active}
+            options={[
+              { label: 'Sim', value: 'sim' },
+              { label: 'Não', value: 'nao' },
+            ]}
+          />
+        </Field>
+      </FormSection>
 
       <FormSection>
         <Field>
@@ -92,7 +138,7 @@ const FileForm = ({ onClose, content }: FileProps) => {
           text="Editar"
           type="button"
           onClick={() =>
-            image ? onSubmitPhoto() : handleError('Selecione um arquivo')
+            image ? onSubmit() : handleError('Selecione um arquivo')
           }
           disabled={isLoading}
         />

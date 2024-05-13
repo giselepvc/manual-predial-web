@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { getIcons } from '@/services/querys/icons';
 import { urlBuild } from '@/utils/urlBuild';
 import Input from '@/components/Input/Input';
+import Select from '@/components/Select/Select';
 import {
   ButtonSection,
   Checkbox,
@@ -35,10 +36,17 @@ const ParagraphForm = ({ onClose, content }: FileProps) => {
   const query = useQueryClient();
 
   const [isLoading, setIsLoading] = useState(false);
+
   const [icon, setIcon] = useState(content?.icon?.id || 0);
   const [italic, setItalic] = useState(content?.italic || false);
   const [description, setDesciption] = useState(content?.description || '');
   const [subtitle, setTitle] = useState(content?.subtitle || '');
+  const [order, setOrder] = useState(content?.order || '');
+  const [active, setActive] = useState({
+    label: content?.visible ? 'Sim' : 'Não' || 'Sim',
+    value: content?.visible ? 'sim' : 'nao' || 'sim',
+  });
+
   const iconsParams = { populate: '*', 'filters[active]': true };
 
   const { data: icons } = useQuery({
@@ -58,6 +66,8 @@ const ParagraphForm = ({ onClose, content }: FileProps) => {
           description,
           subtitle,
           italic,
+          order,
+          visible: active.value === 'sim' ? true : false || true,
           ...(icon !== 0 && { icon }),
         },
       });
@@ -83,6 +93,33 @@ const ParagraphForm = ({ onClose, content }: FileProps) => {
   return (
     <RegisterForm>
       <RegisterTitle>Parágrafos</RegisterTitle>
+
+      <FormSection>
+        <Field>
+          <Label>Ordem</Label>
+          <Input
+            placeholder="Insira uma ordem"
+            type="number"
+            style={{ width: '300px' }}
+            value={order}
+            onChange={e => setOrder(e.target.value)}
+          />
+        </Field>
+
+        <Field>
+          <Label>Visível?</Label>
+          <Select
+            width="300px"
+            placeholder="Selecione uma opção"
+            onChange={e => e && setActive(e)}
+            value={active}
+            options={[
+              { label: 'Sim', value: 'sim' },
+              { label: 'Não', value: 'nao' },
+            ]}
+          />
+        </Field>
+      </FormSection>
 
       {content?.type === 'keys' && (
         <FormSection>

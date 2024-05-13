@@ -65,7 +65,7 @@ export const InputSection = styled.label`
   border-radius: 0.625rem;
 
   padding: 0;
-  width: 500px;
+  width: 632px;
   height: 2.75rem;
   margin-top: 8px;
 

@@ -6,6 +6,8 @@ import { RecursiveNormalize } from '@/utils/normalizeStrapi';
 import { ContentsDatum } from '@/interfaces/manual';
 import { useQueryClient } from '@tanstack/react-query';
 import { urlBuild } from '@/utils/urlBuild';
+import Input from '@/components/Input/Input';
+import Select from '@/components/Select/Select';
 import {
   ButtonSection,
   Field,
@@ -30,6 +32,11 @@ const ImageForm = ({ onClose, content }: FileProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [image, setImage] = useState<File>();
   const [description, setDesciption] = useState(content?.description || '');
+  const [order, setOrder] = useState(content?.order || '');
+  const [active, setActive] = useState({
+    label: content?.visible ? 'Sim' : 'Não' || 'Sim',
+    value: content?.visible ? 'sim' : 'nao' || 'sim',
+  });
 
   const onSubmitPhoto = async () => {
     if (image) {
@@ -51,7 +58,11 @@ const ImageForm = ({ onClose, content }: FileProps) => {
     try {
       setIsLoading(true);
       await api.put(`/containers/${content?.id}`, {
-        data: { description },
+        data: {
+          description,
+          order,
+          visible: active.value === 'sim' ? true : false || true,
+        },
       });
 
       onSubmitPhoto();
@@ -79,6 +90,33 @@ const ImageForm = ({ onClose, content }: FileProps) => {
       <RegisterTitle>
         Imagem única com legenda abaixo de vários parágrafos
       </RegisterTitle>
+
+      <FormSection>
+        <Field>
+          <Label>Ordem</Label>
+          <Input
+            placeholder="Insira uma ordem"
+            type="number"
+            style={{ width: '300px' }}
+            value={order}
+            onChange={e => setOrder(e.target.value)}
+          />
+        </Field>
+
+        <Field>
+          <Label>Visível?</Label>
+          <Select
+            width="300px"
+            placeholder="Selecione uma opção"
+            onChange={e => e && setActive(e)}
+            value={active}
+            options={[
+              { label: 'Sim', value: 'sim' },
+              { label: 'Não', value: 'nao' },
+            ]}
+          />
+        </Field>
+      </FormSection>
 
       <FormSection>
         <Field>
