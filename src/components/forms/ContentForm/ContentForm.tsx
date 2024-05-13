@@ -33,6 +33,10 @@ import {
   RegisterTitle,
 } from './styles';
 
+interface Response {
+  data: { id: number };
+}
+
 interface ChapterPageProps {
   onClose: () => void;
   content: Recursive<ContentsDatum> | undefined;
@@ -55,6 +59,7 @@ const ContentForm = ({
   const query = useQueryClient();
   const [deletingId, setDeletingId] = useState<number>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [contentId, setContentId] = useState<number | undefined>();
 
   const {
     control,
@@ -106,36 +111,46 @@ const ContentForm = ({
     enabled: !!content?.id,
   });
 
+  const onClear = () => {
+    reset({
+      order: '',
+      visible: { label: 'Sim', value: 'sim' },
+      description: '',
+      title: '',
+      icon: 0,
+    });
+  };
+
   const onSubmit: SubmitHandler<IContentForm> = async form => {
     try {
       setIsLoading(true);
-      const { data } = await api.post<{ data: { id: number } }>('/containers', {
-        data: {
-          title: form.title,
-          subtitle: form.description,
-          order: Number(form.order),
-          visible: form.visible?.value === 'sim',
-          icon: form?.icon === 0 ? undefined : form?.icon,
-          type: 'abas',
-        },
-      });
+      const data = {
+        title: form.title,
+        subtitle: form.description,
+        order: Number(form.order),
+        visible: form.visible?.value === 'sim',
+        icon: form?.icon === 0 ? undefined : form?.icon,
+        type: 'abas',
+      };
 
-      if (data.data?.id && container?.id) {
+      const { data: result } = contentId
+        ? await api.put<Response>(`/containers/${contentId}`, { data })
+        : await api.post<Response>('/containers', { data });
+
+      if (result.data?.id && container?.id) {
         const contentIds = container?.sub_containers?.map(c => c?.id) || [];
         await api.put(`/containers/${container.id}`, {
-          data: { sub_containers: [...contentIds, data.data.id] },
+          data: { sub_containers: [...contentIds, result.data.id] },
         });
       }
 
-      reset({
-        order: '',
-        visible: { label: 'Sim', value: 'sim' },
-        description: '',
-        title: '',
-        icon: 0,
-      });
-
-      handleSuccess('Conteúdo cadastrado com sucesso.');
+      setContentId(undefined);
+      onClear();
+      if (contentId) {
+        handleSuccess('Conteúdo alterado com sucesso.');
+      } else {
+        handleSuccess('Conteúdo cadastrado com sucesso.');
+      }
       query.invalidateQueries({ queryKey: ['contentsData'] });
     } catch (err: any) {
       handleError(err);
@@ -253,24 +268,40 @@ const ContentForm = ({
       </FormSection>
 
       <ButtonSection>
-        <Button outlined text="Voltar" type="button" onClick={onClose} />
         <Button
-          text="Adicionar"
+          outlined
+          text="Voltar"
+          type="button"
+          onClick={() => {
+            if (contentId) {
+              setContentId(undefined);
+              onClear();
+            } else {
+              onClose();
+            }
+          }}
+        />
+        <Button
+          text={contentId ? 'Editar' : 'Adicionar'}
           type="button"
           onClick={handleSubmit(onSubmit)}
           disabled={isLoading}
         />
       </ButtonSection>
 
-      <ContentList
-        container={container}
-        setContent={setContent}
-        setSteps={setSteps}
-        setBuildType={setBuildType}
-        setDeletingId={setDeletingId}
-        setSubContent={setSubContent}
-        setAbaContent={setAbaContent}
-      />
+      {!contentId && (
+        <ContentList
+          container={container}
+          setContent={setContent}
+          setSteps={setSteps}
+          setBuildType={setBuildType}
+          setDeletingId={setDeletingId}
+          setSubContent={setSubContent}
+          setAbaContent={setAbaContent}
+          setContentId={setContentId}
+          reset={reset}
+        />
+      )}
 
       {deletingId && (
         <ConfirmModal

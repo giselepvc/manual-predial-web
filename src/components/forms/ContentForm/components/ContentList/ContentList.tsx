@@ -6,6 +6,8 @@ import { FaPen, FaTrash } from 'react-icons/fa6';
 import { Dispatch, SetStateAction } from 'react';
 import { ContentsDatum } from '@/interfaces/manual';
 import Button from '@/components/Button/Button';
+import { UseFormReset } from 'react-hook-form';
+import { IContentForm } from '@/validations/ContentSchema';
 import {
   Action,
   Content,
@@ -23,6 +25,8 @@ interface ContentProps {
   setSteps: Dispatch<SetStateAction<number>>;
   setSubContent: Dispatch<SetStateAction<Recursive<ContentsDatum> | undefined>>;
   setAbaContent: Dispatch<SetStateAction<Recursive<IContent> | undefined>>;
+  reset: UseFormReset<IContentForm>;
+  setContentId: Dispatch<SetStateAction<number | undefined>>;
 }
 
 const ContentList = ({
@@ -33,6 +37,8 @@ const ContentList = ({
   setContent,
   setBuildType,
   setSteps,
+  setContentId,
+  reset,
 }: ContentProps) => {
   return (
     <Content>
@@ -76,7 +82,21 @@ const ContentList = ({
                     setBuildType('subcontainer');
                   }}
                 />
-                <FaPen />
+                <FaPen
+                  onClick={() => {
+                    setContentId(content?.id);
+                    reset({
+                      order: content?.order?.toString() || '',
+                      visible: {
+                        label: content?.visible ? 'Sim' : 'Não' || 'Sim',
+                        value: content?.visible ? 'sim' : 'nao' || 'sim',
+                      },
+                      description: content?.subtitle || '',
+                      title: content?.title || '',
+                      icon: content?.icon?.id || 0,
+                    });
+                  }}
+                />
                 <FaTrash onClick={() => setDeletingId(content.id)} />
               </Action>
             </TableRow>
