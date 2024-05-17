@@ -174,7 +174,7 @@ const PanelPage = () => {
               </>
             ))}
 
-          <ManualMap chapter={chapters} />
+          {chapters && chapters?.length > 0 && <ManualMap chapter={chapters} />}
         </Table>
       </Content>
 
