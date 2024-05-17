@@ -26,6 +26,7 @@ import {
   Separator,
   LogoImage,
 } from './styles';
+import ManualMap from './components/ManualMap/ManualMap';
 
 const PanelPage = () => {
   const { user } = useAuth();
@@ -172,6 +173,8 @@ const PanelPage = () => {
                     ))}
               </>
             ))}
+
+          <ManualMap chapter={chapters} />
         </Table>
       </Content>
 

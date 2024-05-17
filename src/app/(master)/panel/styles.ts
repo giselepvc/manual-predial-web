@@ -59,3 +59,7 @@ export const Image = styled.img`
 export const LogoImage = styled.img`
   width: 400px;
 `;
+
+export const Hidden = styled.div`
+  display: none;
+`;

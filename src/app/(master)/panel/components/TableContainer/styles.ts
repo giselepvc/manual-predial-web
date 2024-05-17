@@ -29,7 +29,6 @@ export const InfoSection = styled.div`
   display: flex;
   gap: 0.2rem;
   animation: ${detailsFadeIn} 0.4s ease-in-out;
-  border-bottom: ${({ theme }) => `1px solid ${theme.colors.primary}`};
 `;
 
 export const InfoColumnSection = styled.div`
