@@ -55,3 +55,7 @@ export const Thread = styled.div`
 export const Image = styled.img`
   width: 600px;
 `;
+
+export const LogoImage = styled.img`
+  width: 400px;
+`;

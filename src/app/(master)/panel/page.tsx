@@ -17,7 +17,15 @@ import TableContainer from './components/TableContainer/TableContainer';
 import AbasContainer from './components/AbasContainer/AbasContainer';
 import ChapterContainer from './components/ChapterContainer/ChapterContainer';
 import TitleContainer from './components/TitleContainer/TitleContainer';
-import { Content, Header, Table, Thread, Image, Separator } from './styles';
+import {
+  Content,
+  Header,
+  Table,
+  Thread,
+  Image,
+  Separator,
+  LogoImage,
+} from './styles';
 
 const PanelPage = () => {
   const { user } = useAuth();
@@ -166,6 +174,12 @@ const PanelPage = () => {
             ))}
         </Table>
       </Content>
+
+      <Header>
+        {image2 && <LogoImage src="/img/logo_dark.svg" alt="Logo" />}
+        <div>Manual Predial</div>
+        <div>contato@manaulpredial.com / (31) 9882-0701</div>
+      </Header>
     </PageLayout>
   );
 };
