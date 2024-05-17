@@ -21,6 +21,7 @@ import {
 interface ContainerProps {
   container: RecursiveNormalize<ContentsDatum> | undefined;
   hasLast?: boolean;
+  hasFirst?: boolean;
   loading?: boolean;
   contentSelected: RecursiveNormalize<IContent> | undefined;
   subContainer: RecursiveNormalize<ContainerData> | undefined;
@@ -33,6 +34,7 @@ const TableContainer = ({
   container,
   hasLast,
   loading,
+  hasFirst,
   contentSelected,
   subContainer,
   setSubContainer,
@@ -54,7 +56,7 @@ const TableContainer = ({
   };
 
   return (
-    <TableDetails hasLast={hasLast}>
+    <TableDetails hasLast={hasLast} hasFirst={hasFirst}>
       <InfoSection>
         {container?.type === 'paragraph' && container?.description && (
           <InfoColumnSection>
@@ -91,10 +93,7 @@ const TableContainer = ({
         {container?.type === 'image' && (
           <ColumnDetails>
             {container?.image?.url && (
-              <Img
-                src={urlBuild(container.image.url)}
-                alt="imagem do container"
-              />
+              <Img src={urlBuild(container.image.url)} alt="container" />
             )}
             <span>
               <strong>Legenda</strong>: {container?.description || ''}
@@ -131,10 +130,7 @@ const TableContainer = ({
                   }}
                 >
                   {subcontainer?.icon?.image?.url && (
-                    <IconNavbar
-                      src={urlBuild(subcontainer.icon.image.url)}
-                      alt="imagem do container"
-                    />
+                    <IconNavbar src={urlBuild(subcontainer.icon.image.url)} />
                   )}
                   {subcontainer.title || ''}
                 </InfoText>

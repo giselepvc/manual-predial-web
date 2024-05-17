@@ -146,6 +146,7 @@ const PanelPage = () => {
                                   subContainer={sub}
                                   loading={loading}
                                   container={container}
+                                  hasFirst={i === 0}
                                   hasLast={ttl?.containers?.length === i + 1}
                                 />
 

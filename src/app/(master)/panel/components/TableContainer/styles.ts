@@ -8,6 +8,7 @@ const detailsFadeIn = keyframes`
 interface TableProps {
   selected?: boolean;
   hasLast?: boolean;
+  hasFirst?: boolean;
   italic?: boolean;
 }
 
@@ -17,13 +18,10 @@ export const TableDetails = styled.div<TableProps>`
   justify-content: space-between;
   width: 100%;
   padding: 0 2.5rem 1.4rem 2.5rem;
-  margin-top: -0.5rem;
+  margin-top: ${({ hasFirst }) => (hasFirst ? '1rem' : '-0.5rem')};
   margin-bottom: ${({ hasLast }) => (hasLast ? '1rem' : 0)};
   background: ${({ theme }) => theme.colors.white};
-  border-left: ${({ theme }) => `1px solid ${theme.colors.primary}`};
-  border-bottom: ${({ theme, hasLast }) =>
-    hasLast && `1px solid ${theme.colors.primary}`};
-  border-right: ${({ theme }) => `1px solid ${theme.colors.primary}`};
+  border-top: none;
   cursor: pointer;
 `;
 
@@ -31,6 +29,7 @@ export const InfoSection = styled.div`
   display: flex;
   gap: 0.2rem;
   animation: ${detailsFadeIn} 0.4s ease-in-out;
+  border-bottom: ${({ theme }) => `1px solid ${theme.colors.primary}`};
 `;
 
 export const InfoColumnSection = styled.div`

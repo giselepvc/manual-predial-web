@@ -14,9 +14,7 @@ export const Container = styled.div`
   margin-top: -2rem;
   margin-bottom: 1rem;
   padding: 1rem 3rem;
-  border-bottom: ${({ theme }) => `1px solid ${theme.colors.primary}`};
-  border-left: ${({ theme }) => `1px solid ${theme.colors.primary}`};
-  border-right: ${({ theme }) => `1px solid ${theme.colors.primary}`};
+  border: none;
 `;
 
 export const Title = styled.div`
