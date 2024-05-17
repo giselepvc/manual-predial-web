@@ -97,16 +97,10 @@ const PanelPage = () => {
   const image1 = manuals?.enterprise?.company?.image?.url;
   const image2 = manuals?.enterprise?.image?.url;
 
-  const renderImage = () => {
-    if (image2) return urlBuild(image2);
-    if (image1) return urlBuild(image1);
-    return '/img/logo_dark.svg';
-  };
-
   return (
-    <PageLayout hasLogo logo={image1 ? urlBuild(image1) : '/img/logo_dark.svg'}>
+    <PageLayout hasLogo logo={image1 && urlBuild(image1)}>
       <Header>
-        <Image src={renderImage()} alt="Logo" />
+        {image2 && <Image src={urlBuild(image2)} alt="Logo" />}
         <div>{manuals?.enterprise?.title || 'Manual Predial'}</div>
         <div>{addressList?.filter(i => i).join(', ')}</div>
       </Header>

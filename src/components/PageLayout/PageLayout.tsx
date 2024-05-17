@@ -33,7 +33,7 @@ const PageLayout = ({
 
       {hasLogo && (
         <Header>
-          <Image src={hasLogo ? logo : '/img/logo.svg'} alt="Logo" />
+          <Image src={logo || '/img/logo.svg'} alt="Logo" />
           <Button onClick={() => logout()}>
             <ExitIcon color="#000000" /> Sair
           </Button>
