@@ -97,7 +97,7 @@ const IconsForm = () => {
             {image ? image.name : 'Selecionar arquivo'}
             <input
               type="file"
-              accept="image/*"
+              accept="image/png,image/jpeg,image/jpg,image/svg"
               hidden
               onChange={e => {
                 if (e.target?.files?.[0]) {

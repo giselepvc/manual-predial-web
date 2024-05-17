@@ -5,11 +5,16 @@ import { getIcons } from '@/services/querys/icons';
 import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import { urlBuild } from '@/utils/urlBuild';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import Image from 'next/image';
 import Action from '@/components/Action/Action';
 import handleError from '@/utils/handleToast';
 import api from '@/services/api';
-import { ImageButton, IconsList, IconsTitle, MainComponent } from './styles';
+import {
+  ImageButton,
+  IconsList,
+  IconsTitle,
+  MainComponent,
+  Image,
+} from './styles';
 
 const IconsPage = () => {
   const query = useQueryClient();
@@ -59,12 +64,7 @@ const IconsPage = () => {
                 selected={icon.active}
                 onClick={() => onUpdate(icon.id, icon.active)}
               >
-                <Image
-                  src={urlBuild(icon.image?.url)}
-                  alt={icon.title}
-                  width={25}
-                  height={25}
-                />
+                <Image src={urlBuild(icon.image?.url)} alt={icon.title} />
               </ImageButton>
             ))}
         </IconsList>
@@ -79,12 +79,7 @@ const IconsPage = () => {
                 selected={icon.active}
                 onClick={() => onUpdate(icon.id, icon.active)}
               >
-                <Image
-                  src={urlBuild(icon.image?.url)}
-                  alt={icon.title}
-                  width={25}
-                  height={25}
-                />
+                <Image src={urlBuild(icon.image?.url)} alt={icon.title} />
               </ImageButton>
             ))}
         </IconsList>

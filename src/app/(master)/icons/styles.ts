@@ -43,3 +43,8 @@ export const IconsTitle = styled.h3`
     ${({ theme }) => theme.colors.graydf};
   }
 `;
+
+export const Image = styled.img`
+  height: 25px;
+  width: 25px;
+`;

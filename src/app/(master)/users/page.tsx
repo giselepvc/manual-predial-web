@@ -70,12 +70,12 @@ const UsersPage = () => {
       />
 
       <TableComponent
-        fields={['Nome', 'E-mail', 'Empreendimento', 'CPF', 'Ações']}
+        fields={['Nome', 'Login', 'Empreendimento', 'CPF', 'Ações']}
       >
         {clients.map(client => (
           <tr key={client.id}>
             <td>{client.name || '--'}</td>
-            <td>{client.users?.email || '--'}</td>
+            <td>{client.users?.username || '--'}</td>
             <td>{client.enterprise?.title || '--'}</td>
             <td>{client.cpf ? cpfMask(client.cpf) : '--'}</td>
             <td>

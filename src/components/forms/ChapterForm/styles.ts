@@ -94,6 +94,11 @@ export const CheckboxLabel = styled.label`
   color: ${({ theme }) => theme.colors.grayd9};
 `;
 
+export const Image = styled.img`
+  width: 14px;
+  height: 14px;
+`;
+
 export const Checkbox = styled.input`
   appearance: none;
   -moz-appearance: none;

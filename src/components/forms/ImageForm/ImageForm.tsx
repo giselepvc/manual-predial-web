@@ -133,7 +133,7 @@ const ImageForm = ({ onClose, content }: FileProps) => {
             <div>{image ? image.name : 'Nenhum arquivo escolhido'}</div>
             <input
               type="file"
-              accept="image/*"
+              accept="image/png,image/jpeg,image/jpg,image/svg"
               hidden
               onChange={e => {
                 const file = e.target?.files?.[0];

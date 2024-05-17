@@ -99,7 +99,7 @@ export const NavLink = styled(Link)<NavLinkProps>`
 `;
 
 export const NavLinkText = styled.p<NavLinkProps>`
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
   overflow: hidden;
   white-space: nowrap;

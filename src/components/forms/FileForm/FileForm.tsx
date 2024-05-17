@@ -65,7 +65,9 @@ const FileForm = ({ onClose, content }: FileProps) => {
         },
       });
 
-      onSubmitPhoto();
+      if (image) {
+        onSubmitPhoto();
+      }
       handleSuccess('Container alterado com sucesso.');
       query.invalidateQueries({ queryKey: ['manualForm'] });
       onClose();
@@ -137,9 +139,7 @@ const FileForm = ({ onClose, content }: FileProps) => {
         <Button
           text="Editar"
           type="button"
-          onClick={() =>
-            image ? onSubmit() : handleError('Selecione um arquivo')
-          }
+          onClick={onSubmit}
           disabled={isLoading}
         />
       </ButtonSection>

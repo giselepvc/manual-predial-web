@@ -12,7 +12,6 @@ import { IManualList } from '@/interfaces/manual';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getGroups } from '@/services/querys/groups';
 import { getIcons } from '@/services/querys/icons';
-import Image from 'next/image';
 import { urlBuild } from '@/utils/urlBuild';
 import { CaptersDatum } from '@/interfaces/grups';
 import {
@@ -22,6 +21,7 @@ import {
   ErrorMessage,
   Field,
   FormSection,
+  Image,
   Label,
   RadiosRow,
   RegisterForm,
@@ -278,12 +278,7 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
             {icons?.map(item => (
               <CheckboxLabel>
                 <Checkbox type="radio" {...register('icon')} value={item.id} />
-                <Image
-                  src={urlBuild(item.image?.url)}
-                  alt="icons"
-                  width={14}
-                  height={14}
-                />
+                <Image src={urlBuild(item.image?.url)} alt="icons" />
               </CheckboxLabel>
             ))}
           </RadiosRow>
