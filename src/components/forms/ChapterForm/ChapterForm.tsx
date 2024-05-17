@@ -97,6 +97,7 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
       setIsLoading(true);
       const formData = {
         ...form,
+        title: form.title.toUpperCase(),
         company: undefined,
         enterprise: undefined,
         icon: form?.icon === 0 ? undefined : form?.icon,
@@ -258,7 +259,7 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
           <Label>Nome do capítulo</Label>
           <Input
             placeholder="Insira um nome"
-            style={{ width: '418px' }}
+            style={{ width: '418px', textTransform: 'uppercase' }}
             {...register('title')}
           />
           {errors?.title?.message && (

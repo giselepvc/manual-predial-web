@@ -59,6 +59,7 @@ const TitleForm = ({ onClose, control, manual, title }: ChapterPageProps) => {
       setIsLoading(true);
       const formData = {
         ...form,
+        title: form.title.toUpperCase(),
         description: '',
         order: Number(form.order),
         chapter: undefined,
@@ -186,7 +187,7 @@ const TitleForm = ({ onClose, control, manual, title }: ChapterPageProps) => {
           <Label>Nome do título</Label>
           <Input
             placeholder="Insira um nome"
-            style={{ width: '965px' }}
+            style={{ width: '965px', textTransform: 'uppercase' }}
             {...register('title')}
           />
         </Field>

@@ -10,7 +10,7 @@ export const GlobalStyle = createGlobalStyle`
     scroll-behavior: smooth;
 
     ::-webkit-scrollbar {
-      width: 6px;
+      width: 12px;
     }
 
     ::-webkit-scrollbar-track {

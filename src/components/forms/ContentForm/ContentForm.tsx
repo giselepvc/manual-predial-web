@@ -126,7 +126,7 @@ const ContentForm = ({
       setIsLoading(true);
       const data = {
         title: form.title,
-        subtitle: form.description,
+        subtitle: form.description?.toUpperCase(),
         order: Number(form.order),
         visible: form.visible?.value === 'sim',
         icon: form?.icon === 0 ? undefined : form?.icon,
@@ -232,7 +232,7 @@ const ContentForm = ({
           <Label>Legenda</Label>
           <Input
             placeholder="Insira uma legenda"
-            style={{ width: '230px' }}
+            style={{ width: '230px', textTransform: 'uppercase' }}
             {...register('description')}
           />
           {errors?.description?.message && (
