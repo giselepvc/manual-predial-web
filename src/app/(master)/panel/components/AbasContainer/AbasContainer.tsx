@@ -27,6 +27,26 @@ const AbasContainer = ({
 }: AbasContainerProps) => {
   if (loading) return;
 
+  const renderDescriptionWithIcon = (
+    text: string,
+    italic: boolean,
+    image?: string,
+  ) => {
+    const paragraphs = text?.split('\n');
+    return paragraphs?.map(paragrafo => (
+      <InfoSection>
+        {image && (paragrafo || paragrafo !== '') && (
+          <Icon src={urlBuild(image)} alt="imagem do container" />
+        )}
+        <Description italic={italic}>{paragrafo}</Description>
+      </InfoSection>
+    ));
+  };
+
+  const renderDescription = (text: string) => {
+    return text?.split('\n');
+  };
+
   return (
     <Container>
       <Title>{title}</Title>
@@ -37,30 +57,27 @@ const AbasContainer = ({
           <>
             {content?.type === 'paragraph' && (
               <Description italic={content?.italic || false}>
-                {content.description}
+                {renderDescription(content?.description)?.map(
+                  item => item || '',
+                )}
               </Description>
             )}
 
             {content?.type === 'keys' && (
               <Description italic={content?.italic || false}>
                 {content?.subtitle && <strong>{content.subtitle}:</strong>}
-                {content.description}
+                {renderDescription(content?.description)?.map(
+                  item => item || '',
+                )}
               </Description>
             )}
 
-            {content?.type === 'paragraphIcon' && (
-              <InfoSection>
-                {content?.icon?.image?.url && (
-                  <Icon
-                    src={urlBuild(content.icon.image.url)}
-                    alt="imagem do container"
-                  />
-                )}
-                <Description italic={content?.italic || false}>
-                  {content?.description}
-                </Description>
-              </InfoSection>
-            )}
+            {content?.type === 'paragraphIcon' &&
+              renderDescriptionWithIcon(
+                content?.description,
+                content?.italic || false,
+                content.icon.image.url,
+              )}
 
             {content?.type === 'image' && (
               <ColumnDetails>
@@ -71,7 +88,10 @@ const AbasContainer = ({
                   />
                 )}
                 <span>
-                  <strong>Legenda</strong>: {content?.description || ''}
+                  <strong>Legenda</strong>:{' '}
+                  {renderDescription(content?.description)?.map(
+                    item => item || '',
+                  )}
                 </span>
               </ColumnDetails>
             )}
