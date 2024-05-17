@@ -141,12 +141,7 @@ const Login = () => {
             )}
           </InputSection>
 
-          <RegisterText
-            style={{ margin: '-0.6rem 0 1rem 0' }}
-            onClick={() => setStep('forgot')}
-          >
-            Esqueci minha senha
-          </RegisterText>
+          <RegisterText style={{ margin: '-0.6rem 0 1rem 0' }} />
 
           <Button
             type="submit"
