@@ -233,7 +233,7 @@ const ManualTable = ({
                               }
                             >
                               <InfoSection>
-                                <span>{index + 1}</span>
+                                <span>{titles.order}</span>
                                 <div>{titles.title.toUpperCase()}</div>
                               </InfoSection>
                               <div>

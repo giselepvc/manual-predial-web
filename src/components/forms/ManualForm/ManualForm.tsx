@@ -254,12 +254,10 @@ const ManualForm = ({ editing }: ManualFormProps) => {
       )}
       {steps === 1 && isCompany && (
         <ManualDetails
-          control={control}
           watch={watch}
           cap={chapter}
           title={title}
           manual={manual}
-          content={content}
           setCap={setChapter}
           setTitle={setTitle}
         />
