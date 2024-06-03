@@ -33,6 +33,7 @@ const AbasContainer = ({
     image?: string,
   ) => {
     const paragraphs = text?.split('\n');
+
     return paragraphs?.map(paragrafo => (
       <InfoSection>
         {image && (paragrafo || paragrafo !== '') && (
@@ -43,8 +44,18 @@ const AbasContainer = ({
     ));
   };
 
-  const renderDescription = (text: string) => {
-    return text?.split('\n');
+  const renderDescription = (
+    text: string,
+    italic: boolean,
+    subtitle?: string,
+  ) => {
+    const paragraphs = text?.split('\n');
+    return paragraphs?.map(item => (
+      <Description italic={italic || false}>
+        {subtitle && <strong>{subtitle}:</strong>}
+        {item}
+      </Description>
+    ));
   };
 
   return (
@@ -55,22 +66,15 @@ const AbasContainer = ({
         ?.filter(item => item.visible)
         ?.map(content => (
           <>
-            {content?.type === 'paragraph' && (
-              <Description italic={content?.italic || false}>
-                {renderDescription(content?.description)?.map(
-                  item => item || '',
-                )}
-              </Description>
-            )}
+            {content?.type === 'paragraph' &&
+              renderDescription(content?.description, content?.italic)}
 
-            {content?.type === 'keys' && (
-              <Description italic={content?.italic || false}>
-                {content?.subtitle && <strong>{content.subtitle}:</strong>}
-                {renderDescription(content?.description)?.map(
-                  item => item || '',
-                )}
-              </Description>
-            )}
+            {content?.type === 'keys' &&
+              renderDescription(
+                content?.description,
+                content?.italic || false,
+                content.subtitle,
+              )}
 
             {content?.type === 'paragraphIcon' &&
               renderDescriptionWithIcon(
@@ -88,10 +92,7 @@ const AbasContainer = ({
                   />
                 )}
                 <span>
-                  <strong>Legenda</strong>:{' '}
-                  {renderDescription(content?.description)?.map(
-                    item => item || '',
-                  )}
+                  <strong>Legenda</strong>: {content?.description}
                 </span>
               </ColumnDetails>
             )}
