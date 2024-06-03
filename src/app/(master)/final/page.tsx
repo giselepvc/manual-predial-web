@@ -31,8 +31,9 @@ const UsersPage = () => {
     'pagination[page]': page,
     'pagination[pageSize]': 7,
     'filters[name][$containsi]': search || undefined,
-    'filters[group][enterprise][id]': user?.enterprise?.id || undefined,
-    'filters[enterprise][id][$null]': true,
+    'filters[$or][0][group][enterprise][id]': user?.enterprise?.id || undefined,
+    'filters[$or][1][group][enterprise][id]': null,
+    'filters[$or][1][group][enterprise][id][$null]': true,
     'filters[users][id][$ne]': 60,
     'sort[createdAt]': 'DESC',
     populate: [
@@ -52,9 +53,9 @@ const UsersPage = () => {
 
   const onDelete = async () => {
     if (!deletingId) return;
+    setIsUpdating(true);
 
     try {
-      setIsUpdating(true);
       await api.delete(`/clients/${deletingId}`);
       handleSuccess('Usuário deletado com sucesso.');
       setDeletingId(undefined);

@@ -70,7 +70,7 @@ const CompanyForm = ({ isEditing, companyId }: CompanProps) => {
   };
 
   const { data: companyInfo } = useQuery({
-    queryKey: ['usersData', companiesParams],
+    queryKey: ['CompaniesData', companiesParams],
     queryFn: async () => {
       const companysData = await getCompanies(companiesParams);
       const companies = normalizeStrapi(companysData || []);
