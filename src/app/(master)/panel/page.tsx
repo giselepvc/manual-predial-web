@@ -13,6 +13,8 @@ import handleError from '@/utils/handleToast';
 import api from '@/services/api';
 import { ContainerData, IContent } from '@/interfaces/content';
 import { Paginated } from '@/interfaces/paginated';
+import { FaEnvelope } from 'react-icons/fa6';
+import { FaPhoneAlt, FaWhatsapp } from 'react-icons/fa';
 import TableContainer from './components/TableContainer/TableContainer';
 import AbasContainer from './components/AbasContainer/AbasContainer';
 import ChapterContainer from './components/ChapterContainer/ChapterContainer';
@@ -180,8 +182,17 @@ const PanelPage = () => {
 
       <Header>
         {image2 && <LogoImage src="/img/logo_dark.svg" alt="Logo" />}
-        <div>Manual Predial</div>
-        <div>contato@manaulpredial.com / (31) 9882-0701</div>
+        <div>PARA ATUALIZAR SEU MANUAL ENTRE EM CONTATO</div>
+        <div>
+          <span>
+            <FaEnvelope /> contato@manaulpredial.com
+          </span>
+          <span>
+            <FaPhoneAlt />
+            <FaWhatsapp size={20} />
+            BH (31) 98820-0701
+          </span>
+        </div>
       </Header>
     </PageLayout>
   );

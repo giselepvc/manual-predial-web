@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export type RecursiveNormalize<O extends object> = O extends Array<infer inner>
   ? inner extends object
     ? RecursiveNormalizeStrapiObject<NonNullable<inner>>[]
