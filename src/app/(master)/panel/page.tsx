@@ -100,9 +100,10 @@ const PanelPage = () => {
   const addressList = [
     manuals?.enterprise?.address || null,
     manuals?.enterprise?.number || null,
+    manuals?.enterprise?.neighborhood || null,
     manuals?.enterprise?.city || null,
     manuals?.enterprise?.state || null,
-    manuals?.enterprise?.zipCode || null,
+    `CEP: ${manuals?.enterprise?.zipCode || null}`,
   ];
 
   const image1 = manuals?.enterprise?.company?.image?.url;
