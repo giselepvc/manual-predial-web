@@ -21,6 +21,8 @@ const IconsPage = () => {
 
   const iconsParams = {
     populate: '*',
+    'pagination[page]': 1,
+    'pagination[pageSize]': 100,
   };
 
   const { data: icons } = useQuery({

@@ -47,7 +47,12 @@ const ParagraphForm = ({ onClose, content }: FileProps) => {
     value: content?.visible ? 'sim' : 'nao' || 'sim',
   });
 
-  const iconsParams = { populate: '*', 'filters[active]': true };
+  const iconsParams = {
+    populate: '*',
+    'pagination[page]': 1,
+    'pagination[pageSize]': 100,
+    'filters[active]': true,
+  };
 
   const { data: icons } = useQuery({
     queryKey: ['iconsData', iconsParams],

@@ -73,6 +73,8 @@ const ContentForm = ({
 
   const iconsParams = {
     populate: '*',
+    'pagination[page]': 1,
+    'pagination[pageSize]': 100,
     'filters[active]': true,
   };
 

@@ -14,13 +14,11 @@ import ConfirmModal from '@/components/ConfirmeModal/ConfirmeModal';
 import api from '@/services/api';
 import handleError, { handleSuccess } from '@/utils/handleToast';
 import { FaTrash } from 'react-icons/fa6';
-import { useAuth } from '@/hooks/useAuth';
 import EditIcon from '../../../../public/icons/edit.svg';
 import { ActionButton, ActionsRows } from './styles';
 
 const UsersPage = () => {
   const { push } = useRouter();
-  const { user } = useAuth();
   const query = useQueryClient();
 
   const [page, setPage] = useState(1);
