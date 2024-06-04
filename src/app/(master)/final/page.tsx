@@ -32,8 +32,8 @@ const UsersPage = () => {
     'pagination[pageSize]': 7,
     'filters[name][$containsi]': search || undefined,
     'filters[$or][0][group][enterprise][id]': user?.enterprise?.id || undefined,
-    'filters[$or][1][group][enterprise][id]': null,
     'filters[$or][1][group][enterprise][id][$null]': true,
+    'filters[$or][2][enterprise][id][$null]': true,
     'filters[users][id][$ne]': 60,
     'sort[createdAt]': 'DESC',
     populate: [

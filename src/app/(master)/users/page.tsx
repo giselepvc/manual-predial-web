@@ -32,15 +32,14 @@ const UsersPage = () => {
     'pagination[page]': page,
     'pagination[pageSize]': 7,
     'filters[name][$containsi]': search || undefined,
-    'filters[group][enterprise][id]': user?.enterprise?.id || undefined,
     'sort[createdAt]': 'DESC',
     'filters[enterprise][id][$null]': false,
     populate: ['users', 'users.image', 'group.enterprise', 'enterprise'],
   };
 
   const { data: clientsData } = useQuery({
-    queryKey: ['usersData', clientsParams],
-    queryFn: async () => getClients(clientsParams),
+    queryKey: ['clientsData', clientsParams],
+    queryFn: () => getClients(clientsParams),
   });
 
   const clients = normalizeStrapi(clientsData || []);
@@ -50,10 +49,12 @@ const UsersPage = () => {
 
     try {
       setIsUpdating(true);
+
       await api.delete(`/clients/${deletingId}`);
+
       handleSuccess('Usuário deletado com sucesso.');
       setDeletingId(undefined);
-      query.invalidateQueries({ queryKey: ['usersData'] });
+      query.invalidateQueries({ queryKey: ['clientsData'] });
     } catch (err: any) {
       handleError(err);
     } finally {
