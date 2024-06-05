@@ -30,6 +30,7 @@ const UsersPage = () => {
     'pagination[page]': page,
     'pagination[pageSize]': 7,
     'filters[name][$containsi]': search || undefined,
+    'filters[users][role][id]': 1,
     'sort[createdAt]': 'DESC',
     populate: [
       'users',
