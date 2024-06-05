@@ -191,14 +191,16 @@ const CustomerForm = ({
     try {
       setIsLoading(true);
       if (isCompany) {
-        await api.post<{ data: { id: number } }>('/registerViewer', {
+        await api.post('/registerViewer', {
           ...form,
           username: form.login,
-          confirmPassword: undefined,
+          email: form?.email || null,
           group: Number(form?.group?.value),
+          creativeEnterprise: form?.enterprise?.label,
+          creativeCompany: form?.company?.label,
           enterprise: undefined,
           company: undefined,
-          email: form?.email || null,
+          confirmPassword: undefined,
         });
       } else {
         const { data } = await api.post<{ data: { id: number } }>(
@@ -207,10 +209,12 @@ const CustomerForm = ({
             ...form,
             username: form.login,
             enterprise: Number(form?.enterprise?.value),
+            creativeEnterprise: form?.enterprise?.label,
+            creativeCompany: form?.company?.label,
+            email: form?.email || null,
             group: undefined,
             confirmPassword: undefined,
             company: undefined,
-            email: form?.email || null,
           },
         );
 
@@ -243,6 +247,8 @@ const CustomerForm = ({
             ? undefined
             : Number(form?.enterprise?.value || user?.enterprise?.id),
           group: form?.group?.value ? Number(form?.group?.value) : undefined,
+          creativeEnterprise: form?.enterprise?.label,
+          creativeCompany: form?.company?.label,
           password: undefined,
           confirmPassword: undefined,
           company: undefined,

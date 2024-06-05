@@ -19,8 +19,10 @@ import { ActionButton, ActionSection } from './styles';
 
 const UsersPage = () => {
   const { push } = useRouter();
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const query = useQueryClient();
+
+  const isMaster = role === 3;
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -31,14 +33,17 @@ const UsersPage = () => {
     'pagination[page]': page,
     'pagination[pageSize]': 7,
     'filters[name][$containsi]': search || undefined,
-    'filters[$or][0][group][enterprise][id]': user?.enterprise?.id || undefined,
-    'filters[$or][1][group][enterprise][id][$null]': true,
-    'filters[$or][2][enterprise][id][$null]': true,
+    ...(!isMaster && {
+      'filters[$or][0][creativeEnterprise]': user?.enterprise?.title,
+      'filters[$or][0][group][enterprise][id]': user?.enterprise?.id,
+    }),
+    'filters[users][role][id]': 4,
     'filters[users][id][$ne]': 60,
     'sort[createdAt]': 'DESC',
     populate: [
       'users',
       'users.image',
+      'users.role',
       'group.enterprise.company',
       'enterprise.company',
     ],
@@ -48,8 +53,6 @@ const UsersPage = () => {
     queryKey: ['usersData', clientsParams],
     queryFn: async () => getClients(clientsParams),
   });
-
-  const clients = normalizeStrapi(clientsData || []);
 
   const onDelete = async () => {
     if (!deletingId) return;
@@ -67,6 +70,16 @@ const UsersPage = () => {
     }
   };
 
+  const clients = normalizeStrapi(clientsData || []);
+  const fields = [
+    'Nome',
+    'Login',
+    'Grupo',
+    'Empreendimento',
+    'Construtora',
+    'Ações',
+  ];
+
   return (
     <PageLayout title="Listagem de usuários final">
       <Action
@@ -75,23 +88,14 @@ const UsersPage = () => {
         setSearch={setSearch}
       />
 
-      <TableComponent
-        fields={[
-          'Nome',
-          'Login',
-          'Grupo',
-          'Empreendimento',
-          'Construtora',
-          'Ações',
-        ]}
-      >
+      <TableComponent fields={fields}>
         {clients.map(client => (
           <tr key={client.id}>
             <td>{client.name || '--'}</td>
             <td>{client.users?.username || '--'}</td>
             <td>{client.group?.name || '--'}</td>
-            <td>{client.group?.enterprise?.title || '--'}</td>
-            <td>{client.group?.enterprise?.company?.name || '--'}</td>
+            <td>{client.creativeEnterprise || '--'}</td>
+            <td>{client.creativeCompany || '--'}</td>
             <td>
               <ActionSection>
                 <ActionButton onClick={() => push(`/final/edit/${client.id}`)}>

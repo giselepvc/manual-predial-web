@@ -30,9 +30,15 @@ const UsersPage = () => {
     'pagination[page]': page,
     'pagination[pageSize]': 7,
     'filters[name][$containsi]': search || undefined,
+    'filters[users][role][id]': 1,
     'sort[createdAt]': 'DESC',
-    'filters[enterprise][id][$null]': false,
-    populate: ['users', 'users.image', 'group.enterprise', 'enterprise'],
+    populate: [
+      'users',
+      'users.image',
+      'group.enterprise',
+      'enterprise',
+      'users.role',
+    ],
   };
 
   const { data: clientsData } = useQuery({
@@ -40,14 +46,11 @@ const UsersPage = () => {
     queryFn: () => getClients(clientsParams),
   });
 
-  const clients = normalizeStrapi(clientsData || []);
-
   const onDelete = async () => {
     if (!deletingId) return;
+    setIsUpdating(true);
 
     try {
-      setIsUpdating(true);
-
       await api.delete(`/clients/${deletingId}`);
 
       handleSuccess('Usuário deletado com sucesso.');
@@ -60,6 +63,9 @@ const UsersPage = () => {
     }
   };
 
+  const clients = normalizeStrapi(clientsData || []);
+  const fields = ['Nome', 'Login', 'Empreendimento', 'CPF', 'Ações'];
+
   return (
     <PageLayout title="Listagem de usuários empreendimento">
       <Action
@@ -68,23 +74,19 @@ const UsersPage = () => {
         setSearch={setSearch}
       />
 
-      <TableComponent
-        fields={['Nome', 'Login', 'Empreendimento', 'CPF', 'Ações']}
-      >
+      <TableComponent fields={fields}>
         {clients.map(client => (
           <tr key={client.id}>
             <td>{client.name || '--'}</td>
             <td>{client.users?.username || '--'}</td>
-            <td>{client.enterprise?.title || '--'}</td>
+            <td>{client.creativeEnterprise || '--'}</td>
             <td>{client.cpf ? cpfMask(client.cpf) : '--'}</td>
             <td>
               <ActionsRows>
                 <ActionButton onClick={() => push(`/users/edit/${client.id}`)}>
                   <EditIcon /> Editar
                 </ActionButton>
-                <ActionButton
-                  onClick={() => !isUpdating && setDeletingId(client.id)}
-                >
+                <ActionButton onClick={() => setDeletingId(client.id)}>
                   <FaTrash />
                 </ActionButton>
               </ActionsRows>

@@ -19,6 +19,8 @@ export interface IClientsAttributes {
   city: string;
   state: string;
   referencePoint: null;
+  creativeCompany: string;
+  creativeEnterprise: string;
   complement: string;
   users: IUsers;
   enterprise: IEnterprise;
