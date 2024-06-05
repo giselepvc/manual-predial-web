@@ -91,7 +91,7 @@ const IconsForm = () => {
         </Field>
 
         <Field>
-          <Label>Selecione um ícone</Label>
+          <Label>Selecione um ícone (Máx. 1mb)</Label>
           <InputSection>
             <FileButton>Escolher arquivo</FileButton>
             {image ? image.name : 'Selecionar arquivo'}
@@ -107,6 +107,7 @@ const IconsForm = () => {
               }}
             />
           </InputSection>
+          <span>Formatos aceitos: png, jpeg, jpg, svg</span>
         </Field>
       </FormSection>
 
