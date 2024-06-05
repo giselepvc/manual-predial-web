@@ -41,6 +41,11 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const isEditing = !!chapter?.id;
 
+  const option = {
+    label: chapter?.visible ? 'Sim' : 'Não',
+    value: chapter?.visible ? 'sim' : 'nao',
+  };
+
   const {
     control: controlManual,
     register,
@@ -53,10 +58,9 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
         title: chapter?.title,
         order: chapter?.order,
         icon: chapter?.icon?.id || 0,
-        visible: {
-          label: chapter?.visible ? 'Sim' : 'Não',
-          value: chapter?.visible ? 'sim' : 'nao',
-        },
+        ...(chapter?.visible !== null
+          ? { visible: option }
+          : { visible: { label: 'Sim', value: 'sim' } }),
         groups:
           chapter?.groups?.map(group => ({
             label: group?.name,
@@ -71,12 +75,14 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
     'filters[enterprise][id]': manual?.enterprise?.id,
   };
 
-  const { data: groupsData } = useQuery({
+  const { data: groups } = useQuery({
     queryKey: ['groupList', groupsParams],
-    queryFn: async () => getGroups(groupsParams),
+    queryFn: async () => {
+      const result = await getGroups(groupsParams);
+      return normalizeStrapi(result || []);
+    },
+    enabled: !!manual?.enterprise?.id,
   });
-
-  const groups = normalizeStrapi(groupsData || []);
 
   const iconsParams = {
     populate: '*',
@@ -213,14 +219,8 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
                 onChange={onChange}
                 value={value}
                 options={[
-                  {
-                    label: 'Sim',
-                    value: 'sim',
-                  },
-                  {
-                    label: 'Não',
-                    value: 'nao',
-                  },
+                  { label: 'Sim', value: 'sim' },
+                  { label: 'Não', value: 'nao' },
                 ]}
               />
             )}

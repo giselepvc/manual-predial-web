@@ -34,6 +34,10 @@ const TitleForm = ({ onClose, control, manual, title }: ChapterPageProps) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const isEditing = !!title?.id;
+  const option = {
+    label: title?.visible ? 'Sim' : 'Não',
+    value: title?.visible ? 'sim' : 'nao',
+  };
 
   const {
     control: controlTitle,
@@ -46,10 +50,9 @@ const TitleForm = ({ onClose, control, manual, title }: ChapterPageProps) => {
       ...(isEditing && {
         title: title?.title,
         order: title?.order?.toString(),
-        visible: {
-          label: title?.visible ? 'Sim' : 'Não',
-          value: title?.visible ? 'sim' : 'nao',
-        },
+        ...(title?.visible !== null
+          ? { visible: option }
+          : { visible: { label: 'Sim', value: 'sim' } }),
       }),
     },
   });

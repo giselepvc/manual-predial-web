@@ -195,16 +195,11 @@ const ContainerForm = ({ onClose, control, manual }: ChapterPageProps) => {
                 placeholder="Selecione uma opção"
                 onChange={onChange}
                 value={value}
+                defaultValue={{ label: 'Sim', value: 'sim' }}
                 width="230px"
                 options={[
-                  {
-                    label: 'Sim',
-                    value: 'sim',
-                  },
-                  {
-                    label: 'Não',
-                    value: 'nao',
-                  },
+                  { label: 'Sim', value: 'sim' },
+                  { label: 'Não', value: 'nao' },
                 ]}
               />
             )}

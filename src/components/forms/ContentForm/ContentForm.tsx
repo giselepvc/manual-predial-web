@@ -204,6 +204,7 @@ const ContentForm = ({
                 placeholder="Selecione uma opção"
                 onChange={onChange}
                 value={value}
+                defaultValue={{ label: 'Sim', value: 'sim' }}
                 width="230px"
                 options={[
                   { label: 'Sim', value: 'sim' },

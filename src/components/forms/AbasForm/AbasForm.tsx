@@ -40,14 +40,14 @@ const AbasForm = ({ onClose, content }: ChapterPageProps) => {
       order: content?.order,
       visible: content?.visible
         ? { label: 'Sim', value: 'sim' }
-        : { label: 'Não', value: 'nao' },
+        : { label: 'Não', value: 'nao' } || { label: 'Sim', value: 'sim' },
       icon: 0,
     },
   });
 
   const onSubmit: SubmitHandler<IAbaForm> = async form => {
     try {
-      await api.put<{ data: { id: number } }>(`/containers/${content?.id}`, {
+      await api.put(`/containers/${content?.id}`, {
         data: {
           title: form.title,
           order: form.order,

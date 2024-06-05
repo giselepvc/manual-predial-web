@@ -110,6 +110,7 @@ const ImageForm = ({ onClose, content }: FileProps) => {
             placeholder="Selecione uma opção"
             onChange={e => e && setActive(e)}
             value={active}
+            defaultValue={{ label: 'Sim', value: 'sim' }}
             options={[
               { label: 'Sim', value: 'sim' },
               { label: 'Não', value: 'nao' },
