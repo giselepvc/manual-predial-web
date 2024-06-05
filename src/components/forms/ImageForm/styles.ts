@@ -38,6 +38,13 @@ export const Field = styled.div`
 
   display: flex;
   flex-direction: column;
+
+  span {
+    font-size: 0.7rem;
+    color: ${({ theme }) => theme.colors.grayd9};
+    padding-left: 0.75rem;
+    margin-top: 0.5rem;
+  }
 `;
 
 export const Img = styled.img`

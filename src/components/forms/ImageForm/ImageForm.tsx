@@ -127,7 +127,7 @@ const ImageForm = ({ onClose, content }: FileProps) => {
 
       <FormSection>
         <Field>
-          <Label>Selecionar imagem</Label>
+          <Label>Selecionar imagem (Máx. 1mb)</Label>
           <InputSection>
             <FileButton>Escolher arquivo</FileButton>
             <div>{image ? image.name : 'Nenhum arquivo escolhido'}</div>
@@ -142,6 +142,7 @@ const ImageForm = ({ onClose, content }: FileProps) => {
               }}
             />
           </InputSection>
+          <span>Formatos aceitos: png, jpeg, jpg, svg</span>
         </Field>
       </FormSection>
 

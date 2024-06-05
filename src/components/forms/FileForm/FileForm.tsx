@@ -78,6 +78,11 @@ const FileForm = ({ onClose, content }: FileProps) => {
     }
   };
 
+  const renderName = () => {
+    if (image) return image.name;
+    return content?.pdf?.name || 'Nenhum arquivo escolhido';
+  };
+
   return (
     <RegisterForm>
       <RegisterTitle>Cadastrar arquivo PDF</RegisterTitle>
@@ -111,14 +116,10 @@ const FileForm = ({ onClose, content }: FileProps) => {
 
       <FormSection>
         <Field>
-          <Label>Arquivo PDF</Label>
+          <Label>Arquivo PDF (Máx. 1mb)</Label>
           <InputSection>
-            <FileButton>Escolher arquivo</FileButton>
-            <div>
-              {image
-                ? image.name
-                : content?.pdf?.name || 'Nenhum arquivo escolhido'}
-            </div>
+            <FileButton>Escolher arquivo em PDF</FileButton>
+            <div>{renderName()}</div>
             <input
               type="file"
               accept="pdf/*"
@@ -130,6 +131,7 @@ const FileForm = ({ onClose, content }: FileProps) => {
                 }
               }}
             />
+            <FileButton>Escolher arquivo</FileButton>
           </InputSection>
         </Field>
       </FormSection>
