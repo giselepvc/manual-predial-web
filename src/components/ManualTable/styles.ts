@@ -184,6 +184,11 @@ export const InfoSection = styled.div`
   gap: 1rem;
 `;
 
+export const Image = styled.img`
+  width: 20px;
+  height: 20px;
+`;
+
 export const RegisterTitle = styled.h3`
   display: flex;
   align-items: center;

@@ -12,6 +12,7 @@ import handleError from '@/utils/handleToast';
 import ChapterList from './components/ChapterList/ChapterList';
 import TitlesList from './components/TitlesList/TitlesList';
 import ContentList from './components/ContentList/ContentList';
+import AbasContentList from './components/AbasContentList/AbasContentList';
 import {
   Header,
   RegisterTitle,
@@ -21,7 +22,6 @@ import {
   Content,
   Separator,
 } from './styles';
-import AbasContentList from './components/AbasContentList/AbasContentList';
 
 interface ManualTableProps {
   watch: UseFormWatch<IManualForm>;

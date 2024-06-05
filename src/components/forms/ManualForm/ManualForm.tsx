@@ -17,7 +17,8 @@ import api from '@/services/api';
 import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { getManuals } from '@/services/querys/manual';
-import { RecursiveNormalize, normalizeStrapi } from '@/utils/normalizeStrapi';
+import { RecursiveNormalize as Recursive } from '@/utils/normalizeStrapi';
+import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import { getEnterprise } from '@/services/querys/enterprise';
 import { useAuth } from '@/hooks/useAuth';
 import ManualDetails from '@/components/ManualDetails/ManualDetails';
@@ -41,27 +42,23 @@ interface ManualFormProps {
 const ManualForm = ({ editing }: ManualFormProps) => {
   const param = useParams();
   const { role } = useAuth();
+
   const isCompany = role === 1;
+
   const [isLoading, setIsloading] = useState<boolean>(false);
   const [steps, setSteps] = useState<number>(editing ? 1 : 0);
   const [buildType, setBuildType] = useState<string>('');
-  const [chapter, setChapter] = useState<
-    RecursiveNormalize<CaptersDatum> | undefined
-  >();
-  const [title, setTitle] = useState<
-    RecursiveNormalize<TitlesDatum> | undefined
-  >();
-  const [manual, setManual] = useState<
-    RecursiveNormalize<IManualList> | undefined
-  >();
+  const [chapter, setChapter] = useState<Recursive<CaptersDatum> | undefined>();
+  const [title, setTitle] = useState<Recursive<TitlesDatum> | undefined>();
+  const [manual, setManual] = useState<Recursive<IManualList> | undefined>();
   const [content, setContent] = useState<
-    RecursiveNormalize<ContentsDatum> | undefined
+    Recursive<ContentsDatum> | undefined
   >();
   const [subcontent, setSubcontent] = useState<
-    RecursiveNormalize<ContentsDatum> | undefined
+    Recursive<ContentsDatum> | undefined
   >();
   const [abacontent, setAbacontent] = useState<
-    RecursiveNormalize<IContent> | undefined
+    Recursive<IContent> | undefined
   >();
 
   const {

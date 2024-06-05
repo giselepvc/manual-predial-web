@@ -1,11 +1,6 @@
 import { Control, Controller, UseFormWatch } from 'react-hook-form';
-import Image from 'next/image';
-import {
-  CaptersDatum,
-  ContentsDatum,
-  IManualList,
-  TitlesDatum,
-} from '@/interfaces/manual';
+import { CaptersDatum, ContentsDatum } from '@/interfaces/manual';
+import { IManualList, TitlesDatum } from '@/interfaces/manual';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { IManualForm } from '@/validations/ManualSchema';
 import { RecursiveNormalize as Recursive } from '@/utils/normalizeStrapi';
@@ -24,6 +19,7 @@ import {
   Header,
   InfoSection,
   Label,
+  Image,
   NotListText,
   RegisterTitle,
   StepsPage,
@@ -70,7 +66,9 @@ const ManualTable = ({
 }: ManualTableProps) => {
   const { role } = useAuth();
   const query = useQueryClient();
+
   const isCompany = role === 1;
+
   const [listOtions, setListOptions] = useState(typeList);
   const [deletingId, setDeletingId] = useState<number>();
   const [deletingTitleId, setDeletingTitleId] = useState<number>();
@@ -188,8 +186,6 @@ const ManualTable = ({
                             : '/icons/image.svg'
                         }
                         alt="icon"
-                        width={20}
-                        height={20}
                       />
                       <div>{capter.title}</div>
                     </InfoSection>
@@ -209,8 +205,6 @@ const ManualTable = ({
                             : '/icons/down-arrow.svg'
                         }
                         alt="icon"
-                        width={20}
-                        height={20}
                       />
                     </div>
                   </TableRow>
@@ -254,8 +248,6 @@ const ManualTable = ({
                                       : '/icons/down-arrow.svg'
                                   }
                                   alt="icon"
-                                  width={20}
-                                  height={20}
                                 />
                               </div>
                             </TableMore>

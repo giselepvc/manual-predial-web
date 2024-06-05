@@ -33,9 +33,8 @@ const ManualPage = () => {
     'pagination[page]': page,
     'pagination[pageSize]': 7,
     'filters[title][$containsi]': search || undefined,
-    'filters[enterprise][id]': user?.enterprise?.id,
-    'populate[0]': 'capters.titles.contents',
-    'populate[1]': 'enterprise.company',
+    ...(isCompany && { 'filters[enterprise][id]': user?.enterprise?.id }),
+    populate: ['capters.titles.contents', 'enterprise.company'],
   };
 
   const { data: manualsdData } = useQuery({
