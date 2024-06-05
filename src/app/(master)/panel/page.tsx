@@ -185,8 +185,8 @@ const PanelPage = () => {
         {image2 && <LogoImage src="/img/logo_dark.svg" alt="Logo" />}
         <div>PARA ATUALIZAR SEU MANUAL ENTRE EM CONTATO</div>
         <div>
-          <span>
-            <FaEnvelope /> contato@manaulpredial.com
+          <span style={{ textDecoration: 'underline' }}>
+            <FaEnvelope /> contato@manualpredial.com
           </span>
           <span>
             <FaPhoneAlt />

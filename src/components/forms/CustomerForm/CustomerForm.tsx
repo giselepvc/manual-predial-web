@@ -96,7 +96,7 @@ const CustomerForm = ({
   const enterpriseParams = {
     populate: '*',
     'filters[company][id]': watch('company.value'),
-    'filters[client][id][$null]': true,
+    ...(isCompany && { 'filters[client][id][$null]': true }),
   };
 
   const { data: enterprises } = useQuery({
@@ -170,8 +170,8 @@ const CustomerForm = ({
 
   const groupsParams = {
     'sort[createdAt]': 'DESC',
-    populate: '*',
     'filters[enterprise][id]': watch('enterprise.value') || option?.value,
+    populate: '*',
   };
 
   const { data: groupsOptions } = useQuery({
@@ -256,7 +256,7 @@ const CustomerForm = ({
         },
       });
 
-      if (form?.enterprise?.value && customerId && !isCompany) {
+      if (form?.enterprise?.value && customerId && isCompany) {
         await api.put(`/enterprises/${form.enterprise.value}`, {
           data: { client: [customerId] },
         });

@@ -30,7 +30,6 @@ const UsersPage = () => {
     'pagination[page]': page,
     'pagination[pageSize]': 7,
     'filters[name][$containsi]': search || undefined,
-    'filters[users][role][id]': 1,
     'sort[createdAt]': 'DESC',
     populate: [
       'users',
@@ -51,9 +50,9 @@ const UsersPage = () => {
     setIsUpdating(true);
 
     try {
-      await api.delete(`/clients/${deletingId}`);
+      const { data } = await api.delete(`/deleteUserById?userid=${deletingId}`);
 
-      handleSuccess('Usuário deletado com sucesso.');
+      handleSuccess(data);
       setDeletingId(undefined);
       query.invalidateQueries({ queryKey: ['clientsData'] });
     } catch (err: any) {
@@ -86,7 +85,7 @@ const UsersPage = () => {
                 <ActionButton onClick={() => push(`/users/edit/${client.id}`)}>
                   <EditIcon /> Editar
                 </ActionButton>
-                <ActionButton onClick={() => setDeletingId(client.id)}>
+                <ActionButton onClick={() => setDeletingId(client.users?.id)}>
                   <FaTrash />
                 </ActionButton>
               </ActionsRows>

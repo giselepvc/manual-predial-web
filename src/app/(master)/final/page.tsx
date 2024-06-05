@@ -38,7 +38,6 @@ const UsersPage = () => {
       'filters[$or][0][group][enterprise][id]': user?.enterprise?.id,
     }),
     'filters[users][role][id]': 4,
-    'filters[users][id][$ne]': 60,
     'sort[createdAt]': 'DESC',
     populate: [
       'users',
@@ -59,8 +58,9 @@ const UsersPage = () => {
     setIsUpdating(true);
 
     try {
-      await api.delete(`/clients/${deletingId}`);
-      handleSuccess('Usuário deletado com sucesso.');
+      const { data } = await api.delete(`/deleteUserById?userid=${deletingId}`);
+
+      handleSuccess(data);
       setDeletingId(undefined);
       query.invalidateQueries({ queryKey: ['usersData'] });
     } catch (err: any) {
@@ -102,7 +102,7 @@ const UsersPage = () => {
                   <EditIcon />
                   Editar
                 </ActionButton>
-                <ActionButton onClick={() => setDeletingId(client.id)}>
+                <ActionButton onClick={() => setDeletingId(client.users?.id)}>
                   <FaTrash />
                 </ActionButton>
               </ActionSection>
