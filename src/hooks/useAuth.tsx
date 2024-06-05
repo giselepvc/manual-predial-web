@@ -55,6 +55,7 @@ const AuthProvider = ({ children }: ChildrenProps) => {
     populate: [
       'users.image',
       'enterprise.company.image',
+      'group.enterprise.image',
       'group.enterprise.company.image',
     ],
   };

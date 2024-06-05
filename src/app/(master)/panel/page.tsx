@@ -98,22 +98,23 @@ const PanelPage = () => {
     ) || [];
 
   const addressList = [
-    manuals?.enterprise?.address || null,
-    manuals?.enterprise?.number || null,
-    manuals?.enterprise?.neighborhood || null,
-    manuals?.enterprise?.city || null,
-    manuals?.enterprise?.state || null,
-    `CEP: ${manuals?.enterprise?.zipCode || null}`,
+    user?.group?.enterprise?.address || null,
+    user?.group?.enterprise?.number || null,
+    user?.group?.enterprise?.neighborhood || null,
+    user?.group?.enterprise?.city || null,
+    user?.group?.enterprise?.state || null,
+    `CEP: ${user?.group?.enterprise?.zipCode || null}`,
   ];
 
-  const image1 = manuals?.enterprise?.company?.image?.url;
-  const image2 = manuals?.enterprise?.image?.url;
+  const image1 = user?.group?.enterprise?.company?.image?.url;
+  const image2 = user?.group?.enterprise?.image?.url;
+  const name = user?.group?.enterprise?.title || manuals?.enterprise?.title;
 
   return (
     <PageLayout hasLogo logo={image1 && urlBuild(image1)}>
       <Header>
         {image2 && <Image src={urlBuild(image2)} alt="Logo" />}
-        <div>{manuals?.enterprise?.title || 'Manual Predial'}</div>
+        <div>{name || 'Manual Predial'}</div>
         <div>{addressList?.filter(i => i).join(', ')}</div>
       </Header>
 
@@ -182,7 +183,7 @@ const PanelPage = () => {
       </Content>
 
       <Header>
-        {image2 && <LogoImage src="/img/logo_dark.svg" alt="Logo" />}
+        <LogoImage src="/img/logo_dark.svg" alt="Logo" />
         <div>PARA ATUALIZAR SEU MANUAL ENTRE EM CONTATO</div>
         <div>
           <span style={{ textDecoration: 'underline' }}>

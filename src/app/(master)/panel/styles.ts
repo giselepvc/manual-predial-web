@@ -64,7 +64,7 @@ export const Thread = styled.div`
 `;
 
 export const Image = styled.img`
-  width: 600px;
+  max-height: 300px;
 `;
 
 export const LogoImage = styled.img`
