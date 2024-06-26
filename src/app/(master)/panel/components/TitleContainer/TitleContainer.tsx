@@ -1,7 +1,8 @@
-import { ContainerData } from '@/interfaces/content';
-import { TitlesDatum } from '@/interfaces/manual';
-import { RecursiveNormalize as Recursive } from '@/utils/normalizeStrapi';
 import { Dispatch, SetStateAction } from 'react';
+
+import { TitlesDatum, ContainerData } from '@/interfaces/manual';
+import { RecursiveNormalize as R } from '@/utils/normalizeStrapi';
+
 import {
   IconArrow,
   InfoSection,
@@ -12,12 +13,12 @@ import {
 } from './styles';
 
 interface TitleProps {
-  setSubContent: Dispatch<SetStateAction<Recursive<ContainerData> | undefined>>;
+  setSubContent: Dispatch<SetStateAction<R<ContainerData> | undefined>>;
   getContent: (id: number) => void;
-  selected: Recursive<TitlesDatum> | undefined;
-  title: Recursive<TitlesDatum> | undefined;
+  selected: R<TitlesDatum> | undefined;
+  title: R<TitlesDatum> | undefined;
   index: number;
-  setSelected: Dispatch<SetStateAction<Recursive<TitlesDatum> | undefined>>;
+  setSelected: Dispatch<SetStateAction<R<TitlesDatum> | undefined>>;
 }
 
 const TitleContainer = ({

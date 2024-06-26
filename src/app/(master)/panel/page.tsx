@@ -1,19 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { FaEnvelope } from 'react-icons/fa6';
-import { FaPhoneAlt, FaWhatsapp } from 'react-icons/fa';
 import { useQuery } from '@tanstack/react-query';
 
-import { CaptersDatum, TitlesDatum } from '@/interfaces/manual';
-import { ContainerData, IContent } from '@/interfaces/content';
+import { CaptersDatum, TitlesDatum, ContainerData } from '@/interfaces/manual';
+import { IContent } from '@/interfaces/content';
 import { Paginated } from '@/interfaces/paginated';
 
 import { getManuals } from '@/services/querys/manual';
 import { useEnterprise } from '@/services/querys/enterprise';
 import handleError from '@/utils/handleToast';
 import { urlBuild } from '@/utils/urlBuild';
-import { RecursiveNormalize as Recursive } from '@/utils/normalizeStrapi';
+import { RecursiveNormalize as R } from '@/utils/normalizeStrapi';
 import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import { useAuth } from '@/hooks/useAuth';
 import api from '@/services/api';
@@ -24,24 +22,16 @@ import AbasContainer from './components/AbasContainer/AbasContainer';
 import ChapterContainer from './components/ChapterContainer/ChapterContainer';
 import TitleContainer from './components/TitleContainer/TitleContainer';
 import ManualMap from './components/ManualMap/ManualMap';
+import Footer from './components/Footer/Footer';
 
-import {
-  Content,
-  Header,
-  Table,
-  Thread,
-  Image,
-  Separator,
-  LogoImage,
-} from './styles';
+import { Content, Header, Table, Thread, Image, Separator } from './styles';
 
 const PanelPage = () => {
   const { user } = useAuth();
 
-  const [chapter, setChapter] = useState<Recursive<CaptersDatum> | undefined>();
-  const [title, setTitle] = useState<Recursive<TitlesDatum> | undefined>();
-  const [selected, setSelected] = useState<Recursive<IContent> | undefined>();
-  const [sub, setSubContent] = useState<Recursive<ContainerData> | undefined>();
+  const [chapterSelected, setChapter] = useState<R<CaptersDatum> | undefined>();
+  const [titleSelected, setTitle] = useState<R<TitlesDatum> | undefined>();
+  const [sub, setSubContent] = useState<R<ContainerData> | undefined>();
   const [loading, setLoading] = useState(false);
 
   const manualsParams = {
@@ -52,9 +42,10 @@ const PanelPage = () => {
     'populate[5]': 'capters.titles.containers.icon.image',
     'populate[6]': 'capters.groups',
     'populate[7]': 'enterprise.image',
-    'populate[8]': 'sub_containers.sub_containers.pdf',
-    'populate[9]': 'sub_containers.sub_containers.icon.image',
-    'populate[10]': 'sub_containers.sub_containers.image',
+    'populate[8]': 'capters.titles.containers.sub_containers.pdf',
+    'populate[9]': 'capters.titles.containers.sub_containers.icon.image',
+    'populate[10]': 'capters.titles.containers.sub_containers.image',
+    'populate[11]': 'capters.titles.containers.sub_containers.sub_containers',
     'filters[capters][groups]': user?.group?.id,
   };
 
@@ -88,7 +79,6 @@ const PanelPage = () => {
       });
 
       const result = normalizeStrapi(data.data?.[0]);
-      setSelected(result);
       setSubContent(result?.sub_containers?.[0]);
     } catch (error) {
       handleError(error);
@@ -97,7 +87,7 @@ const PanelPage = () => {
     }
   };
 
-  const chapters =
+  const chaptersist =
     manuals?.capters.filter(capter =>
       capter.groups.find(group => group.id === user?.group?.id),
     ) || [];
@@ -135,53 +125,52 @@ const PanelPage = () => {
 
       <Content>
         <Table>
-          {chapters
+          {chaptersist
             .filter(item => item.visible)
             .sort((a, b) => a.order - b.order)
-            .map(chap => (
+            .map(chapter => (
               <>
                 <ChapterContainer
-                  chapter={chap}
-                  selected={chapter}
+                  chapter={chapter}
+                  selected={chapterSelected}
                   setSubContent={setSubContent}
                   setSelected={setChapter}
                 />
 
-                {chapter?.id === chap.id &&
-                  chap.titles
+                {chapterSelected?.id === chapter.id &&
+                  chapter.titles
                     .filter(item => item.visible)
                     .sort((a, b) => a.order - b.order)
-                    .map((ttl, index) => (
+                    .map((title, index) => (
                       <>
                         <TitleContainer
                           index={index}
                           getContent={getContent}
-                          selected={title}
+                          selected={titleSelected}
                           setSelected={setTitle}
                           setSubContent={setSubContent}
-                          title={ttl}
+                          title={title}
                         />
 
-                        {title?.id === ttl.id &&
-                          ttl.containers
+                        {titleSelected?.id === title.id &&
+                          title.containers
                             .filter(item => item.visible)
                             .sort((a, b) => a.order - b.order)
                             .map((container, i) => (
                               <Thread key={container.id}>
                                 <TableContainer
-                                  contentSelected={selected}
                                   setSubContainer={setSubContent}
                                   subContainer={sub}
                                   loading={loading}
                                   container={container}
                                   hasFirst={i === 0}
-                                  hasLast={ttl?.containers?.length === i + 1}
+                                  hasLast={title?.containers?.length === i + 1}
                                 />
 
                                 {sub?.id && container?.type === 'abas' && (
                                   <AbasContainer
                                     title={sub?.subtitle || ''}
-                                    subContainer={sub.sub_containers || []}
+                                    subContainer={sub?.sub_containers || []}
                                     loading={loading}
                                   />
                                 )}
@@ -193,24 +182,13 @@ const PanelPage = () => {
               </>
             ))}
 
-          {chapters && chapters?.length > 0 && <ManualMap chapter={chapters} />}
+          {chaptersist && chaptersist?.length > 0 && (
+            <ManualMap chapter={chaptersist} />
+          )}
         </Table>
       </Content>
 
-      <Header>
-        <LogoImage src="/img/logo_dark.svg" alt="Logo" />
-        <div>PARA ATUALIZAR SEU MANUAL ENTRE EM CONTATO</div>
-        <div>
-          <span style={{ textDecoration: 'underline' }}>
-            <FaEnvelope /> contato@manualpredial.com
-          </span>
-          <span>
-            <FaPhoneAlt />
-            <FaWhatsapp size={20} />
-            BH (31) 98820-0701
-          </span>
-        </div>
-      </Header>
+      <Footer />
     </PageLayout>
   );
 };

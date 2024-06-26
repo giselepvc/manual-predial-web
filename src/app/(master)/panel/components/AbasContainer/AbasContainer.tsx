@@ -1,4 +1,4 @@
-import { ContainerData } from '@/interfaces/content';
+import { ContainerData } from '@/interfaces/manual';
 import { RecursiveNormalize } from '@/utils/normalizeStrapi';
 import { urlBuild } from '@/utils/urlBuild';
 import { FaDownload } from 'react-icons/fa6';
@@ -67,7 +67,7 @@ const AbasContainer = ({
         ?.map(content => (
           <>
             {content?.type === 'paragraph' &&
-              renderDescription(content?.description, content?.italic)}
+              renderDescription(content?.description, content?.italic || false)}
 
             {content?.type === 'keys' &&
               renderDescription(

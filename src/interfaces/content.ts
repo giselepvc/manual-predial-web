@@ -84,7 +84,7 @@ export interface FluffyAttributes {
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
-  italic: boolean;
+  italic: boolean | null;
   type: string;
   image: Image;
   pdf: PDF;

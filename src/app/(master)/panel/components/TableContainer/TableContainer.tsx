@@ -1,7 +1,6 @@
 import { urlBuild } from '@/utils/urlBuild';
 import { RecursiveNormalize } from '@/utils/normalizeStrapi';
-import { ContentsDatum } from '@/interfaces/manual';
-import { ContainerData, IContent } from '@/interfaces/content';
+import { ContentsDatum, ContainerData } from '@/interfaces/manual';
 import { Dispatch, SetStateAction } from 'react';
 import { FaDownload } from 'react-icons/fa6';
 import { theme } from '@/styles/theme';
@@ -23,7 +22,6 @@ interface ContainerProps {
   hasLast?: boolean;
   hasFirst?: boolean;
   loading?: boolean;
-  contentSelected: RecursiveNormalize<IContent> | undefined;
   subContainer: RecursiveNormalize<ContainerData> | undefined;
   setSubContainer: Dispatch<
     SetStateAction<RecursiveNormalize<ContainerData> | undefined>
@@ -35,7 +33,6 @@ const TableContainer = ({
   hasLast,
   loading,
   hasFirst,
-  contentSelected,
   subContainer,
   setSubContainer,
 }: ContainerProps) => {
@@ -117,15 +114,15 @@ const TableContainer = ({
         )}
 
         {container?.type === 'abas' &&
-          !loading &&
-          contentSelected?.sub_containers && (
+          container?.sub_containers &&
+          !loading && (
             <InfoSection style={{ borderBottom: '1px solid #AAAAAA' }}>
-              {contentSelected?.sub_containers?.map(subcontainer => (
+              {container?.sub_containers?.map(subcontainer => (
                 <InfoText
                   selected={subcontainer?.id === subContainer?.id}
                   onClick={() => {
-                    setSubContainer(c =>
-                      c === subcontainer ? undefined : subcontainer,
+                    setSubContainer(subItem =>
+                      subItem === subcontainer ? undefined : subcontainer,
                     );
                   }}
                 >

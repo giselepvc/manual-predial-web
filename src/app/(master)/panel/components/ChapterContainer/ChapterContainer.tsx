@@ -1,5 +1,4 @@
-import { CaptersDatum } from '@/interfaces/manual';
-import { ContainerData } from '@/interfaces/content';
+import { CaptersDatum, ContainerData } from '@/interfaces/manual';
 import { RecursiveNormalize as Recursive } from '@/utils/normalizeStrapi';
 import { urlBuild } from '@/utils/urlBuild';
 import { Dispatch, SetStateAction } from 'react';

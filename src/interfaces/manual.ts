@@ -122,14 +122,16 @@ export interface ContainerAttributes {
   description: string;
   subtitle: string;
   visible: boolean;
+  italic: boolean | null;
   order: number;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
   type: string;
-  image: Image;
   pdf: PDF;
+  image: Image;
   icon: IIcon;
+  sub_containers: SubContainers;
 }
 
 export interface Images {
