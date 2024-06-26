@@ -1,24 +1,30 @@
 'use client';
 
-import PageLayout from '@/components/PageLayout/PageLayout';
-import { useAuth } from '@/hooks/useAuth';
-import { getManuals } from '@/services/querys/manual';
-import { RecursiveNormalize as Recursive } from '@/utils/normalizeStrapi';
-import { normalizeStrapi } from '@/utils/normalizeStrapi';
-import { useQuery } from '@tanstack/react-query';
-import { urlBuild } from '@/utils/urlBuild';
 import { useState } from 'react';
-import { CaptersDatum, TitlesDatum } from '@/interfaces/manual';
-import handleError from '@/utils/handleToast';
-import api from '@/services/api';
-import { ContainerData, IContent } from '@/interfaces/content';
-import { Paginated } from '@/interfaces/paginated';
 import { FaEnvelope } from 'react-icons/fa6';
 import { FaPhoneAlt, FaWhatsapp } from 'react-icons/fa';
+import { useQuery } from '@tanstack/react-query';
+
+import { CaptersDatum, TitlesDatum } from '@/interfaces/manual';
+import { ContainerData, IContent } from '@/interfaces/content';
+import { Paginated } from '@/interfaces/paginated';
+
+import { getManuals } from '@/services/querys/manual';
+import { useEnterprise } from '@/services/querys/enterprise';
+import handleError from '@/utils/handleToast';
+import { urlBuild } from '@/utils/urlBuild';
+import { RecursiveNormalize as Recursive } from '@/utils/normalizeStrapi';
+import { normalizeStrapi } from '@/utils/normalizeStrapi';
+import { useAuth } from '@/hooks/useAuth';
+import api from '@/services/api';
+
+import PageLayout from '@/components/PageLayout/PageLayout';
 import TableContainer from './components/TableContainer/TableContainer';
 import AbasContainer from './components/AbasContainer/AbasContainer';
 import ChapterContainer from './components/ChapterContainer/ChapterContainer';
 import TitleContainer from './components/TitleContainer/TitleContainer';
+import ManualMap from './components/ManualMap/ManualMap';
+
 import {
   Content,
   Header,
@@ -28,7 +34,6 @@ import {
   Separator,
   LogoImage,
 } from './styles';
-import ManualMap from './components/ManualMap/ManualMap';
 
 const PanelPage = () => {
   const { user } = useAuth();
@@ -97,13 +102,23 @@ const PanelPage = () => {
       capter.groups.find(group => group.id === user?.group?.id),
     ) || [];
 
+  const { data: enterprises } = useEnterprise(
+    {
+      populate: 'groups.enterprise',
+      'filters[id]': user?.group?.enterprise?.id,
+    },
+    !!user?.group?.enterprise?.id,
+  );
+
+  const enterprise = enterprises?.[0];
+
   const addressList = [
-    user?.group?.enterprise?.address || null,
-    user?.group?.enterprise?.number || null,
-    user?.group?.enterprise?.neighborhood || null,
-    user?.group?.enterprise?.city || null,
-    user?.group?.enterprise?.state || null,
-    `CEP: ${user?.group?.enterprise?.zipCode || null}`,
+    enterprise?.address || null,
+    enterprise?.number || null,
+    enterprise?.neighborhood || null,
+    enterprise?.city || null,
+    enterprise?.state || null,
+    `CEP: ${enterprise?.zipCode || null}`,
   ];
 
   const image1 = user?.group?.enterprise?.company?.image?.url;
