@@ -84,3 +84,19 @@ export const PhotoChangeButton = styled.label`
   justify-content: center;
   gap: 1rem;
 `;
+
+export const PasswordForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+`;
+
+export const ErrorMessage = styled.h3`
+  position: absolute;
+  bottom: -1.25rem;
+  left: 0.25rem;
+
+  font-size: 8pt;
+  font-weight: 400;
+  color: ${({ theme }) => theme.colors.error};
+`;
