@@ -1,29 +1,33 @@
-import Select from '@/components/Select/Select';
+import { useEffect, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+
+import Select from '@/components/Select/Select';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
+
 import { CustomerSchema, ICustomerForm } from '@/validations/CustomerSchema';
-import { yupResolver } from '@hookform/resolvers/yup';
+
 import cpfMask from '@/utils/masks/cpfMask';
 import cnpjMask from '@/utils/masks/cnpjMask';
 import telephoneMask from '@/utils/masks/phone';
 import zipcodeMask from '@/utils/masks/cep';
+import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import handleError, { handleSuccess } from '@/utils/handleToast';
 import { getAddressFromCep } from '@/services/addressApi';
-import api from '@/services/api';
-import { useEffect, useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getEnterprise } from '@/services/querys/enterprise';
-import { RecursiveNormalize as R } from '@/utils/normalizeStrapi';
-import { normalizeStrapi } from '@/utils/normalizeStrapi';
+import { useEnterprise } from '@/services/querys/enterprise';
+import { useEnterpriseOptions } from '@/services/querys/enterprise';
 import { getClients } from '@/services/querys/clients';
+import { useGroupsOptions } from '@/services/querys/groups';
+import { useCompaniesOptions } from '@/services/querys/company';
+import api from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
-import { getGroups } from '@/services/querys/groups';
-import { IEnterprises } from '@/interfaces/enterprise';
-import { getCompanies } from '@/services/querys/company';
-import UserIcon from '../../../../public/icons/peaple.svg';
+
 import HpuseIcon from '../../../../public/icons/house.svg';
+import UserIcon from '../../../../public/icons/peaple.svg';
+
 import {
   ButtonSection,
   FormSection,
@@ -33,6 +37,10 @@ import {
   Label,
   ErrorMessage,
 } from './styles';
+
+interface Response {
+  data: { id: number };
+}
 
 interface CustomerProps {
   isEditing?: boolean;
@@ -50,7 +58,6 @@ const CustomerForm = ({
   const query = useQueryClient();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [enterpriseList, setEnterprise] = useState<R<IEnterprises[]>>([]);
 
   const option = {
     label: user?.enterprise?.title || '',
@@ -65,7 +72,6 @@ const CustomerForm = ({
   const {
     handleSubmit,
     register,
-    trigger,
     setValue,
     setError,
     getValues,
@@ -77,21 +83,7 @@ const CustomerForm = ({
     resolver: yupResolver(CustomerSchema),
   });
 
-  const companiesParams = {
-    populate: '*',
-  };
-
-  const { data: companies } = useQuery({
-    queryKey: ['companiesOptions', companiesParams],
-    queryFn: async () => {
-      const data = await getCompanies(companiesParams);
-      const companiesList = normalizeStrapi(data || []);
-      return companiesList?.map(enter => ({
-        label: enter.name || '',
-        value: enter.id?.toString() || '',
-      }));
-    },
-  });
+  const { data: companies } = useCompaniesOptions({ populate: '*' });
 
   const enterpriseParams = {
     populate: '*',
@@ -99,74 +91,15 @@ const CustomerForm = ({
     ...(!isCompany && { 'filters[client][id][$null]': true }),
   };
 
-  const { data: enterprises } = useQuery({
-    queryKey: ['enterprisesData', enterpriseParams],
-    queryFn: async () => {
-      const data = await getEnterprise(enterpriseParams);
-      const enterpriseList = normalizeStrapi(data || []);
-      setEnterprise(enterpriseList);
-      return enterpriseList?.map(enter => ({
-        label: enter.title || '',
-        value: enter.id ? `${enter.id}` : '',
-      }));
-    },
-    enabled: !!watch('company'),
-  });
+  const { data: enterpriseList } = useEnterprise(
+    enterpriseParams,
+    !!watch('company'),
+  );
 
-  const clientsParams = {
-    'pagination[page]': 1,
-    'pagination[pageSize]': 1,
-    'filters[id]': customerId,
-    populate: [
-      'users',
-      'users.image',
-      'group.enterprise.company',
-      'enterprise.company',
-    ],
-  };
-
-  useQuery({
-    queryKey: ['clientInfoData', clientsParams],
-    queryFn: async () => {
-      const clientsData = await getClients(clientsParams);
-      const clients = normalizeStrapi(clientsData || []);
-
-      reset({
-        ...clients?.[0],
-        login: clients?.[0]?.users?.username || undefined,
-        email: clients?.[0]?.users?.email || undefined,
-        ...(clients?.[0]?.enterprise && {
-          enterprise: {
-            label: isCompany
-              ? clients?.[0]?.group?.enterprise?.title
-              : clients?.[0]?.enterprise?.title,
-            value: isCompany
-              ? clients?.[0]?.group?.enterprise?.id?.toString()
-              : clients?.[0]?.enterprise?.id?.toString(),
-          },
-        }),
-        ...(clients?.[0]?.group && {
-          group: {
-            label: clients?.[0]?.group?.name || '',
-            value: clients?.[0]?.group?.id?.toString() || '',
-          },
-        }),
-        company: {
-          label: isCompany
-            ? clients?.[0]?.group?.enterprise?.company?.name
-            : clients?.[0]?.enterprise?.company?.name,
-          value: isCompany
-            ? clients?.[0]?.group?.enterprise?.company?.id?.toString()
-            : clients?.[0]?.enterprise?.company?.id?.toString(),
-        },
-        password: '12345678',
-        confirmPassword: '12345678',
-      });
-
-      return clients?.[0];
-    },
-    enabled: !!customerId,
-  });
+  const { data: enterprises } = useEnterpriseOptions(
+    enterpriseParams,
+    !!watch('company'),
+  );
 
   const groupsParams = {
     'sort[createdAt]': 'DESC',
@@ -174,49 +107,92 @@ const CustomerForm = ({
     populate: '*',
   };
 
-  const { data: groupsOptions } = useQuery({
-    queryKey: ['groupList', groupsParams],
+  const { data: groupsOptions } = useGroupsOptions(
+    groupsParams,
+    !!watch('enterprise') && !!isCompany,
+  );
+
+  const clientsParams = {
+    'pagination[page]': 1,
+    'pagination[pageSize]': 1,
+    'filters[id]': customerId,
+    'populate[0]': 'users',
+    'populate[1]': 'users.image',
+    'populate[2]': 'group.enterprise.company',
+    'populate[3]': 'enterprise.company',
+  };
+
+  useQuery({
+    queryKey: ['clientInfoData', clientsParams],
     queryFn: async () => {
-      const data = await getGroups(groupsParams);
-      const groups = normalizeStrapi(data || []);
-      return groups?.map(item => ({
-        label: item?.name || '',
-        value: item?.id.toString() || '',
-      }));
+      const clientsData = await getClients(clientsParams);
+      const clients = normalizeStrapi(clientsData || []);
+      const client = clients?.[0];
+
+      reset({
+        ...client,
+        login: client?.users?.username || undefined,
+        email: client?.users?.email || undefined,
+        password: '12345678',
+        confirmPassword: '12345678',
+        ...(client?.enterprise && {
+          enterprise: {
+            label: isCompany
+              ? client?.group?.enterprise?.title
+              : client?.enterprise?.title,
+            value: isCompany
+              ? client?.group?.enterprise?.id?.toString()
+              : client?.enterprise?.id?.toString(),
+          },
+        }),
+        ...(client?.group && {
+          group: {
+            label: client?.group?.name || '',
+            value: client?.group?.id?.toString() || '',
+          },
+        }),
+        company: {
+          label: isCompany
+            ? client?.group?.enterprise?.company?.name
+            : client?.enterprise?.company?.name,
+          value: isCompany
+            ? client?.group?.enterprise?.company?.id?.toString()
+            : client?.enterprise?.company?.id?.toString(),
+        },
+      });
+
+      return client;
     },
-    enabled: !!watch('enterprise') && !!isCompany,
+    enabled: !!customerId,
   });
+
+  const handleCompletionRequest = () => {
+    query.invalidateQueries({ queryKey: ['usersData', 'enterpriseData'] });
+    back();
+  };
 
   const onSubmit: SubmitHandler<ICustomerForm> = async form => {
     try {
       setIsLoading(true);
-      if (isCompany) {
-        await api.post('/registerViewer', {
-          ...form,
-          username: form.login,
-          email: form?.email || null,
-          group: Number(form?.group?.value),
-          creativeEnterprise: form?.enterprise?.label,
-          creativeCompany: form?.company?.label,
-          enterprise: undefined,
-          company: undefined,
-          confirmPassword: undefined,
-        });
-      } else {
-        const { data } = await api.post<{ data: { id: number } }>(
-          '/registerUser',
-          {
-            ...form,
-            username: form.login,
-            enterprise: Number(form?.enterprise?.value),
-            creativeEnterprise: form?.enterprise?.label,
-            creativeCompany: form?.company?.label,
-            email: form?.email || null,
-            group: undefined,
-            confirmPassword: undefined,
-            company: undefined,
-          },
-        );
+
+      const userObj = {
+        ...form,
+        username: form.login,
+        email: form?.email || null,
+        creativeEnterprise: form?.enterprise?.label,
+        creativeCompany: form?.company?.label,
+        confirmPassword: undefined,
+        company: undefined,
+        ...(isCompany
+          ? { group: Number(form?.group?.value) }
+          : { enterprise: Number(form?.enterprise?.value) }),
+        ...(isCompany ? { enterprise: undefined } : { group: undefined }),
+      };
+
+      if (isCompany) await api.post('/registerViewer', userObj);
+
+      if (!isCompany) {
+        const { data } = await api.post<Response>('/registerUser', userObj);
 
         if (form?.enterprise?.value && data.data?.id && !isCompany) {
           await api.put(`/enterprises/${form.enterprise.value}`, {
@@ -225,9 +201,8 @@ const CustomerForm = ({
         }
       }
 
-      query.invalidateQueries({ queryKey: ['usersData', 'enterpriseData'] });
       handleSuccess('Cadastro realizado com sucesso.');
-      back();
+      handleCompletionRequest();
     } catch (err: any) {
       handleError(err);
     } finally {
@@ -238,23 +213,23 @@ const CustomerForm = ({
   const onUpdate: SubmitHandler<ICustomerForm> = async form => {
     try {
       setIsLoading(true);
-      await api.put(`/clients/${customerId}`, {
-        data: {
-          ...form,
-          username: form.login,
-          email: form?.email || null,
-          enterprise: isCompany
-            ? undefined
-            : Number(form?.enterprise?.value || user?.enterprise?.id),
-          group: form?.group?.value ? Number(form?.group?.value) : undefined,
-          creativeEnterprise: form?.enterprise?.label,
-          creativeCompany: form?.company?.label,
-          password: undefined,
-          confirmPassword: undefined,
-          company: undefined,
-          title: '',
-        },
-      });
+
+      const enterId = Number(form?.enterprise?.value || user?.enterprise?.id);
+      const userObj = {
+        ...form,
+        username: form.login,
+        email: form?.email || null,
+        enterprise: !isCompany ? enterId : undefined,
+        group: form?.group?.value ? Number(form?.group?.value) : undefined,
+        creativeEnterprise: form?.enterprise?.label,
+        creativeCompany: form?.company?.label,
+        password: undefined,
+        confirmPassword: undefined,
+        company: undefined,
+        title: '',
+      };
+
+      await api.put(`/clients/${customerId}`, { data: userObj });
 
       if (form?.enterprise?.value && customerId && !isCompany) {
         await api.put(`/enterprises/${form.enterprise.value}`, {
@@ -262,9 +237,8 @@ const CustomerForm = ({
         });
       }
 
-      query.invalidateQueries({ queryKey: ['usersData', 'enterpriseData'] });
       handleSuccess('Cliente editado com sucesso.');
-      back();
+      handleCompletionRequest();
     } catch (err: any) {
       handleError(err);
     } finally {
@@ -273,56 +247,54 @@ const CustomerForm = ({
   };
 
   const handleCepBlur = async () => {
-    const isValid = await trigger('zipCode');
-    if (!isValid) return;
+    const setAddressValues = (address: any) => {
+      setValue('state', address.uf || '');
+      setValue('zipCode', address.cep || '');
+      setValue('city', address.localidade || '');
+      setValue('address', address.logradouro || '');
+      setValue('neighborhood', address.bairro || '');
+    };
+
     const cep = getValues('zipCode');
+    if (!cep) return;
 
-    if (cep) {
-      try {
-        const address = await getAddressFromCep(cep);
+    try {
+      const address = await getAddressFromCep(cep);
 
-        if (address.erro) {
-          setError('zipCode', { message: 'CEP inválido', type: 'invalid-cep' });
-          setValue('zipCode', '');
-          setValue('city', '');
-          setValue('state', '');
-          setValue('address', '');
-          setValue('neighborhood', '');
-          return;
-        }
-
-        setValue('state', address.uf);
-        setValue('zipCode', address.cep);
-        setValue('city', address.localidade);
-        setValue('address', address.logradouro);
-        setValue('neighborhood', address.bairro);
-      } catch (error) {
-        handleError(error);
+      if (address.erro) {
+        setError('zipCode', { message: 'CEP inválido', type: 'invalid-cep' });
+        setAddressValues({});
+        return;
       }
+
+      setAddressValues(address);
+    } catch (error) {
+      handleError(error);
     }
   };
 
   useEffect(() => {
-    if (watch('enterprise.value') && !isEditing) {
-      const enterpriseFind = enterpriseList.find(
-        etp => etp.id.toString() === watch('enterprise.value'),
-      );
+    const setEnterpriseValues = (enterprise: any) => {
+      setValue('state', enterprise?.state);
+      setValue('zipCode', enterprise?.zipCode);
+      setValue('city', enterprise?.city);
+      setValue('address', enterprise?.address);
+      setValue('neighborhood', enterprise?.neighborhood);
+      setValue('number', enterprise?.number);
+      setValue('complement', enterprise?.complement);
+    };
 
-      setValue('state', enterpriseFind?.state);
-      setValue('zipCode', enterpriseFind?.zipCode);
-      setValue('city', enterpriseFind?.city);
-      setValue('address', enterpriseFind?.address);
-      setValue('neighborhood', enterpriseFind?.neighborhood);
-      setValue('number', enterpriseFind?.number);
+    const enterpriseValue = watch('enterprise.value');
+
+    if (enterpriseValue && !isEditing) {
+      const enterpriseFind = enterpriseList?.find(
+        etp => etp.id.toString() === enterpriseValue,
+      );
+      setEnterpriseValues(enterpriseFind);
     }
 
     if (role === 1) {
-      setValue('state', user?.enterprise?.state);
-      setValue('zipCode', user?.enterprise?.zipCode);
-      setValue('city', user?.enterprise?.city);
-      setValue('address', user?.enterprise?.address);
-      setValue('neighborhood', user?.enterprise?.neighborhood);
-      setValue('number', user?.enterprise?.number);
+      setEnterpriseValues(user?.enterprise);
       setValue('company', optionCompany);
       setValue('enterprise', option);
     }
@@ -343,7 +315,6 @@ const CustomerForm = ({
             <ErrorMessage>{errors.name.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>Login</Label>
           <Input placeholder="Insirir login" {...register('login')} />
@@ -351,7 +322,6 @@ const CustomerForm = ({
             <ErrorMessage>{errors.login.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>E-mail</Label>
           <Input
@@ -363,7 +333,6 @@ const CustomerForm = ({
             <ErrorMessage>{errors.email.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>CPF</Label>
           <Input
@@ -391,7 +360,6 @@ const CustomerForm = ({
             <ErrorMessage>{errors.cnpj.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>Telefone</Label>
           <Input
@@ -403,7 +371,6 @@ const CustomerForm = ({
             <ErrorMessage>{errors.phone.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>Celular</Label>
           <Input
@@ -525,7 +492,6 @@ const CustomerForm = ({
             <ErrorMessage>{errors.zipCode.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>Rua</Label>
           <Input placeholder="Insirir rua" {...register('address')} />
@@ -533,7 +499,6 @@ const CustomerForm = ({
             <ErrorMessage>{errors.address.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>Número</Label>
           <Input placeholder="Insirir número" {...register('number')} />
@@ -541,7 +506,6 @@ const CustomerForm = ({
             <ErrorMessage>{errors.number.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>Bairro</Label>
           <Input placeholder="Insirir bairro" {...register('neighborhood')} />
@@ -559,7 +523,6 @@ const CustomerForm = ({
             <ErrorMessage>{errors.city.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>Estado</Label>
           <Input placeholder="Insirir estado" {...register('state')} />
@@ -567,7 +530,6 @@ const CustomerForm = ({
             <ErrorMessage>{errors.state.message}</ErrorMessage>
           )}
         </Field>
-
         <Field>
           <Label>Complemento / N° unidade</Label>
           <Input
