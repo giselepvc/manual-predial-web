@@ -1,39 +1,40 @@
 'use client';
 
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { IManualForm, ManualSchema } from '@/validations/ManualSchema';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
-import {
-  IManualList,
-  TitlesDatum,
-  ResponseManual,
-  CaptersDatum,
-  ContentsDatum,
-} from '@/interfaces/manual';
-import ManualTable from '@/components/ManualTable/ManualTable';
-import handleError from '@/utils/handleToast';
-import api from '@/services/api';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { getManuals } from '@/services/querys/manual';
-import { RecursiveNormalize as Recursive } from '@/utils/normalizeStrapi';
-import { normalizeStrapi } from '@/utils/normalizeStrapi';
-import { getEnterprise } from '@/services/querys/enterprise';
-import { useAuth } from '@/hooks/useAuth';
-import ManualDetails from '@/components/ManualDetails/ManualDetails';
+
+import { IManualList, TitlesDatum } from '@/interfaces/manual';
 import { IContent } from '@/interfaces/content';
+import { ContentsDatum } from '@/interfaces/manual';
+import { ResponseManual, CaptersDatum } from '@/interfaces/manual';
+import { IManualForm, ManualSchema } from '@/validations/ManualSchema';
+
+import { getManuals } from '@/services/querys/manual';
+import { RecursiveNormalize as r } from '@/utils/normalizeStrapi';
+import { normalizeStrapi } from '@/utils/normalizeStrapi';
+import { useEnterprise } from '@/services/querys/enterprise';
+import { useAuth } from '@/hooks/useAuth';
+import handleError from '@/utils/handleToast';
+import api from '@/services/api';
+
+import ManualTable from '@/components/ManualTable/ManualTable';
+import ManualDetails from '@/components/ManualDetails/ManualDetails';
+
 import ContainerForm from '../ContainerForm/ContainerForm';
 import TitleForm from '../TitleForm/TitleForm';
 import ChapterForm from '../ChapterForm/ChapterForm';
 import FirstForm from '../FirstForm/FirstForm';
-import { RegisterForm } from './styles';
 import AbasForm from '../AbasForm/AbasForm';
 import ImageForm from '../ImageForm/ImageForm';
 import FileForm from '../FileForm/FileForm';
 import ParagraphForm from '../ParagraphForm/ParagraphForm';
 import ContentForm from '../ContentForm/ContentForm';
 import SubContentForm from '../SubContentForm/SubContentForm';
+
+import { RegisterForm } from './styles';
 
 interface ManualFormProps {
   editing?: boolean;
@@ -48,25 +49,19 @@ const ManualForm = ({ editing }: ManualFormProps) => {
   const [isLoading, setIsloading] = useState<boolean>(false);
   const [steps, setSteps] = useState<number>(editing ? 1 : 0);
   const [buildType, setBuildType] = useState<string>('');
-  const [chapter, setChapter] = useState<Recursive<CaptersDatum> | undefined>();
-  const [title, setTitle] = useState<Recursive<TitlesDatum> | undefined>();
-  const [manual, setManual] = useState<Recursive<IManualList> | undefined>();
-  const [content, setContent] = useState<
-    Recursive<ContentsDatum> | undefined
-  >();
-  const [subcontent, setSubcontent] = useState<
-    Recursive<ContentsDatum> | undefined
-  >();
-  const [abacontent, setAbacontent] = useState<
-    Recursive<IContent> | undefined
-  >();
+  const [chapter, setChapter] = useState<r<CaptersDatum> | undefined>();
+  const [title, setTitle] = useState<r<TitlesDatum> | undefined>();
+  const [manual, setManual] = useState<r<IManualList> | undefined>();
+  const [content, setContent] = useState<r<ContentsDatum> | undefined>();
+  const [subcontent, setSubcontent] = useState<r<ContentsDatum> | undefined>();
+  const [abacontent, setAbacontent] = useState<r<IContent> | undefined>();
 
   const {
+    watch,
+    setValue,
     handleSubmit,
     register,
     control,
-    watch,
-    setValue,
     formState: { errors },
   } = useForm<IManualForm>({
     resolver: yupResolver(ManualSchema),
@@ -106,13 +101,7 @@ const ManualForm = ({ editing }: ManualFormProps) => {
     populate: ['manuals'],
   };
 
-  const { data: enterprise } = useQuery({
-    queryKey: ['enterpriseData', enterpriseParams],
-    queryFn: async () => {
-      const data = await getEnterprise(enterpriseParams);
-      return normalizeStrapi(data || []);
-    },
-  });
+  const { data: enterprise } = useEnterprise(enterpriseParams);
 
   const onSubmit: SubmitHandler<IManualForm> = async form => {
     try {
@@ -129,6 +118,7 @@ const ManualForm = ({ editing }: ManualFormProps) => {
         const etpId = form.enterprise.value;
         const enterpriseFind = enterprise?.find(e => e.id === Number(etpId));
         const manualsIds = enterpriseFind?.manuals?.map(item => item.id) || [];
+
         await api.put(`/enterprises/${etpId}`, {
           data: { manuals: [...manualsIds, data.data.id] },
         });
@@ -140,6 +130,7 @@ const ManualForm = ({ editing }: ManualFormProps) => {
         enterprise: {} as any,
         capters: [],
       });
+
       setSteps(1);
     } catch (error: any) {
       handleError(error);

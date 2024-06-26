@@ -27,6 +27,11 @@ export const FormSection = styled.section`
   grid-row-gap: 1rem;
 `;
 
+export const Image = styled.img`
+  width: 14px;
+  height: 14px;
+`;
+
 export const Field = styled.div`
   position: relative;
   width: 100%;

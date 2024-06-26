@@ -1,19 +1,24 @@
+import { useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useQueryClient } from '@tanstack/react-query';
+
+import { IManualList } from '@/interfaces/manual';
+import { CaptersDatum } from '@/interfaces/grups';
 import { ChapterSchema, IChapterForm } from '@/validations/ChapterSchema';
+
 import Select from '@/components/Select/Select';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
-import handleError, { handleSuccess } from '@/utils/handleToast';
+
 import api from '@/services/api';
-import { useState } from 'react';
-import { RecursiveNormalize, normalizeStrapi } from '@/utils/normalizeStrapi';
-import { IManualList } from '@/interfaces/manual';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getGroups } from '@/services/querys/groups';
-import { getIcons } from '@/services/querys/icons';
+
+import { useGroups } from '@/services/querys/groups';
+import { useIcons } from '@/services/querys/icons';
 import { urlBuild } from '@/utils/urlBuild';
-import { CaptersDatum } from '@/interfaces/grups';
+import { RecursiveNormalize } from '@/utils/normalizeStrapi';
+import handleError, { handleSuccess } from '@/utils/handleToast';
+
 import {
   ButtonSection,
   Checkbox,
@@ -38,7 +43,8 @@ interface ChapterPageProps {
 const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
   const query = useQueryClient();
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const isEditing = !!chapter?.id;
 
   const option = {
@@ -54,6 +60,7 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
   } = useForm<IChapterForm>({
     resolver: yupResolver(ChapterSchema),
     defaultValues: {
+      visible: { label: 'Sim', value: 'sim' },
       ...(isEditing && {
         title: chapter?.title,
         order: chapter?.order,
@@ -75,14 +82,7 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
     'filters[enterprise][id]': manual?.enterprise?.id,
   };
 
-  const { data: groups } = useQuery({
-    queryKey: ['groupList', groupsParams],
-    queryFn: async () => {
-      const result = await getGroups(groupsParams);
-      return normalizeStrapi(result || []);
-    },
-    enabled: !!manual?.enterprise?.id,
-  });
+  const { data: groups } = useGroups(groupsParams, !!manual?.enterprise?.id);
 
   const iconsParams = {
     populate: '*',
@@ -91,14 +91,7 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
     'filters[active]': true,
   };
 
-  const { data: icons } = useQuery({
-    queryKey: ['iconsData', iconsParams],
-    queryFn: async () => {
-      const result = await getIcons(iconsParams);
-      const iconsResult = normalizeStrapi(result || []);
-      return iconsResult.sort((a, b) => a.id - b.id);
-    },
-  });
+  const { data: icons } = useIcons(iconsParams);
 
   const onSubmit: SubmitHandler<IChapterForm> = async form => {
     try {
@@ -163,8 +156,10 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
       query.invalidateQueries({ queryKey: ['manualForm'] });
       query.invalidateQueries({ queryKey: ['manualList'] });
       query.invalidateQueries({ queryKey: ['groupList'] });
+
       if (isEditing) handleSuccess('Capítulo alterado com sucesso.');
       else handleSuccess('Capítulo cadastrado com sucesso.');
+
       onClose();
     } catch (err: any) {
       handleError(err);

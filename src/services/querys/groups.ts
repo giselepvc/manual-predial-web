@@ -12,6 +12,26 @@ export const getGroups = async (params: Record<string, any>) => {
   return data;
 };
 
+export const useGroups = (params: Record<string, any>, enabled?: boolean) => {
+  const getGroups = async ({ queryKey }: QueryFunctionContext) => {
+    const [, params] = queryKey;
+
+    const { data } = await api.get<Paginated<IGroups>>('/groups', {
+      params,
+    });
+
+    if (data) {
+      return normalizeStrapi(data);
+    }
+  };
+
+  return useQuery({
+    queryKey: ['getGroups', params],
+    queryFn: getGroups,
+    enabled,
+  });
+};
+
 export const useGroupsOptions = (
   params: Record<string, any>,
   enabled?: boolean,

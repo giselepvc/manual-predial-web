@@ -27,6 +27,11 @@ export const TableSection = styled.section`
   align-items: end;
 `;
 
+export const Image = styled.img`
+  width: 20px;
+  height: 20px;
+`;
+
 interface TableProps {
   selected?: boolean;
 }

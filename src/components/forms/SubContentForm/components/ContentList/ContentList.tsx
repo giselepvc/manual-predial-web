@@ -1,11 +1,10 @@
-import Image from 'next/image';
 import { urlBuild } from '@/utils/urlBuild';
 import { IContent } from '@/interfaces/content';
 import { RecursiveNormalize } from '@/utils/normalizeStrapi';
 import { FaPen, FaTrash } from 'react-icons/fa6';
 import { Dispatch, SetStateAction } from 'react';
 import { ContentsDatum } from '@/interfaces/manual';
-import { Content, InfoSection, TableRow, TableSection } from './styles';
+import { Content, InfoSection, TableRow, TableSection, Image } from './styles';
 
 interface ContentProps {
   container: RecursiveNormalize<IContent> | undefined;
@@ -40,19 +39,17 @@ const ContentList = ({
             <TableRow>
               <InfoSection>
                 <span>{content.order}</span>
+
                 {content.icon?.image?.url && (
-                  <Image
-                    src={urlBuild(content.icon?.image?.url)}
-                    alt="icon"
-                    width={20}
-                    height={20}
-                  />
+                  <Image src={urlBuild(content.icon?.image?.url)} alt="icon" />
                 )}
+
                 <div>{name[content.type || 'paragraph']}</div>
               </InfoSection>
 
               <div>
                 {!content?.visible && 'ocultado'}
+
                 <FaPen
                   onClick={() => {
                     setContent(content);
@@ -60,6 +57,7 @@ const ContentList = ({
                     setBuildType(content.type);
                   }}
                 />
+
                 <FaTrash onClick={() => setDeletingId(content.id)} />
               </div>
             </TableRow>

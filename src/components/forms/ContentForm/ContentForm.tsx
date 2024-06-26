@@ -1,31 +1,35 @@
 'use client';
 
+import { Dispatch, SetStateAction, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { yupResolver } from '@hookform/resolvers/yup';
+
+import api from '@/services/api';
+import { useIcons } from '@/services/querys/icons';
+import { getContents } from '@/services/querys/content';
+import { urlBuild } from '@/utils/urlBuild';
 import handleError, { handleSuccess } from '@/utils/handleToast';
+import { RecursiveNormalize as Recursive } from '@/utils/normalizeStrapi';
+import { normalizeStrapi } from '@/utils/normalizeStrapi';
+
+import { IContent } from '@/interfaces/content';
+import { ContentsDatum } from '@/interfaces/manual';
+import { ContentSchema, IContentForm } from '@/validations/ContentSchema';
+
 import Select from '@/components/Select/Select';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
-import { RecursiveNormalize as Recursive } from '@/utils/normalizeStrapi';
-import { normalizeStrapi } from '@/utils/normalizeStrapi';
-import { ContentsDatum } from '@/interfaces/manual';
-import { Dispatch, SetStateAction, useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import api from '@/services/api';
-import { getContents } from '@/services/querys/content';
 import ConfirmModal from '@/components/ConfirmeModal/ConfirmeModal';
-import { ContentSchema, IContentForm } from '@/validations/ContentSchema';
-import { getIcons } from '@/services/querys/icons';
-import Image from 'next/image';
-import { urlBuild } from '@/utils/urlBuild';
-import { IContent } from '@/interfaces/content';
 import ContentList from './components/ContentList/ContentList';
+
 import {
   ButtonSection,
   Checkbox,
   CheckboxLabel,
   ErrorMessage,
   Field,
+  Image,
   FormSection,
   Label,
   RadiosRow,
@@ -69,6 +73,9 @@ const ContentForm = ({
     formState: { errors },
   } = useForm<IContentForm>({
     resolver: yupResolver(ContentSchema),
+    defaultValues: {
+      visible: { label: 'Sim', value: 'sim' },
+    },
   });
 
   const iconsParams = {
@@ -78,15 +85,7 @@ const ContentForm = ({
     'filters[active]': true,
   };
 
-  const { data: icons } = useQuery({
-    queryKey: ['iconsData', iconsParams],
-    queryFn: async () => {
-      const result = await getIcons(iconsParams);
-      const iconsResult = normalizeStrapi(result || []);
-      iconsResult.sort((a, b) => a.id - b.id);
-      return iconsResult;
-    },
-  });
+  const { data: icons } = useIcons(iconsParams);
 
   const contentsParams = {
     'pagination[page]': 1,
@@ -204,7 +203,6 @@ const ContentForm = ({
                 placeholder="Selecione uma opção"
                 onChange={onChange}
                 value={value}
-                defaultValue={{ label: 'Sim', value: 'sim' }}
                 width="230px"
                 options={[
                   { label: 'Sim', value: 'sim' },
@@ -247,23 +245,21 @@ const ContentForm = ({
       <FormSection>
         <Field>
           <Label>Selecione um ícone</Label>
+
           <RadiosRow>
             <CheckboxLabel>
               <Checkbox type="radio" {...register('icon')} value={0} />
               Nenhum
             </CheckboxLabel>
+
             {icons?.map(item => (
               <CheckboxLabel>
                 <Checkbox type="radio" {...register('icon')} value={item.id} />
-                <Image
-                  src={urlBuild(item.image?.url)}
-                  alt="icons"
-                  width={14}
-                  height={14}
-                />
+                <Image src={urlBuild(item.image?.url)} alt="icons" />
               </CheckboxLabel>
             ))}
           </RadiosRow>
+
           {errors?.icon?.message && (
             <ErrorMessage>{errors.icon.message}</ErrorMessage>
           )}

@@ -1,17 +1,21 @@
+import { useState } from 'react';
 import { Control, Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { useQueryClient } from '@tanstack/react-query';
 import { yupResolver } from '@hookform/resolvers/yup';
-import handleError, { handleSuccess } from '@/utils/handleToast';
+
+import { IManualList, TitlesDatum } from '@/interfaces/manual';
 import { ITitleForm, TitleSchema } from '@/validations/TitleSchema';
+import { IManualForm } from '@/validations/ManualSchema';
+
 import Select from '@/components/Select/Select';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
-import { IManualForm } from '@/validations/ManualSchema';
 import { typeList } from '@/components/ManualTable/ManualTable';
+
+import handleError, { handleSuccess } from '@/utils/handleToast';
 import { RecursiveNormalize } from '@/utils/normalizeStrapi';
-import { IManualList, TitlesDatum } from '@/interfaces/manual';
-import { useState } from 'react';
 import api from '@/services/api';
-import { useQueryClient } from '@tanstack/react-query';
+
 import {
   ButtonSection,
   ErrorMessage,
@@ -32,21 +36,24 @@ interface ChapterPageProps {
 const TitleForm = ({ onClose, control, manual, title }: ChapterPageProps) => {
   const query = useQueryClient();
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const isEditing = !!title?.id;
+
   const option = {
     label: title?.visible ? 'Sim' : 'Não',
     value: title?.visible ? 'sim' : 'nao',
   };
 
   const {
-    control: controlTitle,
     register,
     handleSubmit,
+    control: controlTitle,
     formState: { errors },
   } = useForm<ITitleForm>({
     resolver: yupResolver(TitleSchema),
     defaultValues: {
+      visible: { label: 'Sim', value: 'sim' },
       ...(isEditing && {
         title: title?.title,
         order: title?.order?.toString(),
@@ -60,6 +67,7 @@ const TitleForm = ({ onClose, control, manual, title }: ChapterPageProps) => {
   const onSubmit: SubmitHandler<ITitleForm> = async form => {
     try {
       setIsLoading(true);
+
       const formData = {
         ...form,
         title: form.title.toUpperCase(),
@@ -77,6 +85,7 @@ const TitleForm = ({ onClose, control, manual, title }: ChapterPageProps) => {
         const chapterId = Number(form.chapter.value);
         const chptr = manual?.capters?.find(c => c?.id === chapterId);
         const chapterIds = chptr?.titles?.map(ttls => ttls?.id) || [];
+
         await api.put(`/capters/${form?.chapter?.value}`, {
           data: { titles: [...chapterIds, data.data.id] },
         });
@@ -84,6 +93,7 @@ const TitleForm = ({ onClose, control, manual, title }: ChapterPageProps) => {
 
       if (isEditing) handleSuccess('Título editado com sucesso.');
       else handleSuccess('Título cadastrado com sucesso.');
+
       query.invalidateQueries({ queryKey: ['manualForm'] });
       onClose();
     } catch (err: any) {

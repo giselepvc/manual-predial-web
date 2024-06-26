@@ -1,21 +1,25 @@
 'use client';
 
+import { Dispatch, SetStateAction, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { yupResolver } from '@hookform/resolvers/yup';
+
+import { ContentsDatum } from '@/interfaces/manual';
+import { SubContentSchema, IContentForm } from '@/validations/SubContentSchema';
+
+import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import handleError, { handleSuccess } from '@/utils/handleToast';
+import { RecursiveNormalize as R } from '@/utils/normalizeStrapi';
+import api from '@/services/api';
+import { getContents } from '@/services/querys/content';
+
 import Select from '@/components/Select/Select';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
-import { normalizeStrapi } from '@/utils/normalizeStrapi';
-import { RecursiveNormalize as Recursive } from '@/utils/normalizeStrapi';
-import { ContentsDatum } from '@/interfaces/manual';
-import { Dispatch, SetStateAction, useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import api from '@/services/api';
-import { getContents } from '@/services/querys/content';
 import ConfirmModal from '@/components/ConfirmeModal/ConfirmeModal';
-import { SubContentSchema, IContentForm } from '@/validations/SubContentSchema';
 import ContentList from './components/ContentList/ContentList';
+
 import {
   ButtonSection,
   ErrorMessage,
@@ -27,16 +31,16 @@ import {
 } from './styles';
 
 interface ChapterPageProps {
+  content: R<ContentsDatum> | undefined;
   onClose: () => void;
-  content: Recursive<ContentsDatum> | undefined;
   setBuildType: Dispatch<SetStateAction<string>>;
   setSteps: Dispatch<SetStateAction<number>>;
-  setContent: Dispatch<SetStateAction<Recursive<ContentsDatum> | undefined>>;
+  setContent: Dispatch<SetStateAction<R<ContentsDatum> | undefined>>;
 }
 
 const SubContentForm = ({
-  onClose,
   content,
+  onClose,
   setContent,
   setBuildType,
   setSteps,
@@ -54,6 +58,9 @@ const SubContentForm = ({
     formState: { errors },
   } = useForm<IContentForm>({
     resolver: yupResolver(SubContentSchema),
+    defaultValues: {
+      visible: { label: 'Sim', value: 'sim' },
+    },
   });
 
   const contentsParams = {
@@ -156,7 +163,6 @@ const SubContentForm = ({
                 placeholder="Selecione uma opção"
                 onChange={onChange}
                 value={value}
-                defaultValue={{ label: 'Sim', value: 'sim' }}
                 width="230px"
                 options={[
                   { label: 'Sim', value: 'sim' },
