@@ -1,20 +1,25 @@
-import Select from '@/components/Select/Select';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { FaTrash } from 'react-icons/fa6';
+import { yupResolver } from '@hookform/resolvers/yup';
+
+import { GroupSchema, IGroupForm } from '@/validations/GroupSchema';
+
+import { normalizeStrapi } from '@/utils/normalizeStrapi';
+import handleError, { handleSuccess } from '@/utils/handleToast';
+
+import { getGroups } from '@/services/querys/groups';
+import { useCompaniesOptions } from '@/services/querys/company';
+import { useEnterprise } from '@/services/querys/enterprise';
+import api from '@/services/api';
+
+import Select from '@/components/Select/Select';
+import ConfirmModal from '@/components/ConfirmeModal/ConfirmeModal';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
-import { yupResolver } from '@hookform/resolvers/yup';
-import handleError, { handleSuccess } from '@/utils/handleToast';
-import api from '@/services/api';
-import { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getEnterprise } from '@/services/querys/enterprise';
-import { normalizeStrapi } from '@/utils/normalizeStrapi';
-import { GroupSchema, IGroupForm } from '@/validations/GroupSchema';
-import { FaTrash } from 'react-icons/fa6';
-import { getGroups } from '@/services/querys/groups';
-import ConfirmModal from '@/components/ConfirmeModal/ConfirmeModal';
-import { getCompanies } from '@/services/querys/company';
+
 import {
   ButtonSection,
   FormSection,
@@ -37,6 +42,7 @@ interface CustomerProps {
 const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
   const { back } = useRouter();
   const query = useQueryClient();
+
   const [isLoading, setIsLoading] = useState(false);
   const [groupsId] = useState<number>();
   const [deletingId, setDeletingId] = useState<number>();
@@ -77,56 +83,37 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
     enabled: !!groupId || !!groupsId,
   });
 
-  const companiesParams = {
-    populate: '*',
-  };
-
-  const { data: companies } = useQuery({
-    queryKey: ['companiesOptions', companiesParams],
-    queryFn: async () => {
-      const data = await getCompanies(companiesParams);
-      const companiesList = normalizeStrapi(data || []);
-      return companiesList?.map(enter => ({
-        label: enter.name || '',
-        value: enter.id?.toString() || '',
-      }));
-    },
-  });
+  const { data: companies } = useCompaniesOptions({ populate: '*' });
 
   const enterpriseParams = {
     populate: '*',
     'filters[company][id]': watch('company.value'),
   };
 
-  const { data: enterprises } = useQuery({
-    queryKey: ['enterprisesData', enterpriseParams],
-    queryFn: async () => {
-      const data = await getEnterprise(enterpriseParams);
-      const enterprisesList = normalizeStrapi(data || []);
-      return enterprisesList;
-    },
-    enabled: !!watch('company'),
-  });
+  const { data: enterprises } = useEnterprise(
+    enterpriseParams,
+    !!watch('company'),
+  );
 
   const onSubmit: SubmitHandler<IGroupForm> = async form => {
     try {
       setIsLoading(true);
+
       const { data } = await api.post<{ data: { id: number } }>('/groups', {
         data: { name: form.name },
       });
 
-      if (data.data?.id && form?.enterprise?.value) {
-        const enterprise = enterprises?.find(
-          item => item.id === Number(form?.enterprise?.value),
-        );
+      const enterpriseId = Number(form?.enterprise?.value);
+      const groupId = data.data?.id;
+
+      if (groupId && form?.enterprise?.value) {
+        const enterprise = enterprises?.find(({ id }) => id === enterpriseId);
         const groupsIds = enterprise?.groups?.map(item => item.id) || [];
-        const isAdded = !!enterprise?.groups?.find(
-          item => item.id === Number(data.data?.id),
-        );
+        const isAdded = !!enterprise?.groups?.find(({ id }) => id === groupId);
 
         if (!isAdded) {
-          await api.put(`/enterprises/${form?.enterprise?.value}`, {
-            data: { groups: [...groupsIds, data.data.id] },
+          await api.put(`/enterprises/${enterpriseId}`, {
+            data: { groups: [...groupsIds, groupId] },
           });
         }
       }
@@ -143,19 +130,20 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
   const onUpdate: SubmitHandler<IGroupForm> = async form => {
     try {
       setIsLoading(true);
+
       await api.put(`/groups/${groupId}`, { data: { name: form.name } });
 
-      if (groupId && form?.enterprise?.value) {
-        const enterprise = enterprises?.find(
-          item => item.id === Number(form?.enterprise?.value),
-        );
-        const groupsIds = enterprise?.groups?.map(item => item.id) || [];
+      const enterpriseId = Number(form?.enterprise?.value);
+
+      if (groupId && enterpriseId) {
+        const enterprise = enterprises?.find(item => item.id === enterpriseId);
+        const groupsIds = enterprise?.groups?.map(({ id }) => id) || [];
         const isAdded = !!enterprise?.groups?.find(
-          item => item.id === Number(groupId),
+          ({ id }) => id === Number(groupId),
         );
 
         if (!isAdded) {
-          await api.put(`/enterprises/${form?.enterprise?.value}`, {
+          await api.put(`/enterprises/${enterpriseId}`, {
             data: { groups: [...groupsIds, groupId] },
           });
         }
@@ -175,6 +163,7 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
 
     try {
       setIsLoading(true);
+
       const capters = group?.capters?.filter(c => c?.id !== deletingId) || [];
       await api.put(`/groups/${groupId}`, { data: { capters } });
 
