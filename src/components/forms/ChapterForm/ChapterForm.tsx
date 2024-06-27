@@ -44,12 +44,27 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
   const query = useQueryClient();
 
   const [isLoading, setIsLoading] = useState(false);
-
   const isEditing = !!chapter?.id;
 
-  const option = {
-    label: chapter?.visible ? 'Sim' : 'Não',
-    value: chapter?.visible ? 'sim' : 'nao',
+  const getVisibleOption = (visible: boolean) => ({
+    label: visible ? 'Sim' : 'Não',
+    value: visible ? 'sim' : 'nao',
+  });
+
+  const defaultValues = {
+    title: chapter?.title,
+    order: chapter?.order,
+    icon: chapter?.icon?.id || 0,
+    type: { value: chapter?.type, label: chapter?.type },
+    visible:
+      chapter?.visible !== null
+        ? getVisibleOption(chapter?.visible || false)
+        : getVisibleOption(true),
+    groups:
+      chapter?.groups?.map(({ name, id }) => ({
+        label: name,
+        value: id?.toString(),
+      })) || [],
   };
 
   const {
@@ -61,19 +76,11 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
     resolver: yupResolver(ChapterSchema),
     defaultValues: {
       visible: { label: 'Sim', value: 'sim' },
-      ...(isEditing && {
-        title: chapter?.title,
-        order: chapter?.order,
-        icon: chapter?.icon?.id || 0,
-        ...(chapter?.visible !== null
-          ? { visible: option }
-          : { visible: { label: 'Sim', value: 'sim' } }),
-        groups:
-          chapter?.groups?.map(group => ({
-            label: group?.name,
-            value: group?.id?.toString(),
-          })) || [],
-      }),
+      type:
+        type === 'default'
+          ? { value: 'Padrão', label: 'Padrão' }
+          : { value: 'Personalizado', label: 'Personalizado' },
+      ...(isEditing && defaultValues),
     },
   });
 
@@ -96,17 +103,18 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
   const onSubmit: SubmitHandler<IChapterForm> = async form => {
     try {
       setIsLoading(true);
+
       const formData = {
         ...form,
         title: form.title.toUpperCase(),
         company: undefined,
         enterprise: undefined,
-        icon: form?.icon === 0 ? undefined : form?.icon,
-        groups:
-          type === 'default'
-            ? groups?.map(item => Number(item?.id))
-            : form?.groups?.map(item => Number(item.value)),
+        icon: form?.icon !== 0 ? undefined : form?.icon,
         visible: form.visible?.value === 'sim',
+        type: form?.type?.value,
+        groups: type.includes('default')
+          ? groups?.map(item => Number(item?.id))
+          : form?.groups?.map(item => Number(item.value)),
       };
 
       const { data } = chapter?.id
@@ -114,17 +122,19 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
         : await api.post<any>('/capters', { data: formData });
 
       if (data.data?.id && manual?.id) {
-        const chaptesIds = manual?.capters?.map(capter => capter.id) || [];
+        const chaptersIds = manual?.capters?.map(capter => capter.id) || [];
+
         await api.put(`/manuals/${manual.id}`, {
-          data: { capters: [...chaptesIds, data.data.id] },
+          data: { capters: [...chaptersIds, data.data.id] },
         });
       }
 
       if (form?.icon && form?.icon !== 0 && data.data.id) {
         const iconSelected = icons?.find(item => item.id === form.icon);
-        const captersList = iconSelected?.capters?.map(item => item.id) || [];
+        const chaptersList = iconSelected?.capters?.map(item => item.id) || [];
+
         await api.put(`/icons/${form?.icon}`, {
-          data: { capters: [...captersList, data.data.id] },
+          data: { capters: [...chaptersList, data.data.id] },
         });
       }
 
@@ -132,11 +142,12 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
         data.data?.id &&
         form?.groups &&
         form?.groups?.length > 0 &&
-        type !== 'default'
+        !type.includes('default')
       ) {
         form?.groups?.map(async item => {
           const group = groups?.find(g => g?.id === Number(item?.value));
           const groupChapterIds = group?.capters?.map(c => c?.id) || [];
+
           await api.put(`/groups/${item.value}`, {
             data: { capters: [...groupChapterIds, data.data.id] },
           });
@@ -147,6 +158,7 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
         groups?.map(async item => {
           const group = groups?.find(g => g?.id === Number(item?.id));
           const groupChapterIds = group?.capters?.map(c => c?.id) || [];
+
           await api.put(`/groups/${item.id}`, {
             data: { capters: [...groupChapterIds, data.data.id] },
           });
@@ -190,16 +202,23 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
         </Field>
 
         <Field>
-          <Label>Ordem</Label>
-          <Input
-            placeholder="Insira uma ordem"
-            type="number"
-            style={{ width: '270px' }}
-            {...register('order')}
+          <Label>Tipo do Capítulo</Label>
+          <Controller
+            control={controlManual}
+            name="type"
+            render={({ field: { onChange, value } }) => (
+              <Select
+                width="270px"
+                placeholder="Selecione um tipo"
+                onChange={onChange}
+                value={value}
+                options={[
+                  { value: 'Padrão', label: 'Padrão' },
+                  { value: 'Personalizado', label: 'Personalizado' },
+                ]}
+              />
+            )}
           />
-          {errors?.order?.message && (
-            <ErrorMessage>{errors.order.message}</ErrorMessage>
-          )}
         </Field>
 
         <Field>
@@ -227,6 +246,33 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
       </FormSection>
 
       <FormSection style={{ display: 'flex' }}>
+        <Field>
+          <Label>Ordem</Label>
+          <Input
+            placeholder="Insira uma ordem"
+            type="number"
+            style={{ width: '418px' }}
+            {...register('order')}
+          />
+          {errors?.order?.message && (
+            <ErrorMessage>{errors.order.message}</ErrorMessage>
+          )}
+        </Field>
+
+        <Field>
+          <Label>Nome do capítulo</Label>
+          <Input
+            placeholder="Insira um nome"
+            style={{ width: '418px', textTransform: 'uppercase' }}
+            {...register('title')}
+          />
+          {errors?.title?.message && (
+            <ErrorMessage>{errors.title.message}</ErrorMessage>
+          )}
+        </Field>
+      </FormSection>
+
+      <FormSection style={{ display: 'flex' }}>
         {type !== 'default' && (
           <Field>
             <Label>Grupo</Label>
@@ -235,7 +281,7 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
               name="groups"
               render={({ field: { onChange, value } }) => (
                 <Select
-                  width="418px"
+                  width="860px"
                   placeholder="Selecione um grupo"
                   onChange={onChange}
                   value={value}
@@ -251,18 +297,6 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
             />
           </Field>
         )}
-
-        <Field>
-          <Label>Nome do capítulo</Label>
-          <Input
-            placeholder="Insira um nome"
-            style={{ width: '418px', textTransform: 'uppercase' }}
-            {...register('title')}
-          />
-          {errors?.title?.message && (
-            <ErrorMessage>{errors.title.message}</ErrorMessage>
-          )}
-        </Field>
       </FormSection>
 
       <FormSection>

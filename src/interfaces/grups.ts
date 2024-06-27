@@ -28,6 +28,7 @@ export interface FluffyAttributes {
   updatedAt: string;
   publishedAt: string;
   visible: boolean;
+  type: string;
   icon: IIcon;
   groups: Group;
 }

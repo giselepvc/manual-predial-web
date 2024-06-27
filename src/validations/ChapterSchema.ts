@@ -9,6 +9,10 @@ export const ChapterSchema = yup.object({
     .required('A ordem é obrigatória')
     .nullable(),
   title: yup.string().required('Nome é obrigatório'),
+  type: yup.object({
+    value: yup.string().required('Tipo é obrigatório'),
+    label: yup.string().required('Tipo é obrigatório'),
+  }),
   visible: yup.object({
     value: yup.string().required('Status é obrigatório'),
     label: yup.string().required('Status é obrigatório'),
