@@ -97,7 +97,7 @@ export interface ContentsAttributes {
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
-  italic: boolean;
+  italic: boolean | null;
   image: Image;
   pdf: PDF;
   icon: IIcon;
