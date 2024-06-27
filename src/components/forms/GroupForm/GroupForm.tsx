@@ -10,6 +10,7 @@ import { GroupSchema, IGroupForm } from '@/validations/GroupSchema';
 import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import handleError, { handleSuccess } from '@/utils/handleToast';
 
+import { useManualsToChapters } from '@/services/querys/manual';
 import { getGroups } from '@/services/querys/groups';
 import { useCompaniesOptions } from '@/services/querys/company';
 import { useEnterprise } from '@/services/querys/enterprise';
@@ -95,12 +96,25 @@ const GroupForm = ({ isEditing, groupId }: CustomerProps) => {
     !!watch('company'),
   );
 
+  const chaptersParams = {
+    populate: 'capters',
+    'filters[enterprise][id]': watch('enterprise')?.value,
+  };
+
+  const { data: chapters } = useManualsToChapters(
+    chaptersParams,
+    !!watch('enterprise'),
+  );
+
   const onSubmit: SubmitHandler<IGroupForm> = async form => {
     try {
       setIsLoading(true);
 
+      const chaptersIds =
+        chapters?.filter(item => item.type === 'Padrão') || [];
+
       const { data } = await api.post<{ data: { id: number } }>('/groups', {
-        data: { name: form.name },
+        data: { name: form.name, capters: chaptersIds },
       });
 
       const enterpriseId = Number(form?.enterprise?.value);

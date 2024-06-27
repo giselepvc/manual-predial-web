@@ -39,6 +39,7 @@ export interface CaptersAttributes {
   titles: Titles;
   groups: Group;
   icon: IIcon;
+  type: string | null;
 }
 
 export interface Group {

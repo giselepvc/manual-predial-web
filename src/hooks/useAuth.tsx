@@ -3,18 +3,12 @@
 'use client';
 
 import { IClients } from '@/interfaces/clients';
-import { getClients } from '@/services/querys/clients';
+import { useClients } from '@/services/querys/clients';
 import { localStorageKeys } from '@/utils/localStorageKeys';
-import { RecursiveNormalize, normalizeStrapi } from '@/utils/normalizeStrapi';
-import { useQuery } from '@tanstack/react-query';
+import { RecursiveNormalize } from '@/utils/normalizeStrapi';
 import { redirect, usePathname } from 'next/navigation';
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { createContext, ReactNode } from 'react';
 
 export interface User {
   id: number;
@@ -60,15 +54,10 @@ const AuthProvider = ({ children }: ChildrenProps) => {
     ],
   };
 
-  const { data: user } = useQuery({
-    queryKey: ['userData', userParams],
-    queryFn: async () => {
-      const data = await getClients(userParams);
-      const result = normalizeStrapi(data || []);
-      return result?.[0];
-    },
-    enabled: !!userId && userId !== 0,
-  });
+  const requestEnadled = !!userId && userId !== 0;
+
+  const { data: users } = useClients(userParams, requestEnadled);
+  const user = users?.[0];
 
   useEffect(() => {
     const dataUser = localStorage.getItem(localStorageKeys.user);
