@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -55,7 +56,13 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
     title: chapter?.title,
     order: chapter?.order,
     icon: chapter?.icon?.id || 0,
-    type: { value: chapter?.type, label: chapter?.type },
+    type:
+      chapter?.type !== null
+        ? {
+          value: chapter?.type || 'Personalizado',
+          label: chapter?.type || 'Personalizado',
+        }
+        : { value: 'Personalizado', label: 'Personalizado' },
     visible:
       chapter?.visible !== null
         ? getVisibleOption(chapter?.visible || false)

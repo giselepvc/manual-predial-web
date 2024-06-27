@@ -28,9 +28,9 @@ export interface FluffyAttributes {
   updatedAt: string;
   publishedAt: string;
   visible: boolean;
-  type: string;
-  icon: IIcon;
   groups: Group;
+  icon: IIcon;
+  type: string | null;
 }
 
 export interface Group {
