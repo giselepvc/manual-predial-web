@@ -65,3 +65,18 @@ export const ErrorMessage = styled.h3`
   font-weight: 400;
   color: ${({ theme }) => theme.colors.error};
 `;
+
+export const LabelPassword = styled.label`
+  padding-left: 0.75rem;
+  margin-top: 1.5rem;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.grayd9};
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.8;
+  }
+`;

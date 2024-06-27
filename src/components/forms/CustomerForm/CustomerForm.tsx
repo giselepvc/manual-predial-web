@@ -35,8 +35,10 @@ import {
   RegisterTitle,
   Field,
   Label,
+  LabelPassword,
   ErrorMessage,
 } from './styles';
+import PasswordModal from './components/PasswordModal/PasswordModal';
 
 interface Response {
   data: { id: number };
@@ -58,6 +60,7 @@ const CustomerForm = ({
   const query = useQueryClient();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [passwordModal, setPasswordModal] = useState(false);
 
   const option = {
     label: user?.enterprise?.title || '',
@@ -301,256 +304,262 @@ const CustomerForm = ({
   }, [watch('enterprise'), role]);
 
   return (
-    <RegisterForm onSubmit={handleSubmit(isEditing ? onUpdate : onSubmit)}>
-      <RegisterTitle>
-        <UserIcon />
-        Dados pessoais
-      </RegisterTitle>
-
-      <FormSection>
-        <Field>
-          <Label>Nome</Label>
-          <Input placeholder="Insirir nome" {...register('name')} />
-          {errors?.name?.message && (
-            <ErrorMessage>{errors.name.message}</ErrorMessage>
-          )}
-        </Field>
-        <Field>
-          <Label>Login</Label>
-          <Input placeholder="Insirir login" {...register('login')} />
-          {errors?.login?.message && (
-            <ErrorMessage>{errors.login.message}</ErrorMessage>
-          )}
-        </Field>
-        <Field>
-          <Label>E-mail</Label>
-          <Input
-            type="text"
-            placeholder="Insirir e-mail"
-            {...register('email')}
-          />
-          {errors?.email?.message && (
-            <ErrorMessage>{errors.email.message}</ErrorMessage>
-          )}
-        </Field>
-        <Field>
-          <Label>CPF</Label>
-          <Input
-            placeholder="Insirir cpf"
-            maskFunction={cpfMask}
-            maxLength={14}
-            {...register('cpf')}
-          />
-          {errors?.cpf?.message && (
-            <ErrorMessage>{errors.cpf.message}</ErrorMessage>
-          )}
-        </Field>
-      </FormSection>
-
-      <FormSection>
-        <Field>
-          <Label>CNJP</Label>
-          <Input
-            placeholder="Insirir cnpj"
-            maskFunction={cnpjMask}
-            maxLength={18}
-            {...register('cnpj')}
-          />
-          {errors?.cnpj?.message && (
-            <ErrorMessage>{errors.cnpj.message}</ErrorMessage>
-          )}
-        </Field>
-        <Field>
-          <Label>Telefone</Label>
-          <Input
-            placeholder="Insirir telefone"
-            maskFunction={telephoneMask}
-            {...register('phone')}
-          />
-          {errors?.phone?.message && (
-            <ErrorMessage>{errors.phone.message}</ErrorMessage>
-          )}
-        </Field>
-        <Field>
-          <Label>Celular</Label>
-          <Input
-            placeholder="Insirir celular"
-            maskFunction={telephoneMask}
-            {...register('cellPhone')}
-          />
-          {errors?.cellPhone?.message && (
-            <ErrorMessage>{errors.cellPhone.message}</ErrorMessage>
-          )}
-        </Field>
-      </FormSection>
-
-      <FormSection>
-        <Field>
-          <Label>Construtora</Label>
-          <Controller
-            control={control}
-            name="company"
-            render={({ field: { onChange, value } }) => (
-              <Select
-                placeholder="Selecione construtora"
-                onChange={onChange}
-                value={role === 1 ? optionCompany : value}
-                options={companies || []}
-                isDisabled={role === 1}
-              />
-            )}
-          />
-          {errors?.company?.value?.message && (
-            <ErrorMessage>{errors.company.value.message}</ErrorMessage>
-          )}
-        </Field>
-
-        <Field>
-          <Label>Empreendimento</Label>
-          <Controller
-            control={control}
-            name="enterprise"
-            render={({ field: { onChange, value } }) => (
-              <Select
-                placeholder="Selecione empreendimento"
-                onChange={onChange}
-                value={role === 1 ? option : value}
-                options={enterprises || []}
-                isDisabled={role === 1}
-              />
-            )}
-          />
-          {errors?.enterprise?.value?.message && (
-            <ErrorMessage>{errors.enterprise.value.message}</ErrorMessage>
-          )}
-        </Field>
-
-        {isCompany && (
-          <Field>
-            <Label>Grupo</Label>
-            <Controller
-              control={control}
-              name="group"
-              render={({ field: { onChange, value } }) => (
-                <Select
-                  placeholder="Selecione um grupo"
-                  onChange={onChange}
-                  value={value}
-                  options={groupsOptions || []}
-                />
-              )}
-            />
-          </Field>
-        )}
-      </FormSection>
-
-      {!isEditing && (
+    <>
+      <RegisterForm onSubmit={handleSubmit(isEditing ? onUpdate : onSubmit)}>
+        <RegisterTitle>
+          <UserIcon />
+          Dados pessoais
+        </RegisterTitle>
         <FormSection>
           <Field>
-            <Label>Senha</Label>
-            <Input
-              type="password"
-              placeholder="Insirir senha"
-              {...register('password')}
-            />
-            {errors?.password?.message && (
-              <ErrorMessage>{errors.password.message}</ErrorMessage>
+            <Label>Nome</Label>
+            <Input placeholder="Insirir nome" {...register('name')} />
+            {errors?.name?.message && (
+              <ErrorMessage>{errors.name.message}</ErrorMessage>
             )}
           </Field>
-
           <Field>
-            <Label>Confirmar senha</Label>
+            <Label>Login</Label>
+            <Input placeholder="Insirir login" {...register('login')} />
+            {errors?.login?.message && (
+              <ErrorMessage>{errors.login.message}</ErrorMessage>
+            )}
+          </Field>
+          <Field>
+            <Label>E-mail</Label>
             <Input
-              type="password"
-              placeholder="Insirir senha"
-              {...register('confirmPassword')}
+              type="text"
+              placeholder="Insirir e-mail"
+              {...register('email')}
             />
-            {errors?.confirmPassword?.message && (
-              <ErrorMessage>{errors.confirmPassword.message}</ErrorMessage>
+            {errors?.email?.message && (
+              <ErrorMessage>{errors.email.message}</ErrorMessage>
+            )}
+          </Field>
+          <Field>
+            <Label>CPF</Label>
+            <Input
+              placeholder="Insirir cpf"
+              maskFunction={cpfMask}
+              maxLength={14}
+              {...register('cpf')}
+            />
+            {errors?.cpf?.message && (
+              <ErrorMessage>{errors.cpf.message}</ErrorMessage>
             )}
           </Field>
         </FormSection>
-      )}
+        <FormSection>
+          <Field>
+            <Label>CNJP</Label>
+            <Input
+              placeholder="Insirir cnpj"
+              maskFunction={cnpjMask}
+              maxLength={18}
+              {...register('cnpj')}
+            />
+            {errors?.cnpj?.message && (
+              <ErrorMessage>{errors.cnpj.message}</ErrorMessage>
+            )}
+          </Field>
+          <Field>
+            <Label>Telefone</Label>
+            <Input
+              placeholder="Insirir telefone"
+              maskFunction={telephoneMask}
+              {...register('phone')}
+            />
+            {errors?.phone?.message && (
+              <ErrorMessage>{errors.phone.message}</ErrorMessage>
+            )}
+          </Field>
+          <Field>
+            <Label>Celular</Label>
+            <Input
+              placeholder="Insirir celular"
+              maskFunction={telephoneMask}
+              {...register('cellPhone')}
+            />
+            {errors?.cellPhone?.message && (
+              <ErrorMessage>{errors.cellPhone.message}</ErrorMessage>
+            )}
+          </Field>
+        </FormSection>
+        <FormSection>
+          <Field>
+            <Label>Construtora</Label>
+            <Controller
+              control={control}
+              name="company"
+              render={({ field: { onChange, value } }) => (
+                <Select
+                  placeholder="Selecione construtora"
+                  onChange={onChange}
+                  value={role === 1 ? optionCompany : value}
+                  options={companies || []}
+                  isDisabled={role === 1}
+                />
+              )}
+            />
+            {errors?.company?.value?.message && (
+              <ErrorMessage>{errors.company.value.message}</ErrorMessage>
+            )}
+          </Field>
 
-      <RegisterTitle style={{ marginTop: '2rem' }}>
-        <HpuseIcon />
-        Endereço
-      </RegisterTitle>
+          <Field>
+            <Label>Empreendimento</Label>
+            <Controller
+              control={control}
+              name="enterprise"
+              render={({ field: { onChange, value } }) => (
+                <Select
+                  placeholder="Selecione empreendimento"
+                  onChange={onChange}
+                  value={role === 1 ? option : value}
+                  options={enterprises || []}
+                  isDisabled={role === 1}
+                />
+              )}
+            />
+            {errors?.enterprise?.value?.message && (
+              <ErrorMessage>{errors.enterprise.value.message}</ErrorMessage>
+            )}
+          </Field>
 
-      <FormSection>
-        <Field>
-          <Label>CEP</Label>
-          <Input
-            placeholder="Insirir cep"
-            maskFunction={zipcodeMask}
-            maxLength={9}
-            {...register('zipCode', {
-              onBlur: handleCepBlur,
-            })}
+          {isCompany && (
+            <Field>
+              <Label>Grupo</Label>
+              <Controller
+                control={control}
+                name="group"
+                render={({ field: { onChange, value } }) => (
+                  <Select
+                    placeholder="Selecione um grupo"
+                    onChange={onChange}
+                    value={value}
+                    options={groupsOptions || []}
+                  />
+                )}
+              />
+            </Field>
+          )}
+        </FormSection>
+        {!isEditing && (
+          <FormSection>
+            <Field>
+              <Label>Senha</Label>
+              <Input
+                type="password"
+                placeholder="Insirir senha"
+                {...register('password')}
+              />
+              {errors?.password?.message && (
+                <ErrorMessage>{errors.password.message}</ErrorMessage>
+              )}
+            </Field>
+
+            <Field>
+              <Label>Confirmar senha</Label>
+              <Input
+                type="password"
+                placeholder="Insirir senha"
+                {...register('confirmPassword')}
+              />
+              {errors?.confirmPassword?.message && (
+                <ErrorMessage>{errors.confirmPassword.message}</ErrorMessage>
+              )}
+            </Field>
+          </FormSection>
+        )}
+
+        <LabelPassword onClick={() => setPasswordModal(true)}>
+          altera senha desse usuário
+        </LabelPassword>
+
+        <RegisterTitle style={{ marginTop: '2rem' }}>
+          <HpuseIcon />
+          Endereço
+        </RegisterTitle>
+        <FormSection>
+          <Field>
+            <Label>CEP</Label>
+            <Input
+              placeholder="Insirir cep"
+              maskFunction={zipcodeMask}
+              maxLength={9}
+              {...register('zipCode', {
+                onBlur: handleCepBlur,
+              })}
+            />
+            {errors?.zipCode?.message && (
+              <ErrorMessage>{errors.zipCode.message}</ErrorMessage>
+            )}
+          </Field>
+          <Field>
+            <Label>Rua</Label>
+            <Input placeholder="Insirir rua" {...register('address')} />
+            {errors?.address?.message && (
+              <ErrorMessage>{errors.address.message}</ErrorMessage>
+            )}
+          </Field>
+          <Field>
+            <Label>Número</Label>
+            <Input placeholder="Insirir número" {...register('number')} />
+            {errors?.number?.message && (
+              <ErrorMessage>{errors.number.message}</ErrorMessage>
+            )}
+          </Field>
+          <Field>
+            <Label>Bairro</Label>
+            <Input placeholder="Insirir bairro" {...register('neighborhood')} />
+            {errors?.neighborhood?.message && (
+              <ErrorMessage>{errors.neighborhood.message}</ErrorMessage>
+            )}
+          </Field>
+        </FormSection>
+        <FormSection>
+          <Field>
+            <Label>Cidade</Label>
+            <Input placeholder="Insirir cidade" {...register('city')} />
+            {errors?.city?.message && (
+              <ErrorMessage>{errors.city.message}</ErrorMessage>
+            )}
+          </Field>
+          <Field>
+            <Label>Estado</Label>
+            <Input placeholder="Insirir estado" {...register('state')} />
+            {errors?.state?.message && (
+              <ErrorMessage>{errors.state.message}</ErrorMessage>
+            )}
+          </Field>
+          <Field>
+            <Label>Complemento / N° unidade</Label>
+            <Input
+              placeholder="Insirir complemento"
+              {...register('complement')}
+            />
+            {errors?.complement?.message && (
+              <ErrorMessage>{errors.complement.message}</ErrorMessage>
+            )}
+          </Field>
+        </FormSection>
+        <ButtonSection>
+          <Button outlined text="Cancelar" type="button" onClick={back} />
+          <Button
+            text={isEditing ? 'Editar' : 'Cadastrar'}
+            type="submit"
+            disabled={isLoading}
           />
-          {errors?.zipCode?.message && (
-            <ErrorMessage>{errors.zipCode.message}</ErrorMessage>
-          )}
-        </Field>
-        <Field>
-          <Label>Rua</Label>
-          <Input placeholder="Insirir rua" {...register('address')} />
-          {errors?.address?.message && (
-            <ErrorMessage>{errors.address.message}</ErrorMessage>
-          )}
-        </Field>
-        <Field>
-          <Label>Número</Label>
-          <Input placeholder="Insirir número" {...register('number')} />
-          {errors?.number?.message && (
-            <ErrorMessage>{errors.number.message}</ErrorMessage>
-          )}
-        </Field>
-        <Field>
-          <Label>Bairro</Label>
-          <Input placeholder="Insirir bairro" {...register('neighborhood')} />
-          {errors?.neighborhood?.message && (
-            <ErrorMessage>{errors.neighborhood.message}</ErrorMessage>
-          )}
-        </Field>
-      </FormSection>
+        </ButtonSection>
+      </RegisterForm>
 
-      <FormSection>
-        <Field>
-          <Label>Cidade</Label>
-          <Input placeholder="Insirir cidade" {...register('city')} />
-          {errors?.city?.message && (
-            <ErrorMessage>{errors.city.message}</ErrorMessage>
-          )}
-        </Field>
-        <Field>
-          <Label>Estado</Label>
-          <Input placeholder="Insirir estado" {...register('state')} />
-          {errors?.state?.message && (
-            <ErrorMessage>{errors.state.message}</ErrorMessage>
-          )}
-        </Field>
-        <Field>
-          <Label>Complemento / N° unidade</Label>
-          <Input
-            placeholder="Insirir complemento"
-            {...register('complement')}
-          />
-          {errors?.complement?.message && (
-            <ErrorMessage>{errors.complement.message}</ErrorMessage>
-          )}
-        </Field>
-      </FormSection>
-
-      <ButtonSection>
-        <Button outlined text="Cancelar" type="button" onClick={back} />
-        <Button
-          text={isEditing ? 'Editar' : 'Cadastrar'}
-          type="submit"
-          disabled={isLoading}
+      {passwordModal && customerId && (
+        <PasswordModal
+          customerId={customerId}
+          onClose={() => setPasswordModal(false)}
         />
-      </ButtonSection>
-    </RegisterForm>
+      )}
+    </>
   );
 };
 

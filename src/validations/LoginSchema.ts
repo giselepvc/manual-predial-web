@@ -26,3 +26,13 @@ export const ChangePasswordSchema = yup.object({
     .oneOf([yup.ref('password')], 'As senhas devem coincidir')
     .required('Confirmação de senha é obrigatória'),
 });
+
+export type IUserPasswordForm = yup.InferType<typeof UserPasswordSchema>;
+
+export const UserPasswordSchema = yup.object({
+  password: yup.string().required('Senha é obrigatória'),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref('password')], 'As senhas devem coincidir')
+    .required('Confirmação de senha é obrigatória'),
+});
