@@ -1,7 +1,7 @@
 import React from 'react';
 import { CaptersDatum } from '@/interfaces/manual';
 import { RecursiveNormalize } from '@/utils/normalizeStrapi';
-import { Files, Main, Text, Title, Chapter } from './styles';
+import { Files, Main, Title, Chapter } from './styles';
 
 interface ComponentToPrintProps {
   chapter: RecursiveNormalize<CaptersDatum[]> | undefined;
@@ -22,16 +22,7 @@ const DocComponent = React.forwardRef<HTMLDivElement, ComponentToPrintProps>(
                 ?.filter(item => item.visible)
                 ?.sort((a, b) => a.order - b.order)
                 ?.map(title => (
-                  <>
-                    <Title>{title.title}</Title>
-
-                    {title.containers
-                      ?.filter(item => item.visible)
-                      ?.sort((a, b) => a.order - b.order)
-                      ?.map(container => (
-                        <Text>{container.title}</Text>
-                      ))}
-                  </>
+                  <Title>{title.title}</Title>
                 ))}
             </>
           ))}
