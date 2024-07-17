@@ -184,6 +184,7 @@ const CustomerForm = ({
         email: form?.email || null,
         creativeEnterprise: form?.enterprise?.label,
         creativeCompany: form?.company?.label,
+        userCreated: form?.enterprise?.value,
         confirmPassword: undefined,
         company: undefined,
         ...(isCompany
@@ -226,6 +227,7 @@ const CustomerForm = ({
         group: form?.group?.value ? Number(form?.group?.value) : undefined,
         creativeEnterprise: form?.enterprise?.label,
         creativeCompany: form?.company?.label,
+        userCreated: enterId,
         password: undefined,
         confirmPassword: undefined,
         company: undefined,
