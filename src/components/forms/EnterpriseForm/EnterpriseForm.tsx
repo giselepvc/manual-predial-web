@@ -141,7 +141,7 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
     try {
       setIsLoading(true);
       const { data } = await api.put<{ data: { id: number } }>(
-        `/enterprises/${companyId}`,
+        `/updateEnterprise?enterpriseId=${companyId}`,
         {
           data: { ...form },
         },
