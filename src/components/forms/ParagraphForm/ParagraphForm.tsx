@@ -72,7 +72,7 @@ const ParagraphForm = ({ onClose, content }: FileProps) => {
           subtitle,
           italic,
           order,
-          visible: active.value === 'sim' ? true : false || true,
+          visible: active.value === 'sim',
           ...(icon !== 0 && { icon }),
         },
       });

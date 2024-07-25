@@ -61,7 +61,7 @@ const ImageForm = ({ onClose, content }: FileProps) => {
         data: {
           description,
           order,
-          visible: active.value === 'sim' ? true : false || true,
+          visible: active.value === 'sim',
         },
       });
 

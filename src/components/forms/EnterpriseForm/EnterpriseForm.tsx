@@ -104,7 +104,9 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
       setIsLoading(true);
       const { data } = await api.post<{ data: { id: number } }>(
         '/enterprises',
-        { data: { ...form } },
+        {
+          data: { ...form },
+        },
       );
 
       if (data.data?.id && form?.company?.value) {
@@ -141,9 +143,34 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
     try {
       setIsLoading(true);
       const { data } = await api.put<{ data: { id: number } }>(
+        `enterprises/${companyId}`,
+        {
+          data: {
+            ...form,
+            image: undefined,
+            address: undefined,
+            city: undefined,
+            neighborhood: undefined,
+            number: undefined,
+            state: undefined,
+            zipCode: undefined,
+            complement: undefined,
+          },
+        },
+      );
+
+      await api.put<{ data: { id: number } }>(
         `/updateEnterprise?enterpriseId=${companyId}`,
         {
-          data: { ...form },
+          data: {
+            address: form?.address || '',
+            city: form?.city || '',
+            neighborhood: form?.neighborhood || '',
+            number: form?.number || '',
+            state: form?.state || '',
+            zipCode: form?.zipCode || '',
+            complement: form?.complement || '',
+          },
         },
       );
 

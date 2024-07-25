@@ -61,7 +61,7 @@ const FileForm = ({ onClose, content }: FileProps) => {
       await api.put(`/containers/${content?.id}`, {
         data: {
           order,
-          visible: active.value === 'sim' ? true : false || true,
+          visible: active.value === 'sim',
         },
       });
 
