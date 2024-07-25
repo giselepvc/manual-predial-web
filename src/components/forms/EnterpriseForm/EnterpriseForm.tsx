@@ -145,17 +145,7 @@ const EnterpriseForm = ({ isEditing, companyId }: CompanProps) => {
       const { data } = await api.put<{ data: { id: number } }>(
         `enterprises/${companyId}`,
         {
-          data: {
-            ...form,
-            image: undefined,
-            address: undefined,
-            city: undefined,
-            neighborhood: undefined,
-            number: undefined,
-            state: undefined,
-            zipCode: undefined,
-            complement: undefined,
-          },
+          data: { ...form },
         },
       );
 

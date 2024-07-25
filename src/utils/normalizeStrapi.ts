@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 export type RecursiveNormalize<O extends object> = O extends Array<infer inner>
   ? inner extends object
     ? RecursiveNormalizeStrapiObject<NonNullable<inner>>[]
@@ -18,7 +17,7 @@ export const normalizeStrapi = <T extends object>(
   }
   if (Array.isArray(param)) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
+    // @ts-ignore: Ignore depth
     return param.map((item: any) => {
       return normalizeStrapi(item) as any;
     }) as RecursiveNormalize<T>;
