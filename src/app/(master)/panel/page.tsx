@@ -109,6 +109,7 @@ const PanelPage = () => {
     enterprise?.city || null,
     enterprise?.state || null,
     `CEP: ${enterprise?.zipCode || null}`,
+    enterprise?.complement || null,
   ];
 
   const image1 = user?.group?.enterprise?.company?.image?.url;
