@@ -30,8 +30,8 @@ const FileForm = ({ onClose, content }: FileProps) => {
   const [image, setImage] = useState<File>();
   const [order, setOrder] = useState(content?.order || '');
   const [active, setActive] = useState({
-    label: content?.visible ? 'Sim' : 'Não' || 'Sim',
-    value: content?.visible ? 'sim' : 'nao' || 'sim',
+    label: content?.visible ? 'Sim' : 'Não',
+    value: content?.visible ? 'sim' : 'nao',
   });
 
   const onSubmitPhoto = async () => {

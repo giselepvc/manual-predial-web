@@ -43,8 +43,8 @@ const ParagraphForm = ({ onClose, content }: FileProps) => {
   const [subtitle, setTitle] = useState(content?.subtitle || '');
   const [order, setOrder] = useState(content?.order || '');
   const [active, setActive] = useState({
-    label: content?.visible ? 'Sim' : 'Não' || 'Sim',
-    value: content?.visible ? 'sim' : 'nao' || 'sim',
+    label: content?.visible ? 'Sim' : 'Não',
+    value: content?.visible ? 'sim' : 'nao',
   });
 
   const iconsParams = {

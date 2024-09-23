@@ -34,7 +34,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/utils/masks/document.tsz"
+    "src/utils/masks/document.tsz",
+    "build/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

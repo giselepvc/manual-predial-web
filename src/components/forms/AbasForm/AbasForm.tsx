@@ -44,7 +44,7 @@ const AbasForm = ({ onClose, content }: ChapterPageProps) => {
       order: content?.order,
       visible: content?.visible
         ? { label: 'Sim', value: 'sim' }
-        : { label: 'Não', value: 'nao' } || { label: 'Sim', value: 'sim' },
+        : { label: 'Não', value: 'nao' },
       icon: 0,
     },
   });

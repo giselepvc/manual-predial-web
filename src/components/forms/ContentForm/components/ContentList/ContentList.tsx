@@ -88,8 +88,8 @@ const ContentList = ({
                     reset({
                       order: content?.order?.toString() || '',
                       visible: {
-                        label: content?.visible ? 'Sim' : 'Não' || 'Sim',
-                        value: content?.visible ? 'sim' : 'nao' || 'sim',
+                        label: content?.visible ? 'Sim' : 'Não',
+                        value: content?.visible ? 'sim' : 'nao',
                       },
                       description: content?.subtitle || '',
                       title: content?.title || '',

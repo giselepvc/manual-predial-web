@@ -34,8 +34,8 @@ const ImageForm = ({ onClose, content }: FileProps) => {
   const [description, setDesciption] = useState(content?.description || '');
   const [order, setOrder] = useState(content?.order || '');
   const [active, setActive] = useState({
-    label: content?.visible ? 'Sim' : 'Não' || 'Sim',
-    value: content?.visible ? 'sim' : 'nao' || 'sim',
+    label: content?.visible ? 'Sim' : 'Não',
+    value: content?.visible ? 'sim' : 'nao',
   });
 
   const onSubmitPhoto = async () => {
