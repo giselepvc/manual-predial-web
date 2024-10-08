@@ -116,7 +116,7 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
         title: form.title.toUpperCase(),
         company: undefined,
         enterprise: undefined,
-        icon: form?.icon !== 0 ? undefined : form?.icon,
+        icon: form?.icon === 0 ? undefined : form?.icon,
         visible: form.visible?.value === 'sim',
         type: form?.type?.value,
         groups: type.includes('default')
