@@ -58,7 +58,7 @@ const TableContainer = ({
         {container?.type === 'paragraph' && container?.description && (
           <InfoColumnSection>
             {renderDescription(
-              container.description,
+              container?.description,
               container?.italic || false,
             )}
           </InfoColumnSection>
@@ -70,8 +70,8 @@ const TableContainer = ({
             italic={container?.italic || false}
             style={{ flexDirection: 'row', gap: '0.2rem' }}
           >
-            {container.subtitle && <strong>{container.subtitle}:</strong>}
-            {container.description}
+            {container?.subtitle && <strong>{container?.subtitle}:</strong>}
+            {container?.description}
           </Description>
         )}
 
@@ -79,7 +79,7 @@ const TableContainer = ({
           <InfoSection>
             <InfoColumnSection>
               {renderDescription(
-                container.description,
+                container?.description,
                 container?.italic || false,
                 container?.icon?.image?.url,
               )}
@@ -90,7 +90,7 @@ const TableContainer = ({
         {container?.type === 'image' && (
           <ColumnDetails>
             {container?.image?.url && (
-              <Img src={urlBuild(container.image.url)} alt="container" />
+              <Img src={urlBuild(container?.image?.url)} alt="container" />
             )}
             <span>
               <strong>Legenda</strong>: {container?.description || ''}
@@ -107,7 +107,7 @@ const TableContainer = ({
                 }}
               >
                 <FaDownload color={theme.colors.grayStronger} />
-                {container.pdf?.name}
+                {container?.pdf?.name}
               </ButtonDownload>
             )}
           </InfoSection>
@@ -127,7 +127,9 @@ const TableContainer = ({
                   }}
                 >
                   {subcontainer?.icon?.image?.url && (
-                    <IconNavbar src={urlBuild(subcontainer.icon.image.url)} />
+                    <IconNavbar
+                      src={urlBuild(subcontainer?.icon?.image?.url)}
+                    />
                   )}
                   {subcontainer.title || ''}
                 </InfoText>

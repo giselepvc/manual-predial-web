@@ -17,6 +17,7 @@ import { useAuth } from '@/hooks/useAuth';
 import api from '@/services/api';
 
 import PageLayout from '@/components/PageLayout/PageLayout';
+import Loading from '@/components/Loading/Loading';
 import TableContainer from './components/TableContainer/TableContainer';
 import AbasContainer from './components/AbasContainer/AbasContainer';
 import ChapterContainer from './components/ChapterContainer/ChapterContainer';
@@ -49,7 +50,7 @@ const PanelPage = () => {
     'filters[capters][groups]': user?.group?.id,
   };
 
-  const { data: manuals } = useQuery({
+  const { data: manuals, isLoading } = useQuery({
     queryKey: ['manualForm', manualsParams],
     queryFn: async () => {
       const data = await getManuals(manualsParams);
@@ -92,7 +93,7 @@ const PanelPage = () => {
       capter.groups.find(group => group.id === user?.group?.id),
     ) || [];
 
-  const { data: enterprises } = useEnterprise(
+  const { data: enterprises, isLoading: enterpriseIsLoading } = useEnterprise(
     {
       populate: 'groups.enterprise',
       'filters[id]': user?.group?.enterprise?.id,
@@ -108,7 +109,7 @@ const PanelPage = () => {
     enterprise?.neighborhood || null,
     enterprise?.city || null,
     enterprise?.state || null,
-    `CEP: ${enterprise?.zipCode || null}`,
+    enterprise?.zipCode ? `CEP: ${enterprise?.zipCode}` : null,
     enterprise?.complement || null,
   ];
 
@@ -121,7 +122,7 @@ const PanelPage = () => {
       <Header>
         {image2 && <Image src={urlBuild(image2)} alt="Logo" />}
         <div>{name || 'Manual Predial'}</div>
-        <div>{addressList?.filter(i => i).join(', ')}</div>
+        <div>{addressList?.filter(i => i !== null).join(', ')}</div>
       </Header>
 
       <Content>
@@ -190,6 +191,8 @@ const PanelPage = () => {
       </Content>
 
       <Footer />
+
+      {isLoading && !enterpriseIsLoading && !loading && <Loading />}
     </PageLayout>
   );
 };

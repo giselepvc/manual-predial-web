@@ -4,7 +4,7 @@ import Modal from '../Modal/Modal';
 
 const Loading = () => {
   return (
-    <Modal>
+    <Modal zIndex={99999}>
       <ReactLoading type="spin" color="#86BD2C" height="25px" width="25px" />
     </Modal>
   );

@@ -30,7 +30,7 @@ const ChapterContainer = ({
         <IconArrow
           src={
             chapter?.icon?.image?.url
-              ? urlBuild(chapter?.icon.image.url)
+              ? urlBuild(chapter?.icon?.image?.url)
               : '/icons/image.svg'
           }
           alt="icon"

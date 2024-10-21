@@ -73,21 +73,21 @@ const AbasContainer = ({
               renderDescription(
                 content?.description,
                 content?.italic || false,
-                content.subtitle,
+                content?.subtitle,
               )}
 
             {content?.type === 'paragraphIcon' &&
               renderDescriptionWithIcon(
                 content?.description,
                 content?.italic || false,
-                content.icon.image.url,
+                content?.icon?.image?.url,
               )}
 
             {content?.type === 'image' && (
               <ColumnDetails>
                 {content?.image?.url && (
                   <Img
-                    src={urlBuild(content.image.url)}
+                    src={urlBuild(content?.image?.url)}
                     alt="imagem do container"
                   />
                 )}
@@ -99,14 +99,14 @@ const AbasContainer = ({
 
             {content?.type === 'pdf' && (
               <InfoSection>
-                {content.pdf?.name && (
+                {content?.pdf?.name && (
                   <ButtonDownload
                     onClick={() => {
                       window.open(urlBuild(content?.pdf?.url), '_blank');
                     }}
                   >
                     <FaDownload color={theme.colors.grayStronger} />
-                    {content.pdf?.name}
+                    {content?.pdf?.name}
                   </ButtonDownload>
                 )}
               </InfoSection>

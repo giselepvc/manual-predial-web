@@ -1,23 +1,37 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+
 import PageLayout from '@/components/PageLayout/PageLayout';
+import ConfirmModal from '@/components/ConfirmeModal/ConfirmeModal';
+
 import { getIcons } from '@/services/querys/icons';
 import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import { urlBuild } from '@/utils/urlBuild';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import Action from '@/components/Action/Action';
-import handleError from '@/utils/handleToast';
+import handleError, { handleSuccess } from '@/utils/handleToast';
 import api from '@/services/api';
+
+import PlusIcon from '../../../../public/icons/plus.svg';
+
 import {
   ImageButton,
   IconsList,
   IconsTitle,
   MainComponent,
   Image,
+  DeleteIcon,
+  IconWrapper,
+  FilterRegister,
 } from './styles';
 
 const IconsPage = () => {
   const query = useQueryClient();
+  const router = useRouter();
+
+  const [deletingId, setDeletingId] = useState<number>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const iconsParams = {
     populate: '*',
@@ -51,16 +65,46 @@ const IconsPage = () => {
     }
   };
 
+  const onDelete = async () => {
+    if (!deletingId) return;
+
+    setIsLoading(true);
+
+    try {
+      await api.delete(`/icons/${deletingId}`);
+
+      handleSuccess('Ícone excluído com sucesso');
+      setDeletingId(undefined);
+      query.invalidateQueries({ queryKey: ['iconsData'] });
+    } catch (err: any) {
+      handleError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleNavigation = () => {
+    if (icons && icons?.length >= 100) {
+      handleError('Não é possível cadastrar mais de 100 ícones');
+      return;
+    }
+
+    router.push('/icons/create');
+  };
+
   return (
     <PageLayout title="Listagem de ícones">
       <MainComponent>
-        <Action title="Cadastrar novo ícone" notFilter href="/icons/create" />
+        <FilterRegister onClick={handleNavigation}>
+          <PlusIcon />
+          Cadastrar novo ícone
+        </FilterRegister>
 
         <IconsTitle>Ícones ativos</IconsTitle>
 
         <IconsList>
           {icons
-            ?.filter(item => item.image.id && item.active)
+            ?.filter(item => item.active)
             ?.map(icon => (
               <ImageButton
                 selected={icon.active}
@@ -74,18 +118,37 @@ const IconsPage = () => {
         <IconsTitle>Ícones disponíveis</IconsTitle>
 
         <IconsList>
-          {icons
-            ?.filter(item => item.image.id)
-            ?.map(icon => (
-              <ImageButton
-                selected={icon.active}
-                onClick={() => onUpdate(icon.id, icon.active)}
-              >
+          {icons?.map(icon => (
+            <ImageButton selected={icon.active}>
+              <IconWrapper onClick={() => onUpdate(icon.id, icon.active)}>
                 <Image src={urlBuild(icon.image?.url)} alt={icon.title} />
-              </ImageButton>
-            ))}
+              </IconWrapper>
+
+              {!icon.active && (
+                <DeleteIcon onClick={() => setDeletingId(icon.id)}>
+                  x
+                </DeleteIcon>
+              )}
+            </ImageButton>
+          ))}
         </IconsList>
       </MainComponent>
+
+      {deletingId && (
+        <ConfirmModal
+          title="Atenção"
+          onClose={() => setDeletingId(undefined)}
+          onConfirm={onDelete}
+          onCancel={() => setDeletingId(undefined)}
+          cancelText="Cancelar"
+          confirmText="Sim, excluir"
+          isLoading={isLoading}
+        >
+          <ConfirmModal.Message>
+            Tem certeza que deseja <strong>excluir</strong> esse ícone?
+          </ConfirmModal.Message>
+        </ConfirmModal>
+      )}
     </PageLayout>
   );
 };
