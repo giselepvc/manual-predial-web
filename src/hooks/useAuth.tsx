@@ -2,13 +2,17 @@
 
 'use client';
 
-import { IClients } from '@/interfaces/clients';
-import { useClients } from '@/services/querys/clients';
-import { localStorageKeys } from '@/utils/localStorageKeys';
-import { RecursiveNormalize } from '@/utils/normalizeStrapi';
-import { redirect, usePathname } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import { createContext, ReactNode } from 'react';
+import { redirect, usePathname } from 'next/navigation';
+
+import { IClients } from '@/interfaces/clients';
+
+import { useClients } from '@/services/querys/clients';
+
+import { localStorageKeys } from '@/utils/localStorageKeys';
+import { RecursiveNormalize } from '@/utils/normalizeStrapi';
+import { setupAxiosInterceptors } from '@/services/api';
 
 export interface User {
   id: number;
@@ -17,18 +21,19 @@ export interface User {
 }
 
 export interface ILoginResponse {
+  user: User;
   jwt: string;
   refreshToken: string;
-  user: User;
   role: number;
 }
 
 interface IUserProvider {
   user: RecursiveNormalize<IClients> | undefined;
-  setUserId: React.Dispatch<React.SetStateAction<number | undefined>>;
+  role: number | undefined;
+  isloading: boolean;
   isAuthenticated: boolean;
   logout: () => void;
-  role: number | undefined;
+  setUserId: React.Dispatch<React.SetStateAction<number | undefined>>;
   setRole: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
 
@@ -41,6 +46,7 @@ const AuthContext = createContext({} as IUserProvider);
 const AuthProvider = ({ children }: ChildrenProps) => {
   const [userId, setUserId] = useState<number | undefined>();
   const [loading, setLoading] = useState(true);
+  const [isloading, setIsLoading] = useState(false);
   const [role, setRole] = useState<number>();
   const pathname = usePathname();
 
@@ -75,6 +81,10 @@ const AuthProvider = ({ children }: ChildrenProps) => {
     setLoading(false);
   }, []);
 
+  useEffect(() => {
+    setupAxiosInterceptors(setIsLoading);
+  }, []);
+
   const isAuthenticated = !!userId;
 
   const logout = () => {
@@ -98,7 +108,15 @@ const AuthProvider = ({ children }: ChildrenProps) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, setUserId, isAuthenticated, logout, role, setRole }}
+      value={{
+        user,
+        setUserId,
+        isAuthenticated,
+        logout,
+        role,
+        setRole,
+        isloading,
+      }}
     >
       {children}
     </AuthContext.Provider>
