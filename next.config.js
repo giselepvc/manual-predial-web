@@ -4,6 +4,9 @@ module.exports = {
       ssr: true,
     },
   },
+  images: {
+    domains: ['api.manualpredial.com.br'],
+  },
   webpack: config => {
     config.module.rules.push({
       test: /\.svg$/,
