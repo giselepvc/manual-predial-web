@@ -100,6 +100,7 @@ const PanelPage = () => {
   const image1 = user?.group?.enterprise?.company?.image?.url;
   const image2 = user?.group?.enterprise?.image?.url;
   const name = user?.group?.enterprise?.title || manuals?.enterprise?.title;
+  const isSubContent = sub?.id && sub?.visible;
 
   const chapters =
     manuals?.capters.filter(c => c.groups.find(g => g.id === groupId)) || [];
@@ -146,7 +147,7 @@ const PanelPage = () => {
                               hasFirst={i === 0}
                               hasLast={title?.containers?.length === i + 1}
                             />
-                            {sub?.id && container?.type === 'abas' && (
+                            {isSubContent && container?.type === 'abas' && (
                               <AbasContainer
                                 title={sub?.subtitle || ''}
                                 subContainer={sub?.sub_containers || []}
@@ -160,7 +161,7 @@ const PanelPage = () => {
                 ))}
             </>
           ))}
-          {chapters && chapters?.length > 0 && <ManualMap chapter={chapters} />}
+          {chapters?.length > 0 && <ManualMap chapter={chapters} />}
         </Table>
       </Content>
 
