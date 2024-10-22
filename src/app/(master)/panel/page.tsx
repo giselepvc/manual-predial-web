@@ -3,12 +3,15 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
-import { CaptersDatum, TitlesDatum, ContainerData } from '@/interfaces/manual';
+import { CaptersDatum as IChapters } from '@/interfaces/manual';
+import { TitlesDatum as ITitles } from '@/interfaces/manual';
+import { ContentsDatum as IContents } from '@/interfaces/manual';
+import { ContainerData as IContainers } from '@/interfaces/manual';
+import { RecursiveNormalize as R } from '@/utils/normalizeStrapi';
 
 import { getManuals } from '@/services/querys/manual';
 import { useEnterprise } from '@/services/querys/enterprise';
 import { urlBuild } from '@/utils/urlBuild';
-import { RecursiveNormalize as R } from '@/utils/normalizeStrapi';
 import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -23,54 +26,61 @@ import Footer from './components/Footer/Footer';
 
 import { Content, Header, Table, Thread, Image, Separator } from './styles';
 
+type ManualsParams = {
+  [key: string]: string | number | undefined;
+};
+
+type IFilters = { visible: boolean; order: number };
+
 const PanelPage = () => {
   const { user } = useAuth();
+  const groupId = user?.group?.id;
+  const enterpriseId = user?.group?.enterprise?.id;
 
-  const [chapterSelected, setChapter] = useState<R<CaptersDatum> | undefined>();
-  const [titleSelected, setTitle] = useState<R<TitlesDatum> | undefined>();
-  const [sub, setSubContent] = useState<R<ContainerData> | undefined>();
+  const [chapterSelected, setChapter] = useState<R<IChapters> | undefined>();
+  const [titleSelected, setTitle] = useState<R<ITitles> | undefined>();
+  const [sub, setSubContent] = useState<R<IContainers> | undefined>();
 
-  const manualsParams = {
-    'populate[0]': 'capters.titles.containers.image',
-    'populate[1]': 'enterprise.company.image',
-    'populate[3]': 'capters.icon.image',
-    'populate[4]': 'capters.titles.containers.pdf',
-    'populate[5]': 'capters.titles.containers.icon.image',
-    'populate[6]': 'capters.groups',
-    'populate[7]': 'enterprise.image',
-    'populate[8]': 'capters.titles.containers.sub_containers.pdf',
-    'populate[9]': 'capters.titles.containers.sub_containers.icon.image',
-    'populate[10]': 'capters.titles.containers.sub_containers.image',
-    'populate[11]': 'capters.titles.containers.sub_containers.sub_containers',
-    'populate[12]':
-      'capters.titles.containers.sub_containers.sub_containers.icon.image',
-    'populate[13]':
-      'capters.titles.containers.sub_containers.sub_containers.image',
-    'filters[capters][groups]': user?.group?.id,
+  const populate = [
+    'capters.titles.containers.image',
+    'enterprise.company.image',
+    'capters.icon.image',
+    'capters.titles.containers.pdf',
+    'capters.titles.containers.icon.image',
+    'capters.groups',
+    'enterprise.image',
+    'capters.titles.containers.sub_containers.pdf',
+    'capters.titles.containers.sub_containers.icon.image',
+    'capters.titles.containers.sub_containers.image',
+    'capters.titles.containers.sub_containers.sub_containers',
+    'capters.titles.containers.sub_containers.sub_containers.icon.image',
+    'capters.titles.containers.sub_containers.sub_containers.image',
+  ];
+
+  const manualsParams: ManualsParams = populate.reduce((params, path, idx) => {
+    params[`populate[${idx}]`] = path;
+    return params;
+  }, {} as ManualsParams);
+
+  manualsParams['filters[capters][groups]'] = groupId;
+
+  const fetchManuals = async () => {
+    const data = await getManuals(manualsParams);
+    return normalizeStrapi(data || [])?.[0];
   };
 
   const { data: manuals, isLoading } = useQuery({
     queryKey: ['manualForm', manualsParams],
-    queryFn: async () => {
-      const data = await getManuals(manualsParams);
-      const results = normalizeStrapi(data || []);
-      return results?.[0];
-    },
+    queryFn: fetchManuals,
     enabled: !!user?.group?.id,
   });
 
-  const chaptersist =
-    manuals?.capters.filter(capter =>
-      capter.groups.find(group => group.id === user?.group?.id),
-    ) || [];
+  const enterParams = {
+    populate: 'groups.enterprise',
+    'filters[id]': enterpriseId,
+  };
 
-  const { data: enterprises, isLoading: enterpriseIsLoading } = useEnterprise(
-    {
-      populate: 'groups.enterprise',
-      'filters[id]': user?.group?.enterprise?.id,
-    },
-    !!user?.group?.enterprise?.id,
-  );
+  const { data: enterprises } = useEnterprise(enterParams, !!enterpriseId);
 
   const enterprise = enterprises?.[0];
 
@@ -88,6 +98,12 @@ const PanelPage = () => {
   const image2 = user?.group?.enterprise?.image?.url;
   const name = user?.group?.enterprise?.title || manuals?.enterprise?.title;
 
+  const chapters =
+    manuals?.capters.filter(c => c.groups.find(g => g.id === groupId)) || [];
+
+  const filtered = <T extends IFilters>(list: T[]): T[] =>
+    list.filter(item => item.visible).sort((a, b) => a.order - b.order);
+
   return (
     <PageLayout hasLogo logo={image1 && urlBuild(image1)}>
       <Header>
@@ -98,69 +114,55 @@ const PanelPage = () => {
 
       <Content>
         <Table>
-          {chaptersist
-            .filter(item => item.visible)
-            .sort((a, b) => a.order - b.order)
-            .map(chapter => (
-              <>
-                <ChapterContainer
-                  chapter={chapter}
-                  selected={chapterSelected}
-                  setSubContent={setSubContent}
-                  setSelected={setChapter}
-                />
-
-                {chapterSelected?.id === chapter.id &&
-                  chapter.titles
-                    .filter(item => item.visible)
-                    .sort((a, b) => a.order - b.order)
-                    .map((title, index) => (
-                      <>
-                        <TitleContainer
-                          index={index}
-                          selected={titleSelected}
-                          setSelected={setTitle}
-                          setSubContent={setSubContent}
-                          title={title}
-                        />
-
-                        {titleSelected?.id === title.id &&
-                          title.containers
-                            .filter(item => item.visible)
-                            .sort((a, b) => a.order - b.order)
-                            .map((container, i) => (
-                              <Thread key={container.id}>
-                                <TableContainer
-                                  setSubContainer={setSubContent}
-                                  subContainer={sub}
-                                  container={container}
-                                  hasFirst={i === 0}
-                                  hasLast={title?.containers?.length === i + 1}
-                                />
-
-                                {sub?.id && container?.type === 'abas' && (
-                                  <AbasContainer
-                                    title={sub?.subtitle || ''}
-                                    subContainer={sub?.sub_containers || []}
-                                  />
-                                )}
-                              </Thread>
-                            ))}
-                        <Separator />
-                      </>
-                    ))}
-              </>
-            ))}
-
-          {chaptersist && chaptersist?.length > 0 && (
-            <ManualMap chapter={chaptersist} />
-          )}
+          {filtered<R<IChapters>>(chapters).map(chapter => (
+            <>
+              <ChapterContainer
+                chapter={chapter}
+                selected={chapterSelected}
+                setSubContent={setSubContent}
+                setSelected={setChapter}
+              />
+              {chapterSelected?.id === chapter.id &&
+                filtered<R<ITitles>>(chapter.titles).map((title, index) => (
+                  <>
+                    <TitleContainer
+                      index={index}
+                      selected={titleSelected}
+                      setSelected={setTitle}
+                      setSubContent={setSubContent}
+                      title={title}
+                    />
+                    {titleSelected?.id === title.id &&
+                      filtered<R<IContents>>(title.containers).map(
+                        (container, i) => (
+                          <Thread key={container.id}>
+                            <TableContainer
+                              setSubContainer={setSubContent}
+                              subContainer={sub}
+                              container={container}
+                              hasFirst={i === 0}
+                              hasLast={title?.containers?.length === i + 1}
+                            />
+                            {sub?.id && container?.type === 'abas' && (
+                              <AbasContainer
+                                title={sub?.subtitle || ''}
+                                subContainer={sub?.sub_containers || []}
+                              />
+                            )}
+                          </Thread>
+                        ),
+                      )}
+                    <Separator />
+                  </>
+                ))}
+            </>
+          ))}
+          {chapters && chapters?.length > 0 && <ManualMap chapter={chapters} />}
         </Table>
       </Content>
 
       <Footer />
-
-      {isLoading && !enterpriseIsLoading && <Loading />}
+      {isLoading && <Loading />}
     </PageLayout>
   );
 };
