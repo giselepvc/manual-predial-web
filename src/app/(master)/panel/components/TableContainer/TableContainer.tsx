@@ -120,21 +120,25 @@ const TableContainer = ({
 
         {container?.type === 'abas' && container?.sub_containers && (
           <InfoSection style={{ borderBottom: '1px solid #AAAAAA' }}>
-            {container?.sub_containers?.map(subcontainer => (
-              <InfoText
-                selected={subcontainer?.id === subContainer?.id}
-                onClick={() => {
-                  setSubContainer(subItem =>
-                    subItem === subcontainer ? undefined : subcontainer,
-                  );
-                }}
-              >
-                {subcontainer?.icon?.image?.url && (
-                  <IconNavbar src={urlBuild(subcontainer?.icon?.image?.url)} />
-                )}
-                {subcontainer.title || ''}
-              </InfoText>
-            ))}
+            {container?.sub_containers
+              ?.filter(item => item.visible)
+              .map(subcontainer => (
+                <InfoText
+                  selected={subcontainer?.id === subContainer?.id}
+                  onClick={() => {
+                    setSubContainer(subItem =>
+                      subItem === subcontainer ? undefined : subcontainer,
+                    );
+                  }}
+                >
+                  {subcontainer?.icon?.image?.url && (
+                    <IconNavbar
+                      src={urlBuild(subcontainer?.icon?.image?.url)}
+                    />
+                  )}
+                  {subcontainer.title || ''}
+                </InfoText>
+              ))}
           </InfoSection>
         )}
       </InfoSection>
