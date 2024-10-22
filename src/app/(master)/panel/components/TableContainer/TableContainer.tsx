@@ -1,7 +1,7 @@
 import { urlBuild } from '@/utils/urlBuild';
 import { RecursiveNormalize } from '@/utils/normalizeStrapi';
 import { ContentsDatum, ContainerData } from '@/interfaces/manual';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 import { FaDownload } from 'react-icons/fa6';
 import { theme } from '@/styles/theme';
 import {
@@ -21,7 +21,6 @@ interface ContainerProps {
   container: RecursiveNormalize<ContentsDatum> | undefined;
   hasLast?: boolean;
   hasFirst?: boolean;
-  loading?: boolean;
   subContainer: RecursiveNormalize<ContainerData> | undefined;
   setSubContainer: Dispatch<
     SetStateAction<RecursiveNormalize<ContainerData> | undefined>
@@ -31,7 +30,6 @@ interface ContainerProps {
 const TableContainer = ({
   container,
   hasLast,
-  loading,
   hasFirst,
   subContainer,
   setSubContainer,
@@ -51,6 +49,13 @@ const TableContainer = ({
       </InfoSection>
     ));
   };
+
+  useEffect(() => {
+    if (container?.type === 'abas') {
+      const subContainer = container?.sub_containers?.[0];
+      setSubContainer(subContainer);
+    }
+  }, []);
 
   return (
     <TableDetails hasLast={hasLast} hasFirst={hasFirst}>
@@ -113,29 +118,25 @@ const TableContainer = ({
           </InfoSection>
         )}
 
-        {container?.type === 'abas' &&
-          container?.sub_containers &&
-          !loading && (
-            <InfoSection style={{ borderBottom: '1px solid #AAAAAA' }}>
-              {container?.sub_containers?.map(subcontainer => (
-                <InfoText
-                  selected={subcontainer?.id === subContainer?.id}
-                  onClick={() => {
-                    setSubContainer(subItem =>
-                      subItem === subcontainer ? undefined : subcontainer,
-                    );
-                  }}
-                >
-                  {subcontainer?.icon?.image?.url && (
-                    <IconNavbar
-                      src={urlBuild(subcontainer?.icon?.image?.url)}
-                    />
-                  )}
-                  {subcontainer.title || ''}
-                </InfoText>
-              ))}
-            </InfoSection>
-          )}
+        {container?.type === 'abas' && container?.sub_containers && (
+          <InfoSection style={{ borderBottom: '1px solid #AAAAAA' }}>
+            {container?.sub_containers?.map(subcontainer => (
+              <InfoText
+                selected={subcontainer?.id === subContainer?.id}
+                onClick={() => {
+                  setSubContainer(subItem =>
+                    subItem === subcontainer ? undefined : subcontainer,
+                  );
+                }}
+              >
+                {subcontainer?.icon?.image?.url && (
+                  <IconNavbar src={urlBuild(subcontainer?.icon?.image?.url)} />
+                )}
+                {subcontainer.title || ''}
+              </InfoText>
+            ))}
+          </InfoSection>
+        )}
       </InfoSection>
     </TableDetails>
   );

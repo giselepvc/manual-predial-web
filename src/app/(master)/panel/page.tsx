@@ -4,17 +4,13 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { CaptersDatum, TitlesDatum, ContainerData } from '@/interfaces/manual';
-import { IContent } from '@/interfaces/content';
-import { Paginated } from '@/interfaces/paginated';
 
 import { getManuals } from '@/services/querys/manual';
 import { useEnterprise } from '@/services/querys/enterprise';
-import handleError from '@/utils/handleToast';
 import { urlBuild } from '@/utils/urlBuild';
 import { RecursiveNormalize as R } from '@/utils/normalizeStrapi';
 import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import { useAuth } from '@/hooks/useAuth';
-import api from '@/services/api';
 
 import PageLayout from '@/components/PageLayout/PageLayout';
 import Loading from '@/components/Loading/Loading';
@@ -33,7 +29,6 @@ const PanelPage = () => {
   const [chapterSelected, setChapter] = useState<R<CaptersDatum> | undefined>();
   const [titleSelected, setTitle] = useState<R<TitlesDatum> | undefined>();
   const [sub, setSubContent] = useState<R<ContainerData> | undefined>();
-  const [loading, setLoading] = useState(false);
 
   const manualsParams = {
     'populate[0]': 'capters.titles.containers.image',
@@ -47,6 +42,8 @@ const PanelPage = () => {
     'populate[9]': 'capters.titles.containers.sub_containers.icon.image',
     'populate[10]': 'capters.titles.containers.sub_containers.image',
     'populate[11]': 'capters.titles.containers.sub_containers.sub_containers',
+    'populate[12]':
+      'capters.titles.containers.sub_containers.sub_containers.icon.image',
     'filters[capters][groups]': user?.group?.id,
   };
 
@@ -59,34 +56,6 @@ const PanelPage = () => {
     },
     enabled: !!user?.group?.id,
   });
-
-  const getContent = async (id: number) => {
-    try {
-      setLoading(true);
-      const { data } = await api.get<Paginated<IContent>>('/containers', {
-        params: {
-          'filters[id]': id,
-          'populate[0]': 'sub_containers.pdf',
-          'populate[1]': 'sub_containers.icon.image',
-          'populate[3]': 'container',
-          'populate[4]': 'sub_containers.image',
-          'populate[5]': 'icon.image',
-          'populate[6]': 'pdf',
-          'populate[7]': 'image',
-          'populate[8]': 'sub_containers.sub_containers.pdf',
-          'populate[9]': 'sub_containers.sub_containers.icon.image',
-          'populate[10]': 'sub_containers.sub_containers.image',
-        },
-      });
-
-      const result = normalizeStrapi(data.data?.[0]);
-      setSubContent(result?.sub_containers?.[0]);
-    } catch (error) {
-      handleError(error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const chaptersist =
     manuals?.capters.filter(capter =>
@@ -147,7 +116,6 @@ const PanelPage = () => {
                       <>
                         <TitleContainer
                           index={index}
-                          getContent={getContent}
                           selected={titleSelected}
                           setSelected={setTitle}
                           setSubContent={setSubContent}
@@ -163,7 +131,6 @@ const PanelPage = () => {
                                 <TableContainer
                                   setSubContainer={setSubContent}
                                   subContainer={sub}
-                                  loading={loading}
                                   container={container}
                                   hasFirst={i === 0}
                                   hasLast={title?.containers?.length === i + 1}
@@ -173,7 +140,6 @@ const PanelPage = () => {
                                   <AbasContainer
                                     title={sub?.subtitle || ''}
                                     subContainer={sub?.sub_containers || []}
-                                    loading={loading}
                                   />
                                 )}
                               </Thread>
@@ -192,7 +158,7 @@ const PanelPage = () => {
 
       <Footer />
 
-      {isLoading && !enterpriseIsLoading && !loading && <Loading />}
+      {isLoading && !enterpriseIsLoading && <Loading />}
     </PageLayout>
   );
 };

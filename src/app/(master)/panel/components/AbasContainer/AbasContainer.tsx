@@ -1,8 +1,12 @@
+import { FaDownload } from 'react-icons/fa6';
+
 import { ContainerData } from '@/interfaces/manual';
+
 import { RecursiveNormalize } from '@/utils/normalizeStrapi';
 import { urlBuild } from '@/utils/urlBuild';
-import { FaDownload } from 'react-icons/fa6';
+
 import { theme } from '@/styles/theme';
+
 import {
   ButtonDownload,
   ColumnDetails,
@@ -15,18 +19,11 @@ import {
 } from './styles';
 
 interface AbasContainerProps {
-  loading?: boolean;
-  subContainer: RecursiveNormalize<ContainerData[]> | [];
   title: string;
+  subContainer: RecursiveNormalize<ContainerData[]> | [];
 }
 
-const AbasContainer = ({
-  title,
-  subContainer,
-  loading,
-}: AbasContainerProps) => {
-  if (loading) return;
-
+const AbasContainer = ({ title, subContainer }: AbasContainerProps) => {
   const renderDescriptionWithIcon = (
     text: string,
     italic: boolean,
@@ -39,7 +36,7 @@ const AbasContainer = ({
         {image && (paragrafo || paragrafo !== '') && (
           <Icon src={urlBuild(image)} alt="imagem do container" />
         )}
-        <Description italic={italic}>{paragrafo}</Description>
+        <Description italic={italic}>{paragrafo || ''}</Description>
       </InfoSection>
     ));
   };

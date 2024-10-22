@@ -13,50 +13,47 @@ import {
 } from './styles';
 
 interface TitleProps {
-  setSubContent: Dispatch<SetStateAction<R<ContainerData> | undefined>>;
-  getContent: (id: number) => void;
+  index: number;
   selected: R<TitlesDatum> | undefined;
   title: R<TitlesDatum> | undefined;
-  index: number;
+  setSubContent: Dispatch<SetStateAction<R<ContainerData> | undefined>>;
   setSelected: Dispatch<SetStateAction<R<TitlesDatum> | undefined>>;
 }
 
 const TitleContainer = ({
+  index,
   selected,
   title,
-  index,
   setSubContent,
-  getContent,
   setSelected,
 }: TitleProps) => {
+  const hasSelected = title?.id === selected?.id;
+  const hasAbas = title?.containers?.[0]?.type === 'abas';
+
+  const handleSubContent = () => {
+    const id = title?.containers?.[0]?.id;
+
+    if (id && hasAbas && !hasSelected) {
+      setSubContent(undefined);
+    }
+  };
+
+  const handleSelect = () => {
+    setSelected(props => (props === title ? undefined : title));
+  };
+
+  const imageUrl = hasSelected
+    ? '/icons/up-arrow.svg'
+    : '/icons/down-arrow.svg';
+
   return (
-    <Thread
-      onClick={() => {
-        if (title?.containers?.[0]?.type === 'abas') {
-          setSubContent(undefined);
-          getContent(title?.containers?.[0]?.id);
-        }
-      }}
-    >
+    <Thread onClick={handleSubContent}>
       <ThreadSection>{index + 1 === 1 && <ThreadLine />}</ThreadSection>
-      <TableMore
-        key={selected?.id}
-        selected={title?.id === selected?.id}
-        onClick={() =>
-          setSelected(props => (props === title ? undefined : title))
-        }
-      >
+      <TableMore key={index} selected={hasSelected} onClick={handleSelect}>
         <InfoSection>
           <div>{title?.title?.toUpperCase() || ''}</div>
         </InfoSection>
-        <IconArrow
-          src={
-            title?.id === selected?.id
-              ? '/icons/up-arrow.svg'
-              : '/icons/down-arrow.svg'
-          }
-          alt="icon"
-        />
+        <IconArrow src={imageUrl} alt="icon" />
       </TableMore>
     </Thread>
   );
