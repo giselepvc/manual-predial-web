@@ -2,20 +2,18 @@ import styled from 'styled-components';
 
 export const Files = styled.div`
   width: 793px;
-  height: 1122px;
   padding: 1.5rem;
   display: block;
 `;
 
 export const Main = styled.div`
   width: 100%;
-  height: 100%;
   border: 1px solid black;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
+  gap: 0.98rem;
   padding: 2rem 1rem;
 `;
 

@@ -80,9 +80,12 @@ const PanelPage = () => {
     'filters[id]': enterpriseId,
   };
 
-  const { data: enterprises } = useEnterprise(enterParams, !!enterpriseId);
+  const { data: enterData, isLoading: isLoadingEnter } = useEnterprise(
+    enterParams,
+    !!enterpriseId,
+  );
 
-  const enterprise = enterprises?.[0];
+  const enterprise = enterData?.[0];
 
   const addressList = [
     enterprise?.address || null,
@@ -162,7 +165,7 @@ const PanelPage = () => {
       </Content>
 
       <Footer />
-      {isLoading && <Loading />}
+      {isLoading && !isLoadingEnter && <Loading />}
     </PageLayout>
   );
 };
