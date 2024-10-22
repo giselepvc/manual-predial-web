@@ -44,6 +44,8 @@ const PanelPage = () => {
     'populate[11]': 'capters.titles.containers.sub_containers.sub_containers',
     'populate[12]':
       'capters.titles.containers.sub_containers.sub_containers.icon.image',
+    'populate[13]':
+      'capters.titles.containers.sub_containers.sub_containers.image',
     'filters[capters][groups]': user?.group?.id,
   };
 
