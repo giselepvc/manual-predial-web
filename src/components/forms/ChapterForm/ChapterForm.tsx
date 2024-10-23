@@ -306,23 +306,21 @@ const ChapterForm = ({ onClose, manual, chapter, type }: ChapterPageProps) => {
         )}
       </FormSection>
 
-      <FormSection>
-        <Field>
-          <Label>Selecione um ícone</Label>
-          <RadiosRow>
+      <Field style={{ maxWidth: '860px' }}>
+        <Label>Selecione um ícone</Label>
+        <RadiosRow>
+          <CheckboxLabel>
+            <Checkbox type="radio" {...register('icon')} value={0} />
+            Nenhum
+          </CheckboxLabel>
+          {icons?.map(item => (
             <CheckboxLabel>
-              <Checkbox type="radio" {...register('icon')} value={0} />
-              Nenhum
+              <Checkbox type="radio" {...register('icon')} value={item.id} />
+              <Image src={urlBuild(item.image?.url)} alt="icons" />
             </CheckboxLabel>
-            {icons?.map(item => (
-              <CheckboxLabel>
-                <Checkbox type="radio" {...register('icon')} value={item.id} />
-                <Image src={urlBuild(item.image?.url)} alt="icons" />
-              </CheckboxLabel>
-            ))}
-          </RadiosRow>
-        </Field>
-      </FormSection>
+          ))}
+        </RadiosRow>
+      </Field>
 
       <ButtonSection>
         <Button outlined text="Voltar" type="button" onClick={onClose} />

@@ -2,6 +2,7 @@
 
 import PageLayout from '@/components/PageLayout/PageLayout';
 import ManualForm from '@/components/forms/ManualForm/ManualForm';
+
 import { useAuth } from '@/hooks/useAuth';
 
 const ManualEditPage = () => {

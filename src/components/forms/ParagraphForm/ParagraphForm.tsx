@@ -178,33 +178,31 @@ const ParagraphForm = ({ onClose, content }: FileProps) => {
       </FormSection>
 
       {content?.type === 'paragraphIcon' && (
-        <FormSection>
-          <Field>
-            <Label>Selecione um ícone</Label>
-            <RadiosRow>
+        <Field style={{ maxWidth: '860px' }}>
+          <Label>Selecione um ícone</Label>
+          <RadiosRow>
+            <CheckboxLabel>
+              <Checkbox type="radio" onClick={() => setIcon(0)} value={0} />
+              Nenhum
+            </CheckboxLabel>
+            {icons?.map(item => (
               <CheckboxLabel>
-                <Checkbox type="radio" onClick={() => setIcon(0)} value={0} />
-                Nenhum
+                <Checkbox
+                  type="radio"
+                  onClick={() => setIcon(item.id)}
+                  checked={icon === item.id}
+                  value={item.id}
+                />
+                <Image
+                  src={urlBuild(item.image?.url)}
+                  alt="icons"
+                  width={14}
+                  height={14}
+                />
               </CheckboxLabel>
-              {icons?.map(item => (
-                <CheckboxLabel>
-                  <Checkbox
-                    type="radio"
-                    onClick={() => setIcon(item.id)}
-                    checked={icon === item.id}
-                    value={item.id}
-                  />
-                  <Image
-                    src={urlBuild(item.image?.url)}
-                    alt="icons"
-                    width={14}
-                    height={14}
-                  />
-                </CheckboxLabel>
-              ))}
-            </RadiosRow>
-          </Field>
-        </FormSection>
+            ))}
+          </RadiosRow>
+        </Field>
       )}
 
       <ButtonSection>

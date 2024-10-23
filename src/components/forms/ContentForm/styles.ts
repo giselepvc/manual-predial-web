@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 
 export const RegisterForm = styled.form`
+  width: 100%;
+
   display: flex;
   flex-direction: column;
   gap: 1.4rem;
@@ -21,6 +23,7 @@ export const RegisterTitle = styled.h3`
 export const FormSection = styled.section`
   width: 100%;
   max-width: 860px;
+
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-column-gap: 0.8rem;
@@ -34,8 +37,9 @@ export const Image = styled.img`
 
 export const Field = styled.div`
   position: relative;
+
   width: 100%;
-  max-width: 27.75rem;
+
   display: flex;
   flex-direction: column;
 `;
@@ -66,11 +70,14 @@ export const ButtonSection = styled.div`
 `;
 
 export const RadiosRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+  width: 100%;
   margin-top: 10px;
   padding-left: 0.85rem;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 50px);
+  grid-row-gap: 1rem;
+  gap: 1rem;
 `;
 
 export const CheckboxLabel = styled.label`

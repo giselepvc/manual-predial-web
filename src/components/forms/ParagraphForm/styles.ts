@@ -89,11 +89,14 @@ export const TextArea = styled.textarea`
 `;
 
 export const RadiosRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+  width: 100%;
   margin-top: 10px;
   padding-left: 0.85rem;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 50px);
+  grid-row-gap: 1rem;
+  gap: 1rem;
 `;
 
 export const CheckboxLabel = styled.label`

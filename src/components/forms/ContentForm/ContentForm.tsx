@@ -175,6 +175,15 @@ const ContentForm = ({
     }
   };
 
+  const handleBack = () => {
+    if (contentId) {
+      setContentId(undefined);
+      onClear();
+      return;
+    }
+    onClose();
+  };
+
   return (
     <RegisterForm>
       <RegisterTitle>Listagem de titulos nas Abas</RegisterTitle>
@@ -242,44 +251,30 @@ const ContentForm = ({
         </Field>
       </FormSection>
 
-      <FormSection>
-        <Field>
-          <Label>Selecione um ícone</Label>
+      <Field>
+        <Label>Selecione um ícone</Label>
 
-          <RadiosRow>
+        <RadiosRow>
+          <CheckboxLabel>
+            <Checkbox type="radio" {...register('icon')} value={0} />
+            Nenhum
+          </CheckboxLabel>
+
+          {icons?.map(item => (
             <CheckboxLabel>
-              <Checkbox type="radio" {...register('icon')} value={0} />
-              Nenhum
+              <Checkbox type="radio" {...register('icon')} value={item.id} />
+              <Image src={urlBuild(item.image?.url)} alt="icons" />
             </CheckboxLabel>
+          ))}
+        </RadiosRow>
 
-            {icons?.map(item => (
-              <CheckboxLabel>
-                <Checkbox type="radio" {...register('icon')} value={item.id} />
-                <Image src={urlBuild(item.image?.url)} alt="icons" />
-              </CheckboxLabel>
-            ))}
-          </RadiosRow>
-
-          {errors?.icon?.message && (
-            <ErrorMessage>{errors.icon.message}</ErrorMessage>
-          )}
-        </Field>
-      </FormSection>
+        {errors?.icon?.message && (
+          <ErrorMessage>{errors.icon.message}</ErrorMessage>
+        )}
+      </Field>
 
       <ButtonSection>
-        <Button
-          outlined
-          text="Voltar"
-          type="button"
-          onClick={() => {
-            if (contentId) {
-              setContentId(undefined);
-              onClear();
-            } else {
-              onClose();
-            }
-          }}
-        />
+        <Button outlined text="Voltar" type="button" onClick={handleBack} />
         <Button
           text={contentId ? 'Editar' : 'Adicionar'}
           type="button"

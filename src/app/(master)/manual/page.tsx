@@ -1,27 +1,30 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { FaEye, FaTrash } from 'react-icons/fa6';
+
 import Action from '@/components/Action/Action';
 import PageLayout from '@/components/PageLayout/PageLayout';
 import Pagination from '@/components/Pagination/Pagination';
 import TableComponent from '@/components/Table/Table';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import ConfirmModal from '@/components/ConfirmeModal/ConfirmeModal';
+
 import { getManuals } from '@/services/querys/manual';
 import { normalizeStrapi } from '@/utils/normalizeStrapi';
-import { useRouter } from 'next/navigation';
-import { FaEye, FaTrash } from 'react-icons/fa6';
+import { useAuth } from '@/hooks/useAuth';
 import handleError, { handleSuccess } from '@/utils/handleToast';
 import api from '@/services/api';
-import { useState } from 'react';
-import ConfirmModal from '@/components/ConfirmeModal/ConfirmeModal';
-import { useAuth } from '@/hooks/useAuth';
-import { ActionButton } from './styles';
+
 import EditIcon from '../../../../public/icons/edit.svg';
+
+import { ActionButton, Wrapper } from './styles';
 
 const ManualPage = () => {
   const { push } = useRouter();
   const { role, user } = useAuth();
   const query = useQueryClient();
-
   const isCompany = role === 1;
 
   const [page, setPage] = useState(1);
@@ -45,22 +48,32 @@ const ManualPage = () => {
   const manuals = normalizeStrapi(manualsdData || []);
 
   const onDelete = async () => {
-    if (!deletingId) {
-      return;
-    }
+    if (!deletingId) return;
 
     try {
       setIsUpdating(true);
+
       await api.delete(`/manuals/${deletingId}`);
 
       handleSuccess('Manual deletado com sucesso.');
       setDeletingId(undefined);
+
       query.invalidateQueries({ queryKey: ['manualList'] });
     } catch (err: any) {
       handleError(err);
     } finally {
       setIsUpdating(false);
     }
+  };
+
+  const handleDelete = (id: number) => {
+    if (isUpdating) return;
+
+    setDeletingId(id);
+  };
+
+  const handleEdit = (id: number) => {
+    push(`/manual/edit/${id}`);
   };
 
   return (
@@ -88,43 +101,23 @@ const ManualPage = () => {
             <td>{manual.capters?.length || 0}</td>
             <td>
               {isCompany && (
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    gap: '1.5rem',
-                  }}
-                >
-                  <ActionButton
-                    onClick={() => push(`/manual/edit/${manual.id}`)}
-                  >
+                <Wrapper>
+                  <ActionButton onClick={() => handleEdit(manual.id)}>
                     <FaEye />
                     Visualizar
                   </ActionButton>
-                </div>
+                </Wrapper>
               )}
               {!isCompany && (
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    gap: '1.5rem',
-                  }}
-                >
-                  <ActionButton
-                    onClick={() => push(`/manual/edit/${manual.id}`)}
-                  >
+                <Wrapper>
+                  <ActionButton onClick={() => handleEdit(manual.id)}>
                     <EditIcon />
                     Editar
                   </ActionButton>
-                  <ActionButton
-                    onClick={() =>
-                      isUpdating ? null : setDeletingId(manual.id)
-                    }
-                  >
+                  <ActionButton onClick={() => handleDelete(manual.id)}>
                     <FaTrash />
                   </ActionButton>
-                </div>
+                </Wrapper>
               )}
             </td>
           </tr>
@@ -140,11 +133,11 @@ const ManualPage = () => {
       {deletingId && (
         <ConfirmModal
           title="Atenção"
-          onClose={() => setDeletingId(undefined)}
-          onConfirm={onDelete}
-          onCancel={() => setDeletingId(undefined)}
           cancelText="Cancelar"
           confirmText="Sim, excluir"
+          onConfirm={onDelete}
+          onClose={() => setDeletingId(undefined)}
+          onCancel={() => setDeletingId(undefined)}
           isLoading={isUpdating}
         >
           <ConfirmModal.Message>
