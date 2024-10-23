@@ -271,6 +271,15 @@ const ManualTable = ({
                                   <TableDetails>
                                     <InfoSection>
                                       <span>{container.order}</span>
+
+                                      {container.icon?.image?.url && (
+                                        <Image
+                                          src={urlBuild(
+                                            container.icon?.image?.url,
+                                          )}
+                                        />
+                                      )}
+
                                       <div>
                                         {container.type === 'abas' && 'Abas'}
                                         {container.type === 'keys' &&
