@@ -150,12 +150,7 @@ const Navbar = () => {
             </div>
           )}
 
-          <LogoutButton
-            type="button"
-            onClick={() => {
-              logout();
-            }}
-          >
+          <LogoutButton type="button" onClick={logout}>
             <ExitIcon />
           </LogoutButton>
         </LogoutSection>

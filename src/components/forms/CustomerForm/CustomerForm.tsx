@@ -303,7 +303,7 @@ const CustomerForm = ({
       setValue('company', optionCompany);
       setValue('enterprise', option);
     }
-  }, [watch('enterprise'), role]);
+  }, [role]);
 
   return (
     <>
