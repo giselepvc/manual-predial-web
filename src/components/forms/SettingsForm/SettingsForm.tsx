@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -33,19 +33,25 @@ import {
 } from './styles';
 
 const SettingsForm = () => {
-  const { user, setUserId, role } = useAuth();
   const query = useQueryClient();
+  const { user, role, setUserId } = useAuth();
+  const isCompany = role === 1;
 
   const [image, setImage] = useState<File>();
 
-  const isCompany = role === 1;
-
-  const { register } = useForm({
+  const { register, reset: resetUser } = useForm({
     defaultValues: {
       email: user?.users?.email || '',
       name: user?.name || '',
     },
   });
+
+  useEffect(() => {
+    resetUser({
+      name: user?.name || '',
+      email: user?.users?.email || 'Sem e-mail cadastrado',
+    });
+  }, [user]);
 
   const {
     register: registerPassword,
@@ -102,19 +108,21 @@ const SettingsForm = () => {
     }
   };
 
-  const handlemage = (image: string) => {
-    if (image) return urlBuild(image);
+  const photoHandler = () => {
+    if (image) return URL.createObjectURL(image);
     return '/icons/image.svg';
   };
 
   const renderImage = () => {
-    if (role === 1) handlemage(user?.enterprise?.company?.image?.url || '');
-    return handlemage(user?.users?.image?.url || '');
-  };
+    if (role === 1) {
+      return user?.enterprise?.company?.image?.url
+        ? urlBuild(user?.enterprise?.company?.image?.url)
+        : '/icons/image.svg';
+    }
 
-  const photoHandler = () => {
-    if (image) return URL.createObjectURL(image);
-    return '/icons/image.svg';
+    return user?.users?.image?.url
+      ? urlBuild(user?.users?.image?.url)
+      : '/icons/image.svg';
   };
 
   return (
