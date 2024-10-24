@@ -61,6 +61,7 @@ const AbasContainer = ({ title, subContainer }: AbasContainerProps) => {
 
       {subContainer
         ?.filter(item => item.visible)
+        ?.sort((a, b) => a.order - b.order)
         ?.map(content => (
           <>
             {content?.type === 'paragraph' &&
