@@ -220,21 +220,28 @@ const CustomerForm = ({
 
       const enterId = Number(form?.enterprise?.value || user?.enterprise?.id);
       const userObj = {
-        ...form,
+        email: form?.email,
         username: form.login,
-        email: form?.email || null,
         enterprise: !isCompany ? enterId : undefined,
         group: form?.group?.value ? Number(form?.group?.value) : undefined,
         creativeEnterprise: form?.enterprise?.label,
         creativeCompany: form?.company?.label,
+        address: form?.address,
+        city: form?.city,
+        cpf: form?.cpf,
+        cnpj: form?.cnpj,
+        neighborhood: form?.neighborhood,
+        number: form?.number,
+        phone: form?.phone,
+        cellPhone: form?.cellPhone,
+        state: form?.state,
+        zipCode: form?.zipCode,
+        name: form?.name,
+        complement: form?.complement,
         userCreated: enterId,
-        password: undefined,
-        confirmPassword: undefined,
-        company: undefined,
-        title: '',
       };
 
-      await api.put(`/clients/${customerId}`, { data: userObj });
+      await api.put(`/updateUser?clientId=${customerId}`, userObj);
 
       if (form?.enterprise?.value && customerId && !isCompany) {
         await api.put(`/enterprises/${form.enterprise.value}`, {
