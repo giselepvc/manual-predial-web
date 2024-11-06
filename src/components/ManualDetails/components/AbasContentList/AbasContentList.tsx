@@ -53,6 +53,7 @@ const AbasContentList = ({
 
       {subContainer
         ?.filter(item => item.visible)
+        ?.sort((a, b) => a.order - b.order)
         ?.map(content => (
           <>
             {content?.type === 'paragraph' && (

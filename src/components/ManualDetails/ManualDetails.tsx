@@ -32,6 +32,8 @@ interface ManualTableProps {
   setTitle: Dispatch<SetStateAction<Recursive<TitlesDatum> | undefined>>;
 }
 
+type IFilters = { visible: boolean; order: number };
+
 const ManualDetails = ({
   watch,
   setCap,
@@ -72,6 +74,9 @@ const ManualDetails = ({
       setLoading(false);
     }
   };
+
+  const filtered = <T extends IFilters>(list: T[]): T[] =>
+    list.filter(item => item.visible).sort((a, b) => a.order - b.order);
 
   return (
     <StepsPage>
@@ -115,6 +120,7 @@ const ManualDetails = ({
 
                         {title?.id === titles.id &&
                           titles.containers
+                            ?.filter(item => item.visible)
                             .sort((a, b) => a.order - b.order)
                             .map((container, i) => (
                               <Thread key={container.id}>

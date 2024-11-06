@@ -121,24 +121,26 @@ const ContentList = ({
           !loading &&
           contentSelected?.sub_containers && (
             <InfoSection style={{ borderBottom: '1px solid #AAAAAA' }}>
-              {contentSelected?.sub_containers?.map(subcontainer => (
-                <InfoText
-                  selected={subcontainer?.id === subContainer?.id}
-                  onClick={() => {
-                    setSubContainer(c =>
-                      c === subcontainer ? undefined : subcontainer,
-                    );
-                  }}
-                >
-                  {subcontainer?.icon?.image?.url && (
-                    <IconNavbar
-                      src={urlBuild(subcontainer.icon.image.url)}
-                      alt="imagem do container"
-                    />
-                  )}
-                  {subcontainer.title || ''}
-                </InfoText>
-              ))}
+              {contentSelected?.sub_containers
+                ?.filter(item => item.visible)
+                ?.map(subcontainer => (
+                  <InfoText
+                    selected={subcontainer?.id === subContainer?.id}
+                    onClick={() => {
+                      setSubContainer(c =>
+                        c === subcontainer ? undefined : subcontainer,
+                      );
+                    }}
+                  >
+                    {subcontainer?.icon?.image?.url && (
+                      <IconNavbar
+                        src={urlBuild(subcontainer.icon.image.url)}
+                        alt="imagem do container"
+                      />
+                    )}
+                    {subcontainer.title || ''}
+                  </InfoText>
+                ))}
             </InfoSection>
           )}
       </InfoSection>
