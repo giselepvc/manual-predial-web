@@ -121,6 +121,7 @@ const TableContainer = ({
         {container?.type === 'abas' && container?.sub_containers && (
           <InfoSection style={{ borderBottom: '1px solid #AAAAAA' }}>
             {container?.sub_containers
+              ?.sort((a, b) => a.order - b.order)
               ?.filter(item => item.visible)
               .map(subcontainer => (
                 <InfoText

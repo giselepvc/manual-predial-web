@@ -1,8 +1,12 @@
-import { ContainerData } from '@/interfaces/content';
+import { FaDownload } from 'react-icons/fa6';
+
+import { ContainerData } from '@/interfaces/manual';
+
 import { RecursiveNormalize } from '@/utils/normalizeStrapi';
 import { urlBuild } from '@/utils/urlBuild';
-import { FaDownload } from 'react-icons/fa6';
+
 import { theme } from '@/styles/theme';
+
 import {
   ButtonDownload,
   ColumnDetails,
@@ -15,24 +19,18 @@ import {
 } from './styles';
 
 interface AbasContainerProps {
-  loading?: boolean;
   subContainer: RecursiveNormalize<ContainerData[]> | [];
   title: string;
 }
 
-const AbasContentList = ({
-  title,
-  subContainer,
-  loading,
-}: AbasContainerProps) => {
-  if (loading) return;
-
+const AbasContentList = ({ title, subContainer }: AbasContainerProps) => {
   const renderDescriptionWithIcon = (
     text: string,
     italic: boolean,
     image?: string,
   ) => {
     const paragraphs = text?.split('\n');
+
     return paragraphs?.map(paragrafo => (
       <InfoSection>
         {image && (paragrafo || paragrafo !== '') && (
@@ -43,8 +41,18 @@ const AbasContentList = ({
     ));
   };
 
-  const renderDescription = (text: string) => {
-    return text?.split('\n');
+  const renderDescription = (
+    text: string,
+    italic: boolean,
+    subtitle?: string,
+  ) => {
+    const paragraphs = text?.split('\n');
+    return paragraphs?.map(item => (
+      <Description italic={italic || false}>
+        {subtitle && <strong>{subtitle}:</strong>}
+        {item}
+      </Description>
+    ));
   };
 
   return (
@@ -56,22 +64,15 @@ const AbasContentList = ({
         ?.sort((a, b) => a.order - b.order)
         ?.map(content => (
           <>
-            {content?.type === 'paragraph' && (
-              <Description italic={content?.italic || false}>
-                {renderDescription(content?.description)?.map(
-                  item => item || '',
-                )}
-              </Description>
-            )}
+            {content?.type === 'paragraph' &&
+              renderDescription(content?.description, content?.italic || false)}
 
-            {content?.type === 'keys' && (
-              <Description italic={content?.italic || false}>
-                {content?.subtitle && <strong>{content.subtitle}:</strong>}
-                {renderDescription(content?.description)?.map(
-                  item => item || '',
-                )}
-              </Description>
-            )}
+            {content?.type === 'keys' &&
+              renderDescription(
+                content?.description,
+                content?.italic || false,
+                content?.subtitle,
+              )}
 
             {content?.type === 'paragraphIcon' &&
               renderDescriptionWithIcon(
@@ -89,10 +90,7 @@ const AbasContentList = ({
                   />
                 )}
                 <span>
-                  <strong>Legenda</strong>:{' '}
-                  {renderDescription(content?.description)?.map(
-                    item => item || '',
-                  )}
+                  <strong>Legenda</strong>: {content?.description}
                 </span>
               </ColumnDetails>
             )}

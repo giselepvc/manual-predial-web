@@ -1,8 +1,7 @@
 import { urlBuild } from '@/utils/urlBuild';
 import { RecursiveNormalize } from '@/utils/normalizeStrapi';
-import { ContentsDatum } from '@/interfaces/manual';
-import { ContainerData, IContent } from '@/interfaces/content';
-import { Dispatch, SetStateAction } from 'react';
+import { ContentsDatum, ContainerData } from '@/interfaces/manual';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 import { FaDownload } from 'react-icons/fa6';
 import { theme } from '@/styles/theme';
 import {
@@ -21,8 +20,6 @@ import {
 interface ContainerProps {
   container: RecursiveNormalize<ContentsDatum> | undefined;
   hasLast?: boolean;
-  loading?: boolean;
-  contentSelected: RecursiveNormalize<IContent> | undefined;
   subContainer: RecursiveNormalize<ContainerData> | undefined;
   setSubContainer: Dispatch<
     SetStateAction<RecursiveNormalize<ContainerData> | undefined>
@@ -32,8 +29,6 @@ interface ContainerProps {
 const ContentList = ({
   container,
   hasLast,
-  loading,
-  contentSelected,
   subContainer,
   setSubContainer,
 }: ContainerProps) => {
@@ -52,6 +47,13 @@ const ContentList = ({
       </InfoSection>
     ));
   };
+
+  useEffect(() => {
+    if (container?.type === 'abas') {
+      const subContainers = container?.sub_containers?.[0];
+      setSubContainer(subContainers);
+    }
+  }, []);
 
   return (
     <TableDetails hasLast={hasLast}>
@@ -117,32 +119,31 @@ const ContentList = ({
           </InfoSection>
         )}
 
-        {container?.type === 'abas' &&
-          !loading &&
-          contentSelected?.sub_containers && (
-            <InfoSection style={{ borderBottom: '1px solid #AAAAAA' }}>
-              {contentSelected?.sub_containers
-                ?.filter(item => item.visible)
-                ?.map(subcontainer => (
-                  <InfoText
-                    selected={subcontainer?.id === subContainer?.id}
-                    onClick={() => {
-                      setSubContainer(c =>
-                        c === subcontainer ? undefined : subcontainer,
-                      );
-                    }}
-                  >
-                    {subcontainer?.icon?.image?.url && (
-                      <IconNavbar
-                        src={urlBuild(subcontainer.icon.image.url)}
-                        alt="imagem do container"
-                      />
-                    )}
-                    {subcontainer.title || ''}
-                  </InfoText>
-                ))}
-            </InfoSection>
-          )}
+        {container?.type === 'abas' && container?.sub_containers && (
+          <InfoSection style={{ borderBottom: '1px solid #AAAAAA' }}>
+            {container?.sub_containers
+              ?.filter(item => item.visible)
+              ?.sort((a, b) => a.order - b.order)
+              ?.map(subcontainer => (
+                <InfoText
+                  selected={subcontainer?.id === subContainer?.id}
+                  onClick={() => {
+                    setSubContainer(subItem =>
+                      subItem === subcontainer ? undefined : subcontainer,
+                    );
+                  }}
+                >
+                  {subcontainer?.icon?.image?.url && (
+                    <IconNavbar
+                      src={urlBuild(subcontainer.icon.image.url)}
+                      alt="imagem do container"
+                    />
+                  )}
+                  {subcontainer.title || ''}
+                </InfoText>
+              ))}
+          </InfoSection>
+        )}
       </InfoSection>
     </TableDetails>
   );

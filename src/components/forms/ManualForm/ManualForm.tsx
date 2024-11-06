@@ -40,6 +40,10 @@ interface ManualFormProps {
   editing?: boolean;
 }
 
+type ManualsParams = {
+  [key: string]: string | number | undefined;
+};
+
 const ManualForm = ({ editing }: ManualFormProps) => {
   const param = useParams();
   const { role } = useAuth();
@@ -67,20 +71,42 @@ const ManualForm = ({ editing }: ManualFormProps) => {
     resolver: yupResolver(ManualSchema),
   });
 
-  const manualsParams = {
-    'populate[0]': 'capters.titles.containers.image',
-    'populate[1]': 'enterprise',
-    'populate[3]': 'capters.icon.image',
-    'populate[4]': 'capters.titles.containers.pdf',
-    'populate[5]': 'capters.titles.containers.icon.image',
-    'populate[6]': 'capters.groups',
-    'filters[id]': param?.id || manual?.id,
-  };
+  const populate = [
+    'capters.titles.containers.image',
+    'enterprise.company.image',
+    'capters.icon.image',
+    'capters.titles.containers.pdf',
+    'capters.titles.containers.icon.image',
+    'capters.titles.containers.image',
+    'capters.groups',
+    'enterprise.image',
+    'capters.titles.containers.sub_containers.pdf',
+    'capters.titles.containers.sub_containers.icon.image',
+    'capters.titles.containers.sub_containers.image',
+    'capters.titles.containers.sub_containers.sub_containers',
+    'capters.titles.containers.sub_containers.sub_containers.icon.image',
+    'capters.titles.containers.sub_containers.sub_containers.image',
+    'capters.titles.containers.sub_containers.sub_containers.pdf',
+  ];
+
+  const manualsParams: ManualsParams = populate.reduce((params, path, idx) => {
+    params[`populate[${idx}]`] = path;
+    return params;
+  }, {} as ManualsParams);
 
   useQuery({
-    queryKey: ['manualForm', manualsParams],
+    queryKey: [
+      'manualForm',
+      {
+        ...manualsParams,
+        'filters[id]': param?.id || manual?.id,
+      },
+    ],
     queryFn: async () => {
-      const data = await getManuals(manualsParams);
+      const data = await getManuals({
+        ...manualsParams,
+        'filters[id]': param?.id || manual?.id,
+      });
       const results = normalizeStrapi(data || []);
       const result = results?.[0];
       setValue('enterprise', {
