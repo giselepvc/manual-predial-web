@@ -47,6 +47,7 @@ const PanelPage = () => {
     'capters.icon.image',
     'capters.titles.containers.pdf',
     'capters.titles.containers.icon.image',
+    'capters.titles.containers.image',
     'capters.groups',
     'enterprise.image',
     'capters.titles.containers.sub_containers.pdf',
@@ -55,6 +56,7 @@ const PanelPage = () => {
     'capters.titles.containers.sub_containers.sub_containers',
     'capters.titles.containers.sub_containers.sub_containers.icon.image',
     'capters.titles.containers.sub_containers.sub_containers.image',
+    'capters.titles.containers.sub_containers.sub_containers.pdf',
   ];
 
   const manualsParams: ManualsParams = populate.reduce((params, path, idx) => {
