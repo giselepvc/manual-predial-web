@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import Select from '@/components/Select/Select';
 import Input from '@/components/Input/Input';
 import Button from '@/components/Button/Button';
+import PasswordModal from '@/components/PasswordModal/PasswordModal';
 
 import { CustomerSchema, ICustomerForm } from '@/validations/CustomerSchema';
 
@@ -16,13 +17,16 @@ import telephoneMask from '@/utils/masks/phone';
 import zipcodeMask from '@/utils/masks/cep';
 import { normalizeStrapi } from '@/utils/normalizeStrapi';
 import handleError, { handleSuccess } from '@/utils/handleToast';
+
 import { getAddressFromCep } from '@/services/addressApi';
 import { useEnterprise } from '@/services/querys/enterprise';
 import { useEnterpriseOptions } from '@/services/querys/enterprise';
 import { getClients } from '@/services/querys/clients';
 import { useGroupsOptions } from '@/services/querys/groups';
 import { useCompaniesOptions } from '@/services/querys/company';
+
 import api from '@/services/api';
+
 import { useAuth } from '@/hooks/useAuth';
 
 import HpuseIcon from '../../../../public/icons/house.svg';
@@ -38,7 +42,6 @@ import {
   LabelPassword,
   ErrorMessage,
 } from './styles';
-import PasswordModal from './components/PasswordModal/PasswordModal';
 
 interface Response {
   data: { id: number };
@@ -284,6 +287,28 @@ const CustomerForm = ({
       handleError(error);
     }
   };
+
+  useEffect(() => {
+    const setEnterpriseValues = (enterprise: any) => {
+      setValue('state', enterprise?.state);
+      setValue('zipCode', enterprise?.zipCode);
+      setValue('city', enterprise?.city);
+      setValue('address', enterprise?.address);
+      setValue('neighborhood', enterprise?.neighborhood);
+      setValue('number', enterprise?.number);
+      setValue('complement', enterprise?.complement);
+    };
+
+    const enterpriseValue = watch('enterprise.value');
+
+    if (enterpriseValue && !isEditing) {
+      const enterpriseFind = enterpriseList?.find(
+        etp => etp.id.toString() === enterpriseValue,
+      );
+
+      setEnterpriseValues(enterpriseFind);
+    }
+  }, [watch('enterprise.value')]);
 
   useEffect(() => {
     const setEnterpriseValues = (enterprise: any) => {
